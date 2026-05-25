@@ -17,7 +17,12 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        stage.setTitle("Sistema Administrativo Pizzeria Italia Pizza");
+        stage.setResizable(false);
         scene = new Scene(loadFXML("primary"), 640, 480);
+        scene.getStylesheets().add(
+                App.class.getResource("/css/cupertino-dark.css").toExternalForm()
+        );
         stage.setScene(scene);
         stage.show();
     }
