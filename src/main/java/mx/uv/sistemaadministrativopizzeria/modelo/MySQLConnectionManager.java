@@ -21,7 +21,7 @@ public class MySQLConnectionManager {
     private String url;
     private String host = "localhost";
     private String port = "3306";
-    private String db = "cajero";//Escribe la base de datos de conexión
+    private String db = "pizzeria";//Escribe la base de datos de conexión
     private String username = "admin_pizzeria";//Escribe el username del usuario de conexión
     private String password = "12345";//Escribe el password del usuario de conexión
 
