@@ -83,5 +83,14 @@ public class MenuEmpleadoAdministradorController implements Initializable {
             System.getLogger(MenuEmpleadoAdministradorController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
+
+    @FXML
+    private void clicBtnValidaciones(ActionEvent event) {
+        try {
+            App.setRoot("consultaValidacionesInventario");
+        } catch (IOException ex) {
+            System.getLogger(MenuEmpleadoAdministradorController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }
     
 }

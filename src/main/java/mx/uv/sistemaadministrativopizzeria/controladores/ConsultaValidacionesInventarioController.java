@@ -4,6 +4,7 @@
  */
 package mx.uv.sistemaadministrativopizzeria.controladores;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -13,6 +14,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import mx.uv.sistemaadministrativopizzeria.App;
 
 /**
  * FXML Controller class
@@ -46,10 +48,20 @@ public class ConsultaValidacionesInventarioController implements Initializable {
 
     @FXML
     private void btnVolver(ActionEvent event) {
+        try {
+            App.setRoot("menuEmpleadoAdministrador");
+        } catch (IOException ex) {
+            System.getLogger(ConsultaUsuariosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
 
     @FXML
     private void btnRealizarValidacion(ActionEvent event) {
+        try {
+            App.setRoot("realizarValidacionInventario");
+        } catch (IOException ex) {
+            System.getLogger(ConsultaValidacionesInventarioController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
     
 }
