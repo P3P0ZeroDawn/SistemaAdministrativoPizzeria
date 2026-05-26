@@ -8,7 +8,7 @@ package mx.uv.sistemaadministrativopizzeria.modelo.beans;
  *
  * @author pedro
  */
-public class Usuario {
+public class Usuario implements mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemObservableList{
     private int idUsuario;
     private String nombre;
     private String apellidoPaterno;
@@ -21,7 +21,11 @@ public class Usuario {
     private String usuario;
     private String password;
     private Direccion direccion;
-    
+
+    @Override
+    public String getString() {
+        return this.nombre + " " + this.apellidoPaterno + " " + this.apellidoMaterno;
+    }
     
     public enum tipoUsuario {Cliente, Empleado};
     public enum rolEmpleado {Administrador, Cajero};
@@ -190,6 +194,5 @@ public class Usuario {
     public void setDireccion(Direccion direccion) {
         this.direccion = direccion;
     }
-
     
 }

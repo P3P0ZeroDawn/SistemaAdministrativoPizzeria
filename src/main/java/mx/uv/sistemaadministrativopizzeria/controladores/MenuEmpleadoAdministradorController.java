@@ -47,5 +47,23 @@ public class MenuEmpleadoAdministradorController implements Initializable {
             System.getLogger(MenuEmpleadoAdministradorController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
+
+    @FXML
+    private void clicBtnUsuarios(ActionEvent event) {
+        try {
+            App.setRoot("consultaUsuarios");
+        } catch (IOException ex) {
+            System.getLogger(MenuEmpleadoAdministradorController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }
+
+    @FXML
+    private void clicBtnAcercaDe(ActionEvent event) {
+        try {
+            App.setRoot("acercaDe");
+        } catch (IOException ex) {
+            System.getLogger(MenuEmpleadoAdministradorController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }
     
 }

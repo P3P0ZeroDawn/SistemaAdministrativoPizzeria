@@ -1,4 +1,4 @@
-package mx.uv.sistemaadministrativopizzeria.controladores;
+package mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

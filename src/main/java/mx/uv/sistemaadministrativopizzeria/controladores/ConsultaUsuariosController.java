@@ -4,14 +4,26 @@
  */
 package mx.uv.sistemaadministrativopizzeria.controladores;
 
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemTextoBoton;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.BotonAccion;
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import mx.uv.sistemaadministrativopizzeria.App;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
+import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
+import mx.uv.sistemaadministrativopizzeria.modelo.dao.UsuarioDAO;
 
 /**
  * FXML Controller class
@@ -19,6 +31,8 @@ import javafx.scene.control.TextField;
  * @author hp
  */
 public class ConsultaUsuariosController implements Initializable {
+    
+    private ObservableList<Usuario> usuarios = FXCollections.observableArrayList();
 
     @FXML
     private TextField tfBusqueda;
@@ -29,14 +43,65 @@ public class ConsultaUsuariosController implements Initializable {
     @FXML
     private CheckBox cbPorTelefono;
     @FXML
-    private ListView<?> lvUsuarios;
+    private ListView<Usuario> lvUsuarios;
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        lvUsuarios.setCellFactory(param -> new ItemTextoBoton<>(
+                usuario -> {
+                    List<Badge> badges = new ArrayList<>();
+                    
+                    if(usuario.getTipoUsuario().equals(Usuario.tipoUsuario.Empleado)){
+                        badges.add(
+                                new Badge(
+                                        "Empleado",
+                                        "#FFFB29"
+                                )
+                        );
+                        if(usuario.getRolEmpleado().equals(Usuario.rolEmpleado.Administrador)){
+                           badges.add(
+                                new Badge(
+                                        "Administrador",
+                                        "#375cf050"
+                                )
+                            ); 
+                        }else{
+                            badges.add(
+                                new Badge(
+                                        "Cajero",
+                                        "#f037bb50"
+                                )
+                            ); 
+                        }
+                    }else{
+                        badges.add(
+                                new Badge(
+                                        "Cliente",
+                                        "#7FFC6446"
+                                )
+                        );
+                    }
+                    
+                    return badges;
+                },
+                new BotonAccion<>(
+                        "Editar",
+                        "/imagenes/editar.png",
+                        usuario -> {
+                    //editarUsuario((Usuario) usuario);
+                }),
+                
+                new BotonAccion<>(
+                        "Eliminar",
+                        "/imagenes/eliminar.png",
+                        usuario -> {
+                    //eliminarUsuario((Usuario) usuario);
+                })
+        ));
+        cargarDatos();
     }    
 
     @FXML
@@ -45,10 +110,22 @@ public class ConsultaUsuariosController implements Initializable {
 
     @FXML
     private void btnVolver(ActionEvent event) {
+        try {
+            App.setRoot("menuEmpleadoAdministrador");
+        } catch (IOException ex) {
+            System.getLogger(ConsultaUsuariosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
 
     @FXML
     private void btnBuscar(ActionEvent event) {
+    }
+    
+    private void cargarDatos(){
+        List<Usuario> listaUsuarios = UsuarioDAO.obtenerUsuarios();
+        usuarios.clear();
+        usuarios.addAll(listaUsuarios);
+        lvUsuarios.setItems(usuarios);
     }
     
 }
