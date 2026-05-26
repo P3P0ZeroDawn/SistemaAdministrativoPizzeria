@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
@@ -47,7 +48,7 @@
                               <Insets />
                            </VBox.margin>
                         </Label>
-                        <TextField prefHeight="25.0" prefWidth="168.0" />
+                        <TextField fx:id="tfNombre" prefHeight="25.0" prefWidth="168.0" />
                      </children>
                      <HBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -60,7 +61,7 @@
                               <Insets />
                            </VBox.margin>
                         </Label>
-                        <TextField prefHeight="25.0" prefWidth="168.0" />
+                        <TextField fx:id="tfApellidoPaterno" prefHeight="25.0" prefWidth="168.0" />
                      </children>
                      <HBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -73,7 +74,7 @@
                               <Insets />
                            </VBox.margin>
                         </Label>
-                        <TextField prefHeight="25.0" prefWidth="168.0" />
+                        <TextField fx:id="tfApellidoMaterno" prefHeight="25.0" prefWidth="168.0" />
                      </children>
                      <HBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -90,7 +91,7 @@
                               <Insets />
                            </VBox.margin>
                         </Label>
-                        <TextField prefHeight="25.0" prefWidth="168.0" />
+                        <TextField fx:id="tfTelefono" prefHeight="25.0" prefWidth="168.0" />
                      </children>
                      <HBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -103,7 +104,7 @@
                               <Insets />
                            </VBox.margin>
                         </Label>
-                        <TextField prefHeight="25.0" prefWidth="168.0" />
+                        <TextField fx:id="tfCorreo" prefHeight="25.0" prefWidth="168.0" />
                      </children>
                      <HBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -120,12 +121,12 @@
                <children>
                   <VBox prefHeight="60.0" prefWidth="84.0">
                      <children>
-                        <Label text="Código Postal">
+                        <Label prefHeight="20.0" prefWidth="106.0" text="CP">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                         </Label>
-                        <TextField prefHeight="25.0" prefWidth="168.0" />
+                        <TextField fx:id="tfCp" prefHeight="25.0" prefWidth="168.0" />
                      </children>
                      <HBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -138,7 +139,7 @@
                               <Insets />
                            </VBox.margin>
                         </Label>
-                        <TextField prefHeight="25.0" prefWidth="168.0" />
+                        <TextField fx:id="tfCalle" prefHeight="25.0" prefWidth="168.0" />
                      </children>
                      <HBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -151,7 +152,7 @@
                               <Insets />
                            </VBox.margin>
                         </Label>
-                        <TextField prefHeight="25.0" prefWidth="168.0" />
+                        <TextField fx:id="tfNumero" prefHeight="25.0" prefWidth="168.0" />
                      </children>
                      <HBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -164,7 +165,7 @@
                               <Insets />
                            </VBox.margin>
                         </Label>
-                        <TextField prefHeight="25.0" prefWidth="168.0" />
+                        <TextField fx:id="tfCiudad" prefHeight="25.0" prefWidth="168.0" />
                      </children>
                      <HBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -174,22 +175,22 @@
             </HBox>
             <HBox alignment="TOP_CENTER" prefHeight="135.0" prefWidth="800.0">
                <children>
-                  <VBox prefHeight="60.0" prefWidth="84.0">
+                  <VBox prefHeight="132.0" prefWidth="201.0">
                      <children>
                         <Label text="Tipo de usuario">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                         </Label>
-                        <ComboBox fx:id="cbTipousuario" onAction="#clicCbTipoUsuario" prefWidth="150.0" />
-                        <VBox prefHeight="60.0" prefWidth="84.0">
+                        <ComboBox fx:id="cbTipousuario" onAction="#clicCbTipoUsuario" prefHeight="36.0" prefWidth="207.0" />
+                        <VBox fx:id="vbRol" prefHeight="60.0" prefWidth="84.0" visible="false">
                            <children>
                               <Label text="Rol">
                                  <VBox.margin>
                                     <Insets />
                                  </VBox.margin>
                               </Label>
-                              <ComboBox disable="true" prefWidth="150.0" />
+                              <ComboBox fx:id="cbRolEmpleado" disable="true" prefHeight="36.0" prefWidth="242.0" />
                            </children>
                            <VBox.margin>
                               <Insets top="20.0" />
@@ -200,20 +201,20 @@
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                      </HBox.margin>
                   </VBox>
-                  <VBox prefHeight="60.0" prefWidth="238.0">
+                  <VBox fx:id="vbUsuario" prefHeight="132.0" prefWidth="190.0" visible="false">
                      <children>
                         <Label text="Usuario">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                         </Label>
-                        <TextField disable="true" prefHeight="25.0" prefWidth="168.0" />
+                        <TextField fx:id="tfUsuario" disable="true" prefHeight="36.0" prefWidth="192.0" />
                      </children>
                      <HBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                      </HBox.margin>
                   </VBox>
-                  <VBox prefHeight="104.0" prefWidth="274.0">
+                  <VBox fx:id="vbContrasenia" prefHeight="132.0" prefWidth="206.0" visible="false">
                      <children>
                         <VBox prefHeight="104.0" prefWidth="274.0">
                            <children>
@@ -222,15 +223,15 @@
                                     <Insets />
                                  </VBox.margin>
                               </Label>
-                              <TextField disable="true" prefHeight="25.0" prefWidth="168.0" />
+                              <PasswordField fx:id="pfContrasenia" disable="true" prefHeight="25.0" prefWidth="168.0" />
                            </children>
                         </VBox>
-                        <Label text="Contraseña">
+                        <Label text="Confirmar Contraseña">
                            <VBox.margin>
                               <Insets />
                            </VBox.margin>
                         </Label>
-                        <TextField disable="true" prefHeight="25.0" prefWidth="168.0" />
+                        <PasswordField fx:id="pfConfirmacionContrasenia" disable="true" prefHeight="25.0" prefWidth="168.0" />
                      </children>
                      <HBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -244,7 +245,7 @@
    <bottom>
       <HBox alignment="CENTER_LEFT" prefHeight="51.0" prefWidth="800.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" prefHeight="39.0" prefWidth="100.0" text="Cancelar">
+            <Button mnemonicParsing="false" onAction="#clicBtnCancelar" prefHeight="39.0" prefWidth="100.0" text="Cancelar">
                <HBox.margin>
                   <Insets bottom="10.0" left="60.0" />
                </HBox.margin>
@@ -253,7 +254,7 @@
                </font>
             </Button>
             <Region prefHeight="38.0" prefWidth="462.0" />
-            <Button mnemonicParsing="false" prefHeight="39.0" prefWidth="116.0" text="Dar de alta">
+            <Button mnemonicParsing="false" onAction="#clicBtnDarDeAlta" prefHeight="39.0" prefWidth="116.0" text="Dar de alta">
                <font>
                   <Font size="18.0" />
                </font>

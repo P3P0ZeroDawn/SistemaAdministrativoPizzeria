@@ -12,6 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
+import javafx.scene.control.PasswordField;
 import mx.uv.sistemaadministrativopizzeria.App;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.UsuarioDAO;
@@ -26,7 +27,7 @@ public class InicioSesionController implements Initializable {
     @FXML
     private TextField tfUsuario;
     @FXML
-    private TextField tfContrasenia;
+    private PasswordField pfContrasenia;
 
     /**
      * Initializes the controller class.
@@ -38,7 +39,7 @@ public class InicioSesionController implements Initializable {
     @FXML
     private void clicBtnIniciarSesion(ActionEvent event) {
         String usuario = tfUsuario.getText();
-        String contrasenia = tfContrasenia.getText();
+        String contrasenia = pfContrasenia.getText();
         
         Usuario usuarioRecuperado = null;
         usuarioRecuperado = UsuarioDAO.validarLogin(usuario, contrasenia);
