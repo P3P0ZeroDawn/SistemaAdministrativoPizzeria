@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.HashMap;
+import javafx.stage.Modality;
 
 /**
  * JavaFX App
@@ -35,6 +36,41 @@ public class App extends Application {
 
     public static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
+    }
+    
+    public static void abrirVentanaEmergente(
+        String fxml,
+        String titulo,
+        int ancho,
+        int alto,
+        boolean modal
+    ) throws IOException {
+
+        FXMLLoader loader = new FXMLLoader(
+                App.class.getResource(fxml + ".fxml")
+        );
+
+        Parent root = loader.load();
+
+        Scene nuevaEscena = new Scene(root, ancho, alto);
+
+        nuevaEscena.getStylesheets().add(
+                App.class.getResource("/css/primer-light.css").toExternalForm()
+        );
+
+        Stage stage = new Stage();
+
+        stage.setTitle(titulo);
+        stage.setScene(nuevaEscena);
+        stage.setResizable(false);
+
+        // Si será modal
+        if (modal) {
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+        } else {
+            stage.show();
+        }
     }
     
     /**

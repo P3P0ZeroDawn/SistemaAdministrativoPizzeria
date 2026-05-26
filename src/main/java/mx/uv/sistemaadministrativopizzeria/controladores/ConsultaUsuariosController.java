@@ -106,6 +106,11 @@ public class ConsultaUsuariosController implements Initializable {
 
     @FXML
     private void btnNuevoUsuario(ActionEvent event) {
+        try {
+            App.abrirVentanaEmergente("altaUsuario", "Alta de usuario", 800, 600, true);
+        } catch (IOException ex) {
+            System.getLogger(ConsultaProductosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
 
     @FXML

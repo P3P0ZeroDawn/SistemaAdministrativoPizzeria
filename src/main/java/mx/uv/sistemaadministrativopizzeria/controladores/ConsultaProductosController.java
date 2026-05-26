@@ -41,6 +41,7 @@ public class ConsultaProductosController implements Initializable {
 
     @FXML
     private void btnNuevoProducto(ActionEvent event) {
+        
     }
 
     @FXML
