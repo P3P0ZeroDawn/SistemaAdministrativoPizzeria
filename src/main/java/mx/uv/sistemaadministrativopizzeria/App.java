@@ -7,19 +7,25 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * JavaFX App
  */
 public class App extends Application {
 
+    private static HashMap<String, Object> metadatos;
     private static Scene scene;
 
     @Override
     public void start(Stage stage) throws IOException {
         stage.setTitle("Sistema Administrativo Pizzeria Italia Pizza");
+        stage.setMinWidth(700);
+        stage.setMinHeight(300);
+        stage.setMaxWidth(900);
+        stage.setMaxHeight(700);
         stage.setResizable(false);
-        scene = new Scene(loadFXML("primary"), 640, 480);
+        scene = new Scene(loadFXML("inicioSesion"), 800, 600);
         scene.getStylesheets().add(
                 App.class.getResource("/css/cupertino-dark.css").toExternalForm()
         );
