@@ -41,16 +41,25 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
 
         this.label = new Label();
 
-        this.badgesBox = new HBox(5);
+        this.badgesBox = new HBox(10);
 
-        this.accionesBox = new HBox(8);
+        this.accionesBox = new HBox(12);
 
-        this.content = new HBox(10);
+        this.content = new HBox(20);
+
+        /*
+         * TAMAÑO CELDA
+         */
+        setMinHeight(72);
 
         /*
          * CONFIGURACION CONTENEDORES
          */
         content.setAlignment(Pos.CENTER_LEFT);
+
+        content.setStyle(
+                "-fx-padding: 10 15 10 15;"
+        );
 
         badgesBox.setAlignment(Pos.CENTER);
 
@@ -64,6 +73,11 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
         label.setMaxWidth(Double.MAX_VALUE);
 
         label.setAlignment(Pos.CENTER_LEFT);
+
+        label.setStyle(
+                "-fx-font-size: 18px;"
+                + "-fx-font-weight: regular;"
+        );
 
         /*
          * ESTRUCTURA
@@ -89,11 +103,19 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
 
             ImageView iv = new ImageView(img);
 
-            iv.setFitWidth(18);
+            /*
+             * TAMAÑO ICONOS
+             */
+            iv.setFitWidth(24);
 
-            iv.setFitHeight(18);
+            iv.setFitHeight(24);
 
             btn.setGraphic(iv);
+
+            /*
+             * TAMAÑO BOTON
+             */
+            btn.setPrefSize(64, 64);
 
             btn.setAlignment(Pos.CENTER);
 
@@ -154,8 +176,8 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
                                 + badge.getColor()
                                 + ";"
                                 + "-fx-text-fill: black;"
-                                + "-fx-padding: 4 10 4 10;"
-                                + "-fx-background-radius: 8;"
+                                + "-fx-padding: 6 14 6 14;"
+                                + "-fx-background-radius: 10;"
                                 + "-fx-font-size: 18px;"
                                 + "-fx-font-weight: regular;"
                         );
