@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="600.0" prefWidth="800.0" stylesheets="@../../../css/primer-light.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.sistemaadministrativopizzeria.controladores.ConsultaProductosController">
+    <top>
+        <VBox spacing="10.0" BorderPane.alignment="CENTER">
+            <children>
+                <HBox alignment="CENTER">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                            <children>
+                                <Label text="Productos">
+                                    <font>
+                                        <Font size="30.0" />
+                                    </font>
+                                </Label>
+                                <Button mnemonicParsing="false" onAction="#btnNuevoProducto" prefHeight="60.0" prefWidth="130.0" text="Registrar &#10;nuevo producto">
+                                    <font>
+                                        <Font size="14.0" />
+                                    </font>
+                                </Button>
+                        <Button mnemonicParsing="false" onAction="#btnGenerarReporte" prefHeight="60.0" prefWidth="130.0" text="Generar reporte&#10;de inventario">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Button>
+                                <Region prefHeight="60.0" prefWidth="224.0" />
+                            </children>
+                        </HBox>
+                        <StackPane alignment="CENTER_RIGHT" prefWidth="100.0">
+                            <children>
+                                <Button alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#btnVolver" prefHeight="39.0" prefWidth="100.0" text="Volver" textAlignment="RIGHT">
+                                    <font>
+                                        <Font size="18.0" />
+                                    </font>
+                                </Button>
+                                <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER_LEFT">
+                                    <image>
+                                        <Image url="@../../../imagenes/volver.png" />
+                                    </image>
+                                    <StackPane.margin>
+                                        <Insets left="5.0" />
+                                    </StackPane.margin>
+                                </ImageView>
+                            </children>
+                        </StackPane>
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" prefWidth="200.0" spacing="20.0">
+                    <children>
+                        <TextField fx:id="tfBusqueda" prefHeight="25.0" prefWidth="255.0" promptText="Buscar producto" />
+                        <CheckBox fx:id="cbPorNombre" mnemonicParsing="false" text="Por nombre">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </CheckBox>
+                        <CheckBox fx:id="cbPorCodigo" mnemonicParsing="false" text="Por código">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </CheckBox>
+                        <Button mnemonicParsing="false" onAction="#btnBuscar" prefWidth="100.0" text="Buscar">
+                            <font>
+                                <Font size="18.0" />
+                            </font>
+                        </Button>
+                    </children>
+               <VBox.margin>
+                  <Insets left="30.0" />
+               </VBox.margin>
+                </HBox>
+            </children>
+            <BorderPane.margin>
+                <Insets top="20.0" />
+            </BorderPane.margin>
+        </VBox>
+    </top>
+    <center>
+        <ListView fx:id="lvProductos" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+            </BorderPane.margin>
+        </ListView>
+    </center>
+</BorderPane>
