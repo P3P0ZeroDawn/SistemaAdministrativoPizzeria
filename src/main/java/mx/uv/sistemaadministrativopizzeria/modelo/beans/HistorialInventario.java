@@ -5,6 +5,8 @@
 package mx.uv.sistemaadministrativopizzeria.modelo.beans;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 /**
  *
@@ -13,15 +15,17 @@ import java.time.LocalDateTime;
 public class HistorialInventario {
     private int idHistorialInventario;
     private LocalDateTime fecha;
+    private ArrayList ProductoHistorial;
 
     public HistorialInventario() {
     }
 
-    public HistorialInventario(int idHistorialInventario, LocalDateTime fecha) {
+    public HistorialInventario(int idHistorialInventario, LocalDateTime fecha, ArrayList ProductoHistorial) {
         this.idHistorialInventario = idHistorialInventario;
         this.fecha = fecha;
+        this.ProductoHistorial = ProductoHistorial;
     }
-
+    
     public int getIdHistorialInventario() {
         return idHistorialInventario;
     }
@@ -36,5 +40,19 @@ public class HistorialInventario {
 
     public void setFecha(LocalDateTime fecha) {
         this.fecha = fecha;
+    }
+
+    public ArrayList getProductoHistorial() {
+        return ProductoHistorial;
+    }
+
+    public void setProductoHistorial(ArrayList ProductoHistorial) {
+        this.ProductoHistorial = ProductoHistorial;
+    }
+    
+    @Override
+    public String toString(){
+        String fechaString = fecha.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        return fechaString.replace("T", " ");
     }
 }

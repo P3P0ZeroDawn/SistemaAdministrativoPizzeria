@@ -67,4 +67,12 @@ public class ProductoHistorial {
     public void setProducto(Producto producto) {
         this.producto = producto;
     }
+    
+    public String getNombreProducto(){
+        return producto.getNombre();
+    }
+    
+    public Double getCantidadProducto(){
+        return producto.getCantidad();
+    }
 }

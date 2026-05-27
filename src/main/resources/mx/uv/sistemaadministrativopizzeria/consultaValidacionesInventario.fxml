@@ -56,13 +56,13 @@
                   <VBox>
                      <children>
                         <Label text="Buscar por fecha" />
-                        <DatePicker fx:id="dpBusFecha" promptText="Seleccionar fecha" />
+                        <DatePicker fx:id="dpBusFecha" onAction="#clicDpSeleccionFecha" promptText="Seleccionar fecha" />
                      </children>
                   </VBox>
                   <VBox>
                      <children>
                         <Label text="Buscar validación" />
-                        <ComboBox fx:id="cbBusValidacion" prefHeight="36.0" prefWidth="226.0" promptText="Seleccionar validación" />
+                        <ComboBox fx:id="cbBusValidacion" onAction="#clicCbSeleccionValidacion" prefHeight="36.0" prefWidth="226.0" promptText="Seleccionar validación" />
                      </children>
                   </VBox>
                   <Region prefHeight="56.0" prefWidth="47.0" />
