@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.HashMap;
 import javafx.stage.Modality;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Ventana;
 
 /**
  * JavaFX App
@@ -38,12 +39,12 @@ public class App extends Application {
         scene.setRoot(loadFXML(fxml));
     }
     
-    public static void abrirVentanaEmergente(
-        String fxml,
-        String titulo,
-        int ancho,
-        int alto,
-        boolean modal
+    public static <T> Ventana<T> abrirVentanaEmergente(
+            String fxml,
+            String titulo,
+            int ancho,
+            int alto,
+            boolean modal
     ) throws IOException {
 
         FXMLLoader loader = new FXMLLoader(
@@ -64,13 +65,13 @@ public class App extends Application {
         stage.setScene(nuevaEscena);
         stage.setResizable(false);
 
-        // Si será modal
         if (modal) {
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.showAndWait();
-        } else {
-            stage.show();
         }
+
+        T controller = loader.getController();
+
+        return new Ventana<>(stage, controller);
     }
     
     /**

@@ -16,6 +16,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.JavaFXUtils;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ModoFormulario;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Validador;
 import mx.uv.sistemaadministrativopizzeria.excepciones.DatosFaltantesException;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
@@ -26,7 +27,7 @@ import mx.uv.sistemaadministrativopizzeria.modelo.dao.UsuarioDAO;
  *
  * @author pedro
  */
-public class AltaUsuarioController implements Initializable {
+public class DatosUsuarioController implements Initializable {
     
     @FXML
     private ComboBox<Usuario.tipoUsuario> cbTipousuario;
@@ -38,8 +39,6 @@ public class AltaUsuarioController implements Initializable {
     private PasswordField pfContrasenia;
     @FXML
     private PasswordField pfConfirmacionContrasenia;
-    
-    private final Tooltip tooltipContrasenia = new Tooltip("Las contraseñas no coinciden");
     @FXML
     private VBox vbRol;
     @FXML
@@ -64,7 +63,12 @@ public class AltaUsuarioController implements Initializable {
     private TextField tfNumero;
     @FXML
     private TextField tfCiudad;
-
+    
+    private ModoFormulario modo;
+    private Usuario usuarioEdicion;
+    
+    private final Tooltip tooltipContrasenia = new Tooltip("Las contraseñas no coinciden");
+    
     /**
      * Initializes the controller class.
      */
@@ -109,10 +113,20 @@ public class AltaUsuarioController implements Initializable {
     }
 
     @FXML
-    private void clicBtnDarDeAlta(ActionEvent event) {
+    private void clicBtnGuardar(ActionEvent event) {
         try{
             Usuario usuarioRecuperado = recuperarUsuario();
-            boolean resultado = UsuarioDAO.registrarUsuario(usuarioRecuperado);
+            boolean resultado = false;
+            if(modo == ModoFormulario.REGISTRO){
+
+                resultado = UsuarioDAO.registrarUsuario(usuarioRecuperado);
+
+            }else if(modo == ModoFormulario.EDICION){
+
+                usuarioRecuperado.setIdUsuario(usuarioEdicion.getIdUsuario());
+
+                //resultado = UsuarioDAO.editarUsuario(usuarioRecuperado);
+            }
             if(resultado){
                 JavaFXUtils.mostrarMensaje("Datos guardados",
                         "Se guardaron correctamente los datos del usuario", false);
@@ -121,6 +135,48 @@ public class AltaUsuarioController implements Initializable {
         }catch (DatosFaltantesException e){
             JavaFXUtils.mostrarAdvertencia("Datos Faltantes", e.getMessage(), false);
         }  
+    }
+    
+    public void configurar(ModoFormulario modo, Usuario usuario) {
+
+        this.modo = modo;
+        this.usuarioEdicion = usuario;
+
+        if (modo == ModoFormulario.EDICION && usuario != null) {
+            cargarDatosUsuario(usuario);
+            vbContrasenia.setDisable(true);
+            vbContrasenia.setVisible(false);
+        }
+    }
+    
+    private void cargarDatosUsuario(Usuario usuario) {
+
+        tfNombre.setText(usuario.getNombre());
+        tfApellidoPaterno.setText(usuario.getApellidoPaterno());
+        tfApellidoMaterno.setText(usuario.getApellidoMaterno());
+
+        tfTelefono.setText(usuario.getTelefono());
+        tfCorreo.setText(usuario.getEmail());
+
+        tfCp.setText(usuario.getDireccion().getCodigoPostal());
+        tfCalle.setText(usuario.getDireccion().getCalle());
+        tfNumero.setText(usuario.getDireccion().getNumero());
+        tfCiudad.setText(usuario.getDireccion().getCiudad());
+
+        cbTipousuario.setValue(usuario.getTipoUsuario());
+
+        clicCbTipoUsuario(null);
+
+        if(usuario.getTipoUsuario() == Usuario.tipoUsuario.Empleado){
+
+            tfUsuario.setText(usuario.getUsuario());
+
+            cbRolEmpleado.setValue(usuario.getRolEmpleado());
+
+            // no se recupera de la bd
+            pfContrasenia.setText("");
+            pfConfirmacionContrasenia.setText("");
+        }
     }
     
     private Usuario recuperarUsuario() throws DatosFaltantesException{

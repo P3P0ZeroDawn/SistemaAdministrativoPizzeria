@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="@../../../css/primer-light.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.sistemaadministrativopizzeria.controladores.AltaUsuarioController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="@../../../css/primer-light.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.sistemaadministrativopizzeria.controladores.DatosUsuarioController">
    <top>
       <VBox prefHeight="74.0" prefWidth="800.0" BorderPane.alignment="CENTER">
          <children>
@@ -254,7 +254,7 @@
                </font>
             </Button>
             <Region prefHeight="38.0" prefWidth="462.0" />
-            <Button mnemonicParsing="false" onAction="#clicBtnDarDeAlta" prefHeight="39.0" prefWidth="116.0" text="Dar de alta">
+            <Button mnemonicParsing="false" onAction="#clicBtnGuardar" prefHeight="39.0" prefWidth="116.0" text="Guardar">
                <font>
                   <Font size="18.0" />
                </font>

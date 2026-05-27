@@ -15,6 +15,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -22,6 +23,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import mx.uv.sistemaadministrativopizzeria.App;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ModoFormulario;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Ventana;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.UsuarioDAO;
 
@@ -91,7 +94,7 @@ public class ConsultaUsuariosController implements Initializable {
                         "Editar",
                         "/imagenes/editar.png",
                         usuario -> {
-                    //editarUsuario((Usuario) usuario);
+                        cargarVistaEdicion((Usuario) usuario);
                 }),
                 
                 new BotonAccion<>(
@@ -107,7 +110,21 @@ public class ConsultaUsuariosController implements Initializable {
     @FXML
     private void btnNuevoUsuario(ActionEvent event) {
         try {
-            App.abrirVentanaEmergente("altaUsuario", "Alta de usuario", 800, 600, true);
+            Ventana<DatosUsuarioController> ventana =
+                    App.abrirVentanaEmergente(
+                            "datosUsuario",
+                            "Alta de usuario",
+                            800,
+                            600,
+                            true
+                    );
+
+            ventana.getController().configurar(
+                    ModoFormulario.REGISTRO,
+                    null
+            );
+
+            ventana.getStage().showAndWait();
             cargarDatos();
         } catch (IOException ex) {
             System.getLogger(ConsultaProductosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
@@ -134,4 +151,25 @@ public class ConsultaUsuariosController implements Initializable {
         lvUsuarios.setItems(usuarios);
     }
     
+    private void cargarVistaEdicion(Usuario usuario){
+        try {
+            Ventana<DatosUsuarioController> ventana =
+                    App.abrirVentanaEmergente(
+                            "datosUsuario",
+                            "Editar usuario",
+                            800,
+                            600,
+                            true
+                    );
+
+            ventana.getController().configurar(
+                    ModoFormulario.EDICION,
+                    usuario
+            );
+            cargarDatos();
+            ventana.getStage().showAndWait();
+        } catch (IOException ex) {
+            System.getLogger(ConsultaUsuariosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }
 }

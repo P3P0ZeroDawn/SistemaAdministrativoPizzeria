@@ -62,6 +62,24 @@ public class UsuarioDAO {
         return lista;
     }
     
+    public static Usuario buscarUsuario(int idUsuario){
+        Usuario usuario = null;
+        try {
+            MySQLConnectionManager conn = MySQLConnectionManager.buildConnection();
+            String query = "SELECT * FROM usuario WHERE idUsuario = ?;";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, idUsuario);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                usuario = serializarUsuario(rs);
+            }
+            conn.close();
+        } catch (SQLException ex) {
+            System.getLogger(UsuarioDAO.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        return usuario;
+    }
+    
     public static boolean registrarUsuario(Usuario usuario){
         if(usuario != null){
             try{
@@ -117,7 +135,7 @@ public class UsuarioDAO {
                 usuario.setEmail(rs.getString("email"));
                 usuario.setActivo(rs.getInt("activo")==1);
                 usuario.setTipoUsuario(Usuario.tipoUsuario.valueOf(rs.getString("tipoUsuario")));
-                usuario.setUsuario((rs.getString("usuario") != null) ?  rs.getString("usuario") : "");
+                usuario.setUsuario((rs.getString("usuario") != null) ?  rs.getString("usuario") : null);
                 usuario.setRolEmpleado((rs.getString("rolEmpleado") != null) ? Usuario.rolEmpleado.valueOf(rs.getString("rolEmpleado")) : null);
                 direccion.setCalle(rs.getString("calle"));
                 direccion.setNumero(rs.getString("numero"));
