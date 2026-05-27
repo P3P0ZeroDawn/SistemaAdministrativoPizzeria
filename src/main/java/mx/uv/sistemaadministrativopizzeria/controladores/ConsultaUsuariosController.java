@@ -144,6 +144,23 @@ public class ConsultaUsuariosController implements Initializable {
 
     @FXML
     private void btnBuscar(ActionEvent event) {
+
+        String busqueda = tfBusqueda.getText().trim();
+
+        boolean porNombre = cbPorNombre.isSelected();
+        boolean porTelefono = cbPorTelefono.isSelected();
+        boolean porDireccion = cbPorDireccion.isSelected();
+
+        List<Usuario> resultado =
+                UsuarioDAO.buscarUsuarios(
+                        busqueda,
+                        porNombre,
+                        porTelefono,
+                        porDireccion
+                );
+
+        usuarios.clear();
+        usuarios.addAll(resultado);
     }
     
     private void cargarDatos(){

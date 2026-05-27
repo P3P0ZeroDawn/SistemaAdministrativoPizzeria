@@ -232,6 +232,91 @@ public class UsuarioDAO {
         return false;
     }
     
+    public static List<Usuario> buscarUsuarios(
+        String busqueda,
+        boolean porNombre,
+        boolean porTelefono,
+        boolean porDireccion) {
+
+        List<Usuario> lista = new ArrayList<>();
+
+        try {
+
+            MySQLConnectionManager conn =
+                    MySQLConnectionManager.buildConnection();
+
+            StringBuilder query = new StringBuilder(
+                    "SELECT * FROM usuario WHERE activo = 1"
+            );
+
+            List<String> filtros = new ArrayList<>();
+
+            if (porNombre) {
+                filtros.add(
+                    "(nombre LIKE ? OR apellidoPaterno LIKE ? OR apellidoMaterno LIKE ?)"
+                );
+            }
+
+            if (porTelefono) {
+                filtros.add("telefono LIKE ?");
+            }
+
+            if (porDireccion) {
+                filtros.add(
+                    "(calle LIKE ? OR ciudad LIKE ? OR codigoPostal LIKE ?)"
+                );
+            }
+
+            if (!filtros.isEmpty()) {
+
+                query.append(" AND (");
+                query.append(String.join(" OR ", filtros));
+                query.append(")");
+            }
+
+            PreparedStatement ps =
+                    conn.prepareStatement(query.toString());
+
+            int indice = 1;
+
+            if (porNombre) {
+
+                ps.setString(indice++, "%" + busqueda + "%");
+                ps.setString(indice++, "%" + busqueda + "%");
+                ps.setString(indice++, "%" + busqueda + "%");
+            }
+
+            if (porTelefono) {
+
+                ps.setString(indice++, "%" + busqueda + "%");
+            }
+
+            if (porDireccion) {
+
+                ps.setString(indice++, "%" + busqueda + "%");
+                ps.setString(indice++, "%" + busqueda + "%");
+                ps.setString(indice++, "%" + busqueda + "%");
+            }
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                lista.add(serializarUsuario(rs));
+            }
+
+            conn.close();
+
+        } catch (SQLException ex) {
+
+            System.getLogger(UsuarioDAO.class.getName())
+                    .log(System.Logger.Level.ERROR,
+                            (String) null,
+                            ex);
+        }
+
+        return lista;
+    }
+    
     public static boolean eliminarUsuario(Usuario usuario) {
 
         if (usuario != null) {
