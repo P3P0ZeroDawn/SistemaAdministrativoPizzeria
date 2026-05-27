@@ -120,6 +120,116 @@ public class UsuarioDAO {
         }
         return false;
     }
+    
+    public static boolean actualizarUsuario(Usuario usuario,
+        boolean modifContrasenia){
+
+            if(usuario != null){
+
+                try{
+
+                    MySQLConnectionManager conn =
+                            MySQLConnectionManager.buildConnection();
+
+                    String campoContrasenia =
+                            modifContrasenia
+                            ? ", password = ?"
+                            : "";
+
+                    String query =
+                            "UPDATE usuario SET "
+                            + "nombre = ?, "
+                            + "apellidoPaterno = ?, "
+                            + "apellidoMaterno = ?, "
+                            + "telefono = ?, "
+                            + "email = ?, "
+                            + "activo = ?, "
+                            + "tipoUsuario = ?, "
+                            + "usuario = ?, "
+                            + "rolEmpleado = ?, "
+                            + "calle = ?, "
+                            + "numero = ?, "
+                            + "codigoPostal = ?, "
+                            + "ciudad = ?"
+                            + campoContrasenia
+                            + " WHERE idUsuario = ?";
+
+                    PreparedStatement ps = conn.prepareStatement(query);
+
+                    int indice = 1;
+
+                    ps.setString(indice++, usuario.getNombre());
+                    ps.setString(indice++, usuario.getApellidoPaterno());
+                    ps.setString(indice++, usuario.getApellidoMaterno());
+                    ps.setString(indice++, usuario.getTelefono());
+                    ps.setString(indice++, usuario.getEmail());
+                    ps.setInt(indice++, usuario.getActivo()? 1 : 0);
+                    ps.setString(indice++, usuario.getTipoUsuario().toString());
+
+                    if(usuario.getTipoUsuario()
+                            == Usuario.tipoUsuario.Empleado){
+
+                        ps.setString(indice++, usuario.getUsuario());
+
+                        ps.setString(indice++,
+                                usuario.getRolEmpleado().toString());
+
+                    }else{
+
+                        ps.setNull(indice++, Types.VARCHAR);
+                        ps.setNull(indice++, Types.VARCHAR);
+                    }
+
+                    ps.setString(indice++,
+                            usuario.getDireccion().getCalle());
+
+                    ps.setString(indice++,
+                            usuario.getDireccion().getNumero());
+
+                    ps.setString(indice++,
+                            usuario.getDireccion().getCodigoPostal());
+
+                    ps.setString(indice++,
+                            usuario.getDireccion().getCiudad());
+
+                    if(modifContrasenia){
+
+                        ps.setBytes(indice++,
+                                JavaFXUtils.sha256Bytes(
+                                        usuario.getPassword()
+                                ));
+                    }
+
+                    ps.setInt(indice++, usuario.getIdUsuario());
+
+                    ps.executeUpdate();
+
+                    conn.close();
+
+                    return true;
+
+                }catch (SQLException e){
+
+                    System.out.println(e.getMessage());
+
+                } catch (NoSuchAlgorithmException ex) {
+
+                    System.getLogger(UsuarioDAO.class.getName())
+                            .log(System.Logger.Level.ERROR,
+                                    (String) null,
+                                    ex);
+
+                } catch (UnsupportedEncodingException ex) {
+
+                    System.getLogger(UsuarioDAO.class.getName())
+                            .log(System.Logger.Level.ERROR,
+                                    (String) null,
+                                    ex);
+                }
+            }
+
+            return false;
+        }
             
     public static Usuario serializarUsuario(ResultSet rs){
         Usuario usuario = null;

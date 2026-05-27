@@ -9,6 +9,7 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -28,6 +29,11 @@ import mx.uv.sistemaadministrativopizzeria.modelo.dao.UsuarioDAO;
  * @author pedro
  */
 public class DatosUsuarioController implements Initializable {
+    
+    private ModoFormulario modo;
+    private Usuario usuarioEdicion;
+    
+    private final Tooltip tooltipContrasenia = new Tooltip("Las contraseñas no coinciden");
     
     @FXML
     private ComboBox<Usuario.tipoUsuario> cbTipousuario;
@@ -63,11 +69,9 @@ public class DatosUsuarioController implements Initializable {
     private TextField tfNumero;
     @FXML
     private TextField tfCiudad;
-    
-    private ModoFormulario modo;
-    private Usuario usuarioEdicion;
-    
-    private final Tooltip tooltipContrasenia = new Tooltip("Las contraseñas no coinciden");
+    @FXML
+    private CheckBox chbModifContrasenia;
+    private VBox vbModifContrasenia;
     
     /**
      * Initializes the controller class.
@@ -78,6 +82,7 @@ public class DatosUsuarioController implements Initializable {
         
         pfContrasenia.setOnKeyReleased(event -> validarContrasenias());
         pfConfirmacionContrasenia.setOnKeyReleased(event -> validarContrasenias());
+        chbModifContrasenia.setOnAction(event -> alternarVisualizacionCamposContrasenia());
     }    
 
     @FXML
@@ -125,7 +130,7 @@ public class DatosUsuarioController implements Initializable {
 
                 usuarioRecuperado.setIdUsuario(usuarioEdicion.getIdUsuario());
 
-                //resultado = UsuarioDAO.editarUsuario(usuarioRecuperado);
+                resultado = UsuarioDAO.actualizarUsuario(usuarioRecuperado, chbModifContrasenia.isSelected());
             }
             if(resultado){
                 JavaFXUtils.mostrarMensaje("Datos guardados",
@@ -144,8 +149,8 @@ public class DatosUsuarioController implements Initializable {
 
         if (modo == ModoFormulario.EDICION && usuario != null) {
             cargarDatosUsuario(usuario);
-            vbContrasenia.setDisable(true);
             vbContrasenia.setVisible(false);
+            chbModifContrasenia.setVisible(true);
         }
     }
     
@@ -215,14 +220,15 @@ public class DatosUsuarioController implements Initializable {
 
             Validador.requerido(tfUsuario,
                     "El usuario es obligatorio");
+            if (modo == ModoFormulario.REGISTRO){
+                Validador.requerido(pfContrasenia,
+                        "La contraseña es obligatoria");
 
-            Validador.requerido(pfContrasenia,
-                    "La contraseña es obligatoria");
-
-            Validador.passwordsIguales(
-                    pfContrasenia,
-                    pfConfirmacionContrasenia,
-                    "Las contraseñas no coinciden");
+                Validador.passwordsIguales(
+                        pfContrasenia,
+                        pfConfirmacionContrasenia,
+                        "Las contraseñas no coinciden");
+            }
         }
         Usuario usuario = new Usuario();
         
@@ -240,8 +246,10 @@ public class DatosUsuarioController implements Initializable {
         usuario.setTipoUsuario(cbTipousuario.getValue());
         
         if(cbTipousuario.getValue() == Usuario.tipoUsuario.Empleado){
+            if (modo == ModoFormulario.REGISTRO){
+                usuario.setPassword(pfContrasenia.getText());
+            }
             usuario.setUsuario(tfUsuario.getText().trim());
-            usuario.setPassword(pfContrasenia.getText());
             usuario.setRolEmpleado(cbRolEmpleado.getValue());
         }
         return usuario;
@@ -270,6 +278,18 @@ public class DatosUsuarioController implements Initializable {
 
             pfConfirmacionContrasenia.setStyle("");
             pfConfirmacionContrasenia.setTooltip(null);
+        }
+    }
+
+    private void alternarVisualizacionCamposContrasenia() {
+        if(chbModifContrasenia.isSelected()){
+            vbContrasenia.setVisible(true);
+            pfContrasenia.setDisable(false);
+            pfConfirmacionContrasenia.setDisable(false);
+        }else{
+            vbContrasenia.setVisible(false);
+            pfContrasenia.setDisable(true);
+            pfConfirmacionContrasenia.setDisable(true);
         }
     }
 }
