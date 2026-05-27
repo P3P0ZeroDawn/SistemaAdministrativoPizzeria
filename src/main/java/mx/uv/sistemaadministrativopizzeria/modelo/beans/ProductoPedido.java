@@ -4,11 +4,13 @@
  */
 package mx.uv.sistemaadministrativopizzeria.modelo.beans;
 
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemObservableList;
+
 /**
  *
  * @author pedro
  */
-public class ProductoPedido {
+public class ProductoPedido implements ItemObservableList{
     private int idProductoPedido;
     private Producto producto;
     private int cantidad;
@@ -44,5 +46,10 @@ public class ProductoPedido {
 
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
+    }
+
+    @Override
+    public String getString() {
+        return producto.getNombre();
     }
 }

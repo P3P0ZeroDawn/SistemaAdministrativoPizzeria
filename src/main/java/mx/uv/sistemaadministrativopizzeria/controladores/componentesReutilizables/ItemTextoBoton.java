@@ -137,27 +137,39 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
 
             Button btn = new Button();
 
-            Image img = new Image(
-                    getClass().getResourceAsStream(
-                            config.getRutaIcono()
-                    )
-            );
+            if (config.getTexto() != null && config.getRutaIcono() == null) {
+                btn.setText(config.getTexto());
+            }
+            
+            if (config.getRutaIcono() != null) {
+                Image img = new Image(
+                        getClass().getResourceAsStream(
+                                config.getRutaIcono()
+                        )
+                );
 
-            ImageView iv = new ImageView(img);
+                ImageView iv = new ImageView(img);
 
-            /*
-             * TAMAÑO ICONOS
-             */
-            iv.setFitWidth(20);
+                /*
+                 * TAMAÑO ICONOS
+                 */
+                iv.setFitWidth(20);
 
-            iv.setFitHeight(20);
+                iv.setFitHeight(20);
 
-            btn.setGraphic(iv);
-
+                btn.setGraphic(iv);
+            }
             /*
              * TAMAÑO BOTON
              */
-            btn.setPrefSize(42, 42);
+            if (config.getTexto() != null && !config.getTexto().isBlank()) {
+
+                btn.setPrefHeight(42);
+
+            } else {
+
+                btn.setPrefSize(42, 42);
+            }
 
             btn.setAlignment(Pos.CENTER);
 

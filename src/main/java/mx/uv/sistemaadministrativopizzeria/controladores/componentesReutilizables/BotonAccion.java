@@ -25,6 +25,12 @@ public class BotonAccion<T> {
         this.accion = accion;
     }
 
+    public BotonAccion(String texto, Consumer<T> accion) {
+        this.texto = texto;
+        this.rutaIcono = null;
+        this.accion = accion;
+    }
+
     public String getTexto() {
         return texto;
     }
