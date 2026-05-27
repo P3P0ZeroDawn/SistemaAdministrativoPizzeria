@@ -239,7 +239,7 @@ public class DatosUsuarioController implements Initializable {
                 
                 Validador.passwordSegura(
                         pfContrasenia,
-                        "La contraseña debe contener mayúsculas, minúsculas, números y símbolos"
+                        "La contraseña debe tener mínimo 8 caracteres y contener mayúsculas, minúsculas, números y símbolos"
                 );
 
                 Validador.passwordsIguales(

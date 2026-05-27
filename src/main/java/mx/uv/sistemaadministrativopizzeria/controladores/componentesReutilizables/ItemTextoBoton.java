@@ -10,6 +10,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
 
 /**
  * Permite mostrar:
@@ -30,6 +32,10 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
     private final Label label;
 
     private final Function<T, List<Badge>> badgesProvider;
+    
+    private final ImageView imageView;
+
+    private final StackPane imageContainer;
 
     @SafeVarargs
     public ItemTextoBoton(
@@ -40,6 +46,10 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
         this.badgesProvider = badgesProvider;
 
         this.label = new Label();
+        
+        this.imageView = new ImageView();
+
+        this.imageContainer = new StackPane();
 
         this.badgesBox = new HBox(10);
 
@@ -50,7 +60,7 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
         /*
          * TAMAÑO CELDA
          */
-        setMinHeight(72);
+        setPrefHeight(USE_COMPUTED_SIZE);
 
         /*
          * CONFIGURACION CONTENEDORES
@@ -58,12 +68,42 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
         content.setAlignment(Pos.CENTER_LEFT);
 
         content.setStyle(
-                "-fx-padding: 10 15 10 15;"
+                "-fx-padding: 3 10 3 10;"
         );
 
         badgesBox.setAlignment(Pos.CENTER);
 
         accionesBox.setAlignment(Pos.CENTER);
+        
+        /*
+         * IMAGEN
+         */
+        imageView.setFitWidth(54);
+
+        imageView.setFitHeight(54);
+
+        imageView.setPreserveRatio(true);
+
+        Rectangle clip = new Rectangle(54, 54);
+
+        clip.setArcWidth(12);
+
+        clip.setArcHeight(12);
+
+        imageView.setClip(clip);
+
+        imageContainer.setMinSize(54, 54);
+
+        imageContainer.setPrefSize(54, 54);
+
+        imageContainer.setMaxSize(54, 54);
+
+        imageContainer.getChildren().add(imageView);
+
+        imageContainer.setStyle(
+                "-fx-background-color: #F4F4F4;"
+                + "-fx-background-radius: 12;"
+        );
 
         /*
          * LABEL PRINCIPAL
@@ -84,6 +124,8 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
          */
         accionesBox.getChildren().add(badgesBox);
 
+        content.getChildren().add(imageContainer);
+        
         content.getChildren().add(label);
 
         content.getChildren().add(accionesBox);
@@ -106,16 +148,16 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
             /*
              * TAMAÑO ICONOS
              */
-            iv.setFitWidth(24);
+            iv.setFitWidth(20);
 
-            iv.setFitHeight(24);
+            iv.setFitHeight(20);
 
             btn.setGraphic(iv);
 
             /*
              * TAMAÑO BOTON
              */
-            btn.setPrefSize(64, 64);
+            btn.setPrefSize(42, 42);
 
             btn.setAlignment(Pos.CENTER);
 
@@ -144,6 +186,38 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
 
         } else {
 
+            /*
+            * IMAGEN
+            */
+           if (item instanceof ItemConImagen) {
+
+                ItemConImagen itemConImagen =
+                        (ItemConImagen) item;
+
+                if (itemConImagen.getImagen() != null) {
+
+                    imageView.setImage(
+                            itemConImagen.getImagen()
+                    );
+
+                    imageContainer.setVisible(true);
+
+                    imageContainer.setManaged(true);
+
+                } else {
+
+                    imageContainer.setVisible(false);
+
+                    imageContainer.setManaged(false);
+                }
+
+            } else {
+
+                imageContainer.setVisible(false);
+
+                imageContainer.setManaged(false);
+            }
+            
             /*
              * TEXTO PRINCIPAL
              */

@@ -6,12 +6,14 @@ package mx.uv.sistemaadministrativopizzeria.modelo.beans;
 
 import java.util.ArrayList;
 import javafx.scene.image.Image;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemConImagen;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemObservableList;
 
 /**
  *
  * @author pedro
  */
-public class Producto {
+public class Producto implements ItemObservableList, ItemConImagen{
     private int idProducto;
     private String nombre;
     private String codigo;
@@ -24,12 +26,15 @@ public class Producto {
     private Boolean esPreparado;
     private Boolean esInsumo;
     private Boolean activo;
-    private ArrayList componentes;
+    private ArrayList<ComponenteProducto> componentes;
 
     public Producto() {
     }
 
-    public Producto(int idProducto, String nombre, String codigo, String descripcion, Double precio, String restricciones, Image foto, Double cantidad, String unidadMedida, Boolean esPreparado, Boolean esInsumo, Boolean activo, ArrayList componentes) {
+    public Producto(int idProducto, String nombre, String codigo,
+            String descripcion, Double precio, String restricciones,
+            Image foto, Double cantidad, String unidadMedida, Boolean esPreparado,
+            Boolean esInsumo, Boolean activo, ArrayList<ComponenteProducto> componentes) {
         this.idProducto = idProducto;
         this.nombre = nombre;
         this.codigo = codigo;
@@ -141,13 +146,21 @@ public class Producto {
         this.activo = activo;
     }
 
-    public ArrayList getComponentes() {
+    public ArrayList<ComponenteProducto> getComponentes() {
         return componentes;
     }
 
-    public void setComponentes(ArrayList componentes) {
+    public void setComponentes(ArrayList<ComponenteProducto> componentes) {
         this.componentes = componentes;
     }
 
-    
+    @Override
+    public String getString() {
+        return nombre;
+    }
+
+    @Override
+    public Image getImagen() {
+        return foto;
+    }
 }

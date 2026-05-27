@@ -90,7 +90,7 @@
         </VBox>
     </top>
     <center>
-        <ListView fx:id="lvProductos" BorderPane.alignment="CENTER">
+        <ListView fx:id="lvProductos" maxHeight="1.7976931348623157E308" BorderPane.alignment="CENTER">
             <BorderPane.margin>
                 <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
             </BorderPane.margin>

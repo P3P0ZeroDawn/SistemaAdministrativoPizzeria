@@ -22,7 +22,7 @@
                <children>
                   <HBox alignment="CENTER_LEFT" prefHeight="41.0" prefWidth="800.0">
                      <children>
-                        <Label text="Alta de usuario">
+                        <Label text="Datos del usuario">
                            <font>
                               <Font size="30.0" />
                            </font>
