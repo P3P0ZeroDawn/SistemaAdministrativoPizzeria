@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import mx.uv.sistemaadministrativopizzeria.modelo.MySQLConnectionManager;
@@ -67,7 +68,7 @@ public class UsuarioDAO {
                 MySQLConnectionManager conn = MySQLConnectionManager.buildConnection();
                 String query = "INSERT INTO usuario (nombre, apellidoPaterno, apellidoMaterno, "
                         + "telefono, email, activo, tipoUsuario, usuario, password, rolEmpleado, "
-                        + "calle, numero, codigoPostal, ciudad VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        + "calle, numero, codigoPostal, ciudad) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 PreparedStatement ps = conn.prepareStatement(query);
                 ps.setString(1, usuario.getNombre());
                 ps.setString(2, usuario.getApellidoPaterno());
@@ -81,9 +82,9 @@ public class UsuarioDAO {
                     ps.setBytes(9, JavaFXUtils.sha256Bytes(usuario.getPassword()));
                     ps.setString(10, usuario.getRolEmpleado().toString());
                 }else{
-                    ps.setString(8, null);
-                    ps.setBytes(9, null);
-                    ps.setString(10, null);
+                    ps.setNull(8, Types.VARCHAR);
+                    ps.setNull(9, Types.VARBINARY);
+                    ps.setNull(10, Types.VARCHAR);
                 }
                 ps.setString(11, usuario.getDireccion().getCalle());
                 ps.setString(12, usuario.getDireccion().getNumero());
@@ -92,7 +93,7 @@ public class UsuarioDAO {
                 ps.executeUpdate();
                 return true;
             }catch (SQLException e){
-                
+                System.out.println(e.getMessage());
             } catch (NoSuchAlgorithmException ex) {
                 System.getLogger(UsuarioDAO.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
             } catch (UnsupportedEncodingException ex) {

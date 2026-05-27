@@ -19,6 +19,7 @@ import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizable
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Validador;
 import mx.uv.sistemaadministrativopizzeria.excepciones.DatosFaltantesException;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
+import mx.uv.sistemaadministrativopizzeria.modelo.dao.UsuarioDAO;
 
 /**
  * FXML Controller class
@@ -111,6 +112,12 @@ public class AltaUsuarioController implements Initializable {
     private void clicBtnDarDeAlta(ActionEvent event) {
         try{
             Usuario usuarioRecuperado = recuperarUsuario();
+            boolean resultado = UsuarioDAO.registrarUsuario(usuarioRecuperado);
+            if(resultado){
+                JavaFXUtils.mostrarMensaje("Datos guardados",
+                        "Se guardaron correctamente los datos del usuario", false);
+            }
+            ((Stage) tfNombre.getScene().getWindow()).close();
         }catch (DatosFaltantesException e){
             JavaFXUtils.mostrarAdvertencia("Datos Faltantes", e.getMessage(), false);
         }  
@@ -118,21 +125,46 @@ public class AltaUsuarioController implements Initializable {
     
     private Usuario recuperarUsuario() throws DatosFaltantesException{
         
-        Validador.validarCampo(tfNombre, "El nombre es obligatorio");
-        Validador.validarCampo(tfApellidoPaterno, "El apellido paterno es obligatorio");
-        Validador.validarCampo(tfTelefono, "El teléfono es obligatorio");
-        Validador.validarCampo(tfCorreo, "El correo es obligatorio");
-        Validador.validarCampo(tfCp, "El código postal es obligatorio");
-        Validador.validarCampo(tfCalle, "La calle es obligatoria");
-        Validador.validarCampo(tfNumero, "El número es obligatorio");
-        Validador.validarCampo(tfCiudad, "La ciudad es obligatoria");
-        Validador.validarCampoComboBox(cbTipousuario, "Debes seleccionar un tipo de usuario");
-        
+        Validador.requerido(tfNombre,
+                "El nombre es obligatorio");
+
+        Validador.requerido(tfApellidoPaterno,
+                "El apellido paterno es obligatorio");
+
+        Validador.requerido(tfTelefono,
+                "El teléfono es obligatorio");
+
+        Validador.requerido(tfCorreo,
+                "El correo es obligatorio");
+
+        Validador.requerido(tfCp,
+                "El código postal es obligatorio");
+
+        Validador.requerido(tfCalle,
+                "La calle es obligatoria");
+
+        Validador.requerido(tfNumero,
+                "El número es obligatorio");
+
+        Validador.requerido(tfCiudad,
+                "La ciudad es obligatoria");
+
+        Validador.comboRequerido(cbTipousuario,
+                "Debes seleccionar un tipo de usuario");
+
         if(cbTipousuario.getValue() == Usuario.tipoUsuario.Empleado){
-            Validador.validarCampoComboBox(cbRolEmpleado, "Debes seleccionar un rol de empleado");
-            Validador.validarCampo(tfUsuario, "El usuario es obligatorio");
-            Validador.validarCampoPassword(pfContrasenia, "La contraseña es obligatoria");
-            Validador.validarComprobacionContrasenia(pfContrasenia,
+
+            Validador.comboRequerido(cbRolEmpleado,
+                    "Debes seleccionar un rol de empleado");
+
+            Validador.requerido(tfUsuario,
+                    "El usuario es obligatorio");
+
+            Validador.requerido(pfContrasenia,
+                    "La contraseña es obligatoria");
+
+            Validador.passwordsIguales(
+                    pfContrasenia,
                     pfConfirmacionContrasenia,
                     "Las contraseñas no coinciden");
         }

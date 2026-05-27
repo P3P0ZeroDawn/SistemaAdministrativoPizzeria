@@ -1,50 +1,90 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables;
 
+import java.util.regex.Pattern;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputControl;
 import mx.uv.sistemaadministrativopizzeria.excepciones.DatosFaltantesException;
 
-/**
- *
- * @author pedro
- */
 public class Validador {
-    public static void validarCampo(TextField campo, String mensaje)
-        throws DatosFaltantesException {
+
+    private static final Pattern EMAIL_PATTERN =
+            Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+
+    public static void requerido(TextInputControl campo, String mensaje)
+            throws DatosFaltantesException {
 
         if (campo.getText() == null || campo.getText().trim().isEmpty()) {
             campo.requestFocus();
             throw new DatosFaltantesException(mensaje);
         }
     }
-    
-    public static void validarCampoPassword(PasswordField campo, String mensaje)
-        throws DatosFaltantesException {
 
-        if (campo.getText() == null || campo.getText().trim().isEmpty()) {
+    public static void longitudMaxima(TextInputControl campo,
+                                      int maximo,
+                                      String mensaje)
+            throws DatosFaltantesException {
+
+        if (campo.getText() != null &&
+                campo.getText().length() > maximo) {
+
             campo.requestFocus();
             throw new DatosFaltantesException(mensaje);
         }
     }
-    
-    public static void validarCampoComboBox(ComboBox campo, String mensaje)
-        throws DatosFaltantesException {
-        if (campo.getValue() == null) {
+
+    public static void longitudMinima(TextInputControl campo,
+                                      int minimo,
+                                      String mensaje)
+            throws DatosFaltantesException {
+
+        if (campo.getText() == null ||
+                campo.getText().length() < minimo) {
+
             campo.requestFocus();
             throw new DatosFaltantesException(mensaje);
         }
     }
-    
-    public static void validarComprobacionContrasenia(PasswordField contrasenia1,
-            PasswordField contrasenia2, String mensaje)
-        throws DatosFaltantesException {
-        if (!contrasenia1.getText().equals(contrasenia2.getText())) {
-            throw new DatosFaltantesException("Las contraseñas no coinciden");
+
+    public static void email(TextInputControl campo,
+                             String mensaje)
+            throws DatosFaltantesException {
+
+        if (!EMAIL_PATTERN.matcher(campo.getText()).matches()) {
+            campo.requestFocus();
+            throw new DatosFaltantesException(mensaje);
+        }
+    }
+
+    public static void numerico(TextInputControl campo,
+                                String mensaje)
+            throws DatosFaltantesException {
+
+        try {
+            Integer.valueOf(campo.getText());
+        } catch (NumberFormatException e) {
+            campo.requestFocus();
+            throw new DatosFaltantesException(mensaje);
+        }
+    }
+
+    public static void comboRequerido(ComboBox<?> combo,
+                                      String mensaje)
+            throws DatosFaltantesException {
+
+        if (combo.getValue() == null) {
+            combo.requestFocus();
+            throw new DatosFaltantesException(mensaje);
+        }
+    }
+
+    public static void passwordsIguales(TextInputControl p1,
+                                        TextInputControl p2,
+                                        String mensaje)
+            throws DatosFaltantesException {
+
+        if (!p1.getText().equals(p2.getText())) {
+            p2.requestFocus();
+            throw new DatosFaltantesException(mensaje);
         }
     }
 }
