@@ -74,6 +74,19 @@ public class App extends Application {
         return new Ventana<>(stage, controller);
     }
     
+    public static <T> Ventana<T> setRootVentana(String fxml) throws IOException{
+        FXMLLoader loader = new FXMLLoader(
+                App.class.getResource(fxml + ".fxml")
+        );
+        
+        Parent root = loader.load();
+        scene.setRoot(root);
+        Stage stage = (Stage) scene.getWindow();
+        
+        T controller = loader.getController();
+        
+        return new Ventana<>(stage, controller);
+    }    
     /**
     * Método que permite agregar un valor al repositorio de metadatos
     * @param nombre

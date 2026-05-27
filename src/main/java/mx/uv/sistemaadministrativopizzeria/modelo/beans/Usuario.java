@@ -84,6 +84,13 @@ public class Usuario implements mx.uv.sistemaadministrativopizzeria.controladore
         this.direccion = new Direccion();
     }
 
+    public Usuario(int idUsuario, String nombre, String apellidoPaterno, String apellidoMaterno) {
+        this.idUsuario = idUsuario;
+        this.nombre = nombre;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+    }
+
     public Usuario(int idUsuario, String nombre, String apellidoPaterno, String apellidoMaterno, String telefono, String email, Boolean activo, tipoUsuario tipoUsuario, rolEmpleado rolEmpleado, String usuario, String password, Direccion direccion) {
         this.idUsuario = idUsuario;
         this.nombre = nombre;
@@ -195,4 +202,8 @@ public class Usuario implements mx.uv.sistemaadministrativopizzeria.controladore
         this.direccion = direccion;
     }
     
+    @Override
+    public String toString() {
+        return this.nombre + " " + this.apellidoPaterno + " " + this.apellidoMaterno;
+    }
 }

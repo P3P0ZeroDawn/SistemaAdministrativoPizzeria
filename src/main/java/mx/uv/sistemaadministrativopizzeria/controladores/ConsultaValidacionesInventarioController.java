@@ -20,7 +20,6 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.StringConverter;
 import mx.uv.sistemaadministrativopizzeria.App;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.CeldaEstadoTabla;
@@ -136,7 +135,7 @@ public class ConsultaValidacionesInventarioController implements Initializable {
                 }
             }
         });
-}
+    }
 
     @FXML
     private void btnVolver(ActionEvent event) {

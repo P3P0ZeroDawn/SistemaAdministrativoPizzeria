@@ -65,19 +65,19 @@
                   <VBox>
                      <children>
                         <Label text="Buscar por usuario" />
-                        <ComboBox fx:id="cbBusUsuario" prefHeight="36.0" prefWidth="226.0" promptText="Seleccionar usuario" />
+                        <ComboBox fx:id="cbBusUsuario" onAction="#clicCbSeleccionUsuario" prefHeight="36.0" prefWidth="226.0" promptText="Seleccionar usuario" />
                      </children>
                   </VBox>
                   <VBox>
                      <children>
                         <Label text="Buscar por fecha" />
-                        <DatePicker fx:id="dpBusFecha" promptText="Seleccionar fecha" />
+                        <DatePicker fx:id="dpBusFecha" onAction="#clicDpSeleccionFecha" promptText="Seleccionar fecha" />
                      </children>
                   </VBox>
                   <VBox>
                      <children>
                         <Label text="Buscar por estatus" />
-                        <ComboBox fx:id="cbBusEstatus" prefHeight="36.0" prefWidth="199.0" promptText="Seleccionar estatus" />
+                        <ComboBox fx:id="cbBusEstatus" onAction="#clicCbSeleccionEstatus" prefHeight="36.0" prefWidth="199.0" promptText="Seleccionar estatus" />
                      </children>
                   </VBox>
                </children>
