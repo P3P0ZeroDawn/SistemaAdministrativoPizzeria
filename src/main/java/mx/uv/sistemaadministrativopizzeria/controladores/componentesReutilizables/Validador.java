@@ -4,11 +4,15 @@ import java.util.regex.Pattern;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextInputControl;
 import mx.uv.sistemaadministrativopizzeria.excepciones.DatosFaltantesException;
+import javafx.scene.control.TextFormatter;
 
 public class Validador {
 
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+    
+    private static final Pattern SOLO_TEXTO_PATTERN =
+        Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$");
 
     public static void requerido(TextInputControl campo, String mensaje)
             throws DatosFaltantesException {
@@ -84,6 +88,139 @@ public class Validador {
 
         if (!p1.getText().equals(p2.getText())) {
             p2.requestFocus();
+            throw new DatosFaltantesException(mensaje);
+        }
+    }
+    
+    public static void soloTexto(TextInputControl campo,
+                              String mensaje)
+        throws DatosFaltantesException {
+
+        if (!SOLO_TEXTO_PATTERN
+                .matcher(campo.getText())
+                .matches()) {
+
+            campo.requestFocus();
+
+            throw new DatosFaltantesException(mensaje);
+        }
+    }
+    
+    // =========================
+    // FILTROS DE ENTRADA
+    // =========================
+
+    private static void aplicarFiltro(TextInputControl campo,
+                                      String regexPermitido,
+                                      int longitudMaxima) {
+
+        campo.setTextFormatter(new TextFormatter<>(change -> {
+
+            String nuevoTexto = change.getControlNewText();
+
+            boolean textoValido =
+                    nuevoTexto.matches(regexPermitido);
+
+            boolean longitudValida =
+                    nuevoTexto.length() <= longitudMaxima;
+
+            if (textoValido && longitudValida) {
+                return change;
+            }
+
+            return null;
+        }));
+    }
+
+    // =========================
+    // MÉTODOS REUTILIZABLES
+    // =========================
+
+    public static void permitirSoloTexto(TextInputControl campo,
+                                         int longitudMaxima) {
+
+        aplicarFiltro(
+                campo,
+                "[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]*",
+                longitudMaxima
+        );
+    }
+
+    public static void permitirSoloNumeros(TextInputControl campo,
+                                           int longitudMaxima) {
+
+        aplicarFiltro(
+                campo,
+                "[0-9]*",
+                longitudMaxima
+        );
+    }
+
+    public static void permitirTextoNumerico(TextInputControl campo,
+                                             int longitudMaxima) {
+
+        aplicarFiltro(
+                campo,
+                "[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s]*",
+                longitudMaxima
+        );
+    }
+
+    public static void permitirCorreo(TextInputControl campo,
+                                      int longitudMaxima) {
+
+        aplicarFiltro(
+                campo,
+                "[a-zA-Z0-9@._\\-]*",
+                longitudMaxima
+        );
+    }
+
+    public static void permitirTelefono(TextInputControl campo,
+                                        int longitudMaxima) {
+
+        aplicarFiltro(
+                campo,
+                "[0-9+\\-\\s]*",
+                longitudMaxima
+        );
+    }
+
+    public static void permitirDireccion(TextInputControl campo,
+                                         int longitudMaxima) {
+
+        aplicarFiltro(
+                campo,
+                "[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9#.,\\-\\s]*",
+                longitudMaxima
+        );
+    }
+    
+    public static void permitirPassword(TextInputControl campo,
+                                    int longitudMaxima) {
+
+        aplicarFiltro(
+                campo,
+                "[a-zA-Z0-9@#$%^&*!?_.,\\-]*",
+                longitudMaxima
+        );
+    }
+    
+    public static void passwordSegura(TextInputControl campo,
+                                  String mensaje)
+        throws DatosFaltantesException {
+
+        String password = campo.getText();
+
+        boolean valida =
+                password.matches(
+                        "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&*!?_.,\\-]).{8,}$"
+                );
+
+        if (!valida) {
+
+            campo.requestFocus();
+
             throw new DatosFaltantesException(mensaje);
         }
     }

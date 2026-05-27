@@ -83,6 +83,17 @@ public class DatosUsuarioController implements Initializable {
         pfContrasenia.setOnKeyReleased(event -> validarContrasenias());
         pfConfirmacionContrasenia.setOnKeyReleased(event -> validarContrasenias());
         chbModifContrasenia.setOnAction(event -> alternarVisualizacionCamposContrasenia());
+        Validador.permitirSoloTexto(tfNombre, 45);
+        Validador.permitirSoloTexto(tfApellidoPaterno, 45);
+        Validador.permitirSoloTexto(tfApellidoMaterno, 45);
+        Validador.permitirTelefono(tfTelefono, 10);
+        Validador.permitirSoloNumeros(tfCp, 45);
+        Validador.permitirDireccion(tfCalle, 45);
+        Validador.permitirTextoNumerico(tfNumero, 45);
+        Validador.permitirSoloTexto(tfCiudad, 45);
+        Validador.permitirTextoNumerico(tfUsuario, 45);
+        Validador.permitirPassword(pfContrasenia, 45);
+        Validador.permitirPassword(pfConfirmacionContrasenia, 45);
     }    
 
     @FXML
@@ -197,6 +208,8 @@ public class DatosUsuarioController implements Initializable {
 
         Validador.requerido(tfCorreo,
                 "El correo es obligatorio");
+        
+        Validador.email(tfCorreo, "Ingrese una dirección de correo válida");
 
         Validador.requerido(tfCp,
                 "El código postal es obligatorio");
@@ -223,6 +236,11 @@ public class DatosUsuarioController implements Initializable {
             if (modo == ModoFormulario.REGISTRO){
                 Validador.requerido(pfContrasenia,
                         "La contraseña es obligatoria");
+                
+                Validador.passwordSegura(
+                        pfContrasenia,
+                        "La contraseña debe contener mayúsculas, minúsculas, números y símbolos"
+                );
 
                 Validador.passwordsIguales(
                         pfContrasenia,
@@ -246,7 +264,7 @@ public class DatosUsuarioController implements Initializable {
         usuario.setTipoUsuario(cbTipousuario.getValue());
         
         if(cbTipousuario.getValue() == Usuario.tipoUsuario.Empleado){
-            if (modo == ModoFormulario.REGISTRO){
+            if (modo == ModoFormulario.REGISTRO || this.chbModifContrasenia.isSelected()){
                 usuario.setPassword(pfContrasenia.getText());
             }
             usuario.setUsuario(tfUsuario.getText().trim());

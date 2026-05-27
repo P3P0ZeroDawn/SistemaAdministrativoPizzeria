@@ -15,25 +15,36 @@ public class JavaFXUtils {
 
     public static void mostrarMensaje(String titulo,
             String mensaje, boolean cierreautomatico) {
-        crearAlerta(Alert.AlertType.INFORMATION, titulo, mensaje, cierreautomatico);
+        Alert alerta = crearAlerta(Alert.AlertType.INFORMATION, titulo, mensaje);
+        mostrar(alerta, cierreautomatico);
     }
 
     public static void mostrarAdvertencia(String titulo,
             String mensaje,
             boolean cierreautomatico) {
-        crearAlerta(Alert.AlertType.WARNING, titulo, mensaje, cierreautomatico);
+        Alert alerta = crearAlerta(Alert.AlertType.WARNING, titulo, mensaje);
+        mostrar(alerta, cierreautomatico);
     }
 
     public static void mostrarError(String titulo,
             String mensaje,
             boolean cierreautomatico) {
-        crearAlerta(Alert.AlertType.ERROR, titulo, mensaje, cierreautomatico);
+        Alert alerta = crearAlerta(Alert.AlertType.ERROR, titulo, mensaje);
+        mostrar(alerta, cierreautomatico);
+    }
+    
+    public static boolean mostrarConfirmacion(String titulo,
+            String mensaje) {
+        Alert alerta = crearAlerta(Alert.AlertType.CONFIRMATION, titulo, mensaje);
+        
+        return alerta.showAndWait()
+            .filter(respuesta -> respuesta.getButtonData().isDefaultButton())
+            .isPresent();
     }
 
-    private static void crearAlerta(AlertType tipo,
+    private static Alert crearAlerta(AlertType tipo,
             String titulo,
-            String mensaje,
-            boolean cierreautomatico) {
+            String mensaje) {
         //---Creamos el dialogo, en JavaFX se usa la clase Alert---//
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
@@ -48,19 +59,30 @@ public class JavaFXUtils {
         alerta.getDialogPane().getStyleClass().add(
                 "alert-personalizada"
         );
-        if (cierreautomatico) {
-            alerta.show();
-            PauseTransition espera = new PauseTransition(
-                    Duration.seconds(SEGUNDOS_CIERRE_AUTOMATICO));
-            espera.setOnFinished(e -> alerta.close());
-            espera.play();
-        } else {
-            alerta.showAndWait();
-        }
+        return alerta;
     }
     
-    public static byte[] sha256Bytes(String input) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        return md.digest(input.getBytes("UTF-8"));
+    private static void mostrar(Alert alerta,
+        boolean cierreautomatico){
+
+        if (cierreautomatico) {
+
+            alerta.show();
+
+            PauseTransition espera =
+                    new PauseTransition(
+                            Duration.seconds(
+                                    SEGUNDOS_CIERRE_AUTOMATICO
+                            )
+                    );
+
+            espera.setOnFinished(e -> alerta.close());
+
+            espera.play();
+
+        } else {
+
+            alerta.showAndWait();
+        }
     }
 }

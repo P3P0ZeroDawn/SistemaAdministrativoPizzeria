@@ -17,12 +17,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import mx.uv.sistemaadministrativopizzeria.App;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.JavaFXUtils;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ModoFormulario;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Ventana;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
@@ -101,7 +103,7 @@ public class ConsultaUsuariosController implements Initializable {
                         "Eliminar",
                         "/imagenes/eliminar.png",
                         usuario -> {
-                    //eliminarUsuario((Usuario) usuario);
+                        eliminarUsuario((Usuario) usuario);
                 })
         ));
         cargarDatos();
@@ -165,11 +167,32 @@ public class ConsultaUsuariosController implements Initializable {
             ventana.getController().configurar(
                     ModoFormulario.EDICION,
                     usuario
-            );
-            cargarDatos();
+            );  
             ventana.getStage().showAndWait();
+            cargarDatos();
         } catch (IOException ex) {
             System.getLogger(ConsultaUsuariosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
+    }
+    
+    private void eliminarUsuario(Usuario usuario){
+        Usuario usuarioActivo = (Usuario) App.getMetadato("usuario");
+        if(usuario.getIdUsuario() != usuarioActivo.getIdUsuario()){
+            boolean confirmado = 
+                JavaFXUtils.mostrarConfirmacion(
+                        "Eliminación de usuario",
+                        "¿Seguro que desea eliminar este usuario?"
+                );
+        
+            if(confirmado){
+                boolean resultado = UsuarioDAO.eliminarUsuario(usuario);
+                if(resultado){
+                    cargarDatos();
+                    JavaFXUtils.mostrarMensaje("Eliminación de usuario", "Usuario eliminado correctamente", false);
+                }  
+            }  
+        }else{
+            JavaFXUtils.mostrarError("No se puede eliminar", "El usuario seleccionado es el usuario activo", false);
+        }  
     }
 }
