@@ -81,7 +81,7 @@ public class ConsultaPedidosController implements Initializable {
                         "Editar",
                         "/imagenes/editar.png",
                         pedido -> {
-                            //cargarVistaEdicion((Usuario) usuario);
+                            editarPedido(pedido);
                 }),
                 new BotonAccion<>(
                         "Eliminar",
@@ -90,6 +90,16 @@ public class ConsultaPedidosController implements Initializable {
                             //eliminarUsuario((Usuario) usuario);
                 })
         ));
+    }
+    
+    private void editarPedido(Pedido pedido){
+        try {
+            Ventana<DatosPedidoController> ventana = App.setRootVentana("datosPedido");
+            
+            ventana.getController().configurar(ModoFormulario.EDICION, pedido);
+        } catch (IOException ex) {
+            System.getLogger(ConsultaPedidosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
     
     private void llenarEstatus() {

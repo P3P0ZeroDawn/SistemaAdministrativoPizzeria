@@ -6,7 +6,10 @@ package mx.uv.sistemaadministrativopizzeria.controladores;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,6 +20,8 @@ import javafx.scene.control.TextField;
 import mx.uv.sistemaadministrativopizzeria.App;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ModoFormulario;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Pedido;
+import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
+import mx.uv.sistemaadministrativopizzeria.modelo.dao.PedidoDAO;
 
 /**
  * FXML Controller class
@@ -25,6 +30,8 @@ import mx.uv.sistemaadministrativopizzeria.modelo.beans.Pedido;
  */
 public class DatosPedidoController implements Initializable {
 
+    private ObservableList<Producto> pedidos = FXCollections.observableArrayList();
+     
     private ModoFormulario modo;
     private Pedido pedido;
     
@@ -37,11 +44,11 @@ public class DatosPedidoController implements Initializable {
     @FXML
     private TextField tfProducto;
     @FXML
-    private ListView<?> lvProducto;
+    private ListView<Producto> lvProducto;
     @FXML
     private TextField tfPedido;
     @FXML
-    private ListView<?> lvPedido;
+    private ListView<Producto> lvPedido;
     @FXML
     private Button btnSeleccionUsuario;
     @FXML
@@ -57,7 +64,12 @@ public class DatosPedidoController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-    }    
+    }
+    
+    private void llenarProductos(){
+        //pedidos.addAll(lista);
+        //lvProducto.setItems(pedidos);
+    }
 
     public void configurar(ModoFormulario modo, Pedido pedido){
         this.modo = modo;
