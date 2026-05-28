@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.image.Image;
 import mx.uv.sistemaadministrativopizzeria.modelo.MySQLConnectionManager;
+import mx.uv.sistemaadministrativopizzeria.modelo.beans.ComponenteProducto;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
 
 /**
@@ -51,6 +52,70 @@ public class ProductoDAO {
         }
 
         return lista;
+    }
+    
+    public static Producto obtenerProducto(int idProducto) {
+
+        Producto producto = null;
+
+        try {
+
+            MySQLConnectionManager conn =
+                    MySQLConnectionManager.buildConnection();
+
+            String query =
+                    "SELECT * FROM producto WHERE idProducto = ?";
+
+            PreparedStatement ps =
+                    conn.prepareStatement(query);
+            ps.setInt(1, idProducto);
+
+            ResultSet rs = ps.executeQuery();
+
+            if(rs.next()){
+                producto = serializarProducto(rs);
+            }
+            conn.close();
+
+        } catch (SQLException ex) {
+
+            System.getLogger(ProductoDAO.class.getName())
+                    .log(System.Logger.Level.ERROR,
+                            (String) null,
+                            ex);
+        }
+        return producto;
+    }
+    
+    public static Producto obtenerProductosProducto(Producto producto) {
+        List<ComponenteProducto> lista = null;
+        try {
+            lista = new ArrayList<>();
+            MySQLConnectionManager conn = MySQLConnectionManager.buildConnection();
+            String query = "SELECT p.idProducto, p.nombre, p.codigo, p.descripcion, p.precio, p.foto,"
+                    + " p.cantidad, p.unidadMedida, p.activo, p.esPreparado,p.esInsumo, ce.cantidad AS cantidadCP "
+                    + " FROM producto AS p JOIN ComponenteElaboracion AS ce"
+                    + " ON p.idProducto = ce.idProducto;";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Producto p = serializarProducto(rs);
+                ComponenteProducto componente = new ComponenteProducto();
+                componente.setProducto(p);
+                componente.setCantidad(rs.getDouble("cantidadCP"));
+                lista.add(componente);
+            }
+            conn.close();
+        } catch (SQLException ex) {
+            System.getLogger(ProductoDAO.class.getName())
+                    .log(System.Logger.Level.ERROR,
+                            (String) null,
+                            ex);
+        }
+        if(lista != null){
+            producto.setComponentes(new ArrayList<>(lista));
+        }
+        return producto;
     }
 
     public static Producto buscarProducto(int idProducto) {

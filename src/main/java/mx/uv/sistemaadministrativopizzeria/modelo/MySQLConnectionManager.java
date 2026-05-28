@@ -86,4 +86,20 @@ public class MySQLConnectionManager {
         return connSingleton;
     }
 
+    public void setAutoCommit(boolean autoCommit) throws SQLException {
+        connect(); // Nos aseguramos de que la conexión esté abierta
+        this.connection.setAutoCommit(autoCommit);
+    }
+
+    public void commit() throws SQLException {
+        if (connection != null && !connection.isClosed()) {
+            connection.commit();
+        }
+    }
+
+    public void rollback() throws SQLException {
+        if (connection != null && !connection.isClosed()) {
+            connection.rollback();
+        }
+    }
 }

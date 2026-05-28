@@ -6,6 +6,7 @@ package mx.uv.sistemaadministrativopizzeria.controladores;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -28,6 +29,7 @@ import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoPedido;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.PedidoDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoDAO;
+import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoPedidoDAO;
 
 /**
  * FXML Controller class
@@ -117,6 +119,22 @@ public class DatosPedidoController implements Initializable {
         lvProducto.setItems(productos);
     }
 
+    private void llenarPedido(){
+        try {
+            if(pedido == null) throw new NullPointerException("No existe ningun pedido");
+            pedido = ProductoPedidoDAO.obtenerProPedidos(pedido);
+            for(ProductoPedido p: pedido.getProductos()){
+                p.setProducto(ProductoDAO.obtenerProducto(p.getProducto().getIdProducto()));
+                if(p.getProducto().getEsPreparado()){
+                    p.setProducto(ProductoDAO.obtenerProductosProducto(p.getProducto()));
+                }
+            }
+            proPedidos.addAll(pedido.getProductos());
+        } catch (SQLException | NullPointerException ex){
+            System.getLogger(DatosPedidoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }
+    
     public void configurar(ModoFormulario modo, Pedido pedido){
         this.modo = modo;
         this.pedido = pedido;
@@ -125,6 +143,7 @@ public class DatosPedidoController implements Initializable {
             lbTitulo.setText("Edición de pedido");
             btnSeleccionUsuario.setVisible(false);
             btnConfirmacion.setText("Confirmar");
+            llenarPedido();
         } else{
             lbFecha.setVisible(false);
             lbFechaPedido.setVisible(false);
