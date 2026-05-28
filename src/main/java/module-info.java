@@ -3,7 +3,9 @@ module mx.uv.sistemaadministrativopizzeria {
     requires javafx.fxml;
     requires java.sql;
     requires java.base;
-
+    requires java.desktop;
+    requires javafx.swing;
+    
     opens mx.uv.sistemaadministrativopizzeria to javafx.fxml;
     opens mx.uv.sistemaadministrativopizzeria.controladores to javafx.fxml;
     opens mx.uv.sistemaadministrativopizzeria.modelo.beans to javafx.base;

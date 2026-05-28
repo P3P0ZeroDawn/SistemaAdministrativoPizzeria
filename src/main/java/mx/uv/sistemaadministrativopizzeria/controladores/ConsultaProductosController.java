@@ -22,6 +22,8 @@ import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizable
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.BotonAccion;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemTextoBoton;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.JavaFXUtils;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ModoFormulario;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Ventana;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoDAO;
 
@@ -86,7 +88,7 @@ public class ConsultaProductosController implements Initializable {
                     "/imagenes/editar.png",
 
                     producto -> {
-                        //cargarVistaEdicion(producto);
+                        cargarVistaEdicion(producto);
                     }
                 ),
 
@@ -107,7 +109,26 @@ public class ConsultaProductosController implements Initializable {
 
     @FXML
     private void btnNuevoProducto(ActionEvent event) {
-        
+        try{
+            Ventana<DatosProductoController> ventana =
+                    App.abrirVentanaEmergente(
+                            "datosProducto",
+                            "Registro de producto",
+                            800,
+                            600,
+                            true
+                    );
+            
+            ventana.getController().configurar(
+                    ModoFormulario.REGISTRO,
+                    null
+            );
+            
+            ventana.getStage().showAndWait();
+            cargarDatos();
+        } catch (IOException ex){
+            System.getLogger(ConsultaProductosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
 
     @FXML
@@ -125,6 +146,20 @@ public class ConsultaProductosController implements Initializable {
 
     @FXML
     private void btnBuscar(ActionEvent event) {
+        String busqueda = tfBusqueda.getText().trim();
+        
+        boolean porNombre = cbPorNombre.isSelected();
+        boolean porCodigo = cbPorCodigo.isSelected();
+        
+        List<Producto> resultado =
+                ProductoDAO.buscarProductos(
+                        busqueda,
+                        porNombre,
+                        porCodigo
+                );
+        
+        productos.clear();
+        productos.addAll(resultado);
     }
     
     private void cargarDatos() {
@@ -163,5 +198,26 @@ public class ConsultaProductosController implements Initializable {
                 );
             }
         }
-}
+    }
+    
+    private void cargarVistaEdicion(Producto producto){
+        try{
+            Ventana<DatosProductoController> ventana = App.abrirVentanaEmergente(
+                    "datosProducto",
+                    "Editar producto",
+                    800,
+                    600,
+                    true
+            );
+            
+            ventana.getController().configurar(
+                    ModoFormulario.EDICION,
+                    producto
+            );
+            ventana.getStage().showAndWait();
+            cargarDatos();
+        } catch (IOException ex) {
+           System.getLogger(ConsultaUsuariosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex); 
+        }
+    }
 }

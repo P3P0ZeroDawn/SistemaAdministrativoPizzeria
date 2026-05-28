@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Function;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.image.Image;
@@ -60,13 +61,17 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
         /*
          * TAMAÑO CELDA
          */
-        setPrefHeight(USE_COMPUTED_SIZE);
+        setMinHeight(80);
+
+        setPrefHeight(80);
+
+        setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 
         /*
          * CONFIGURACION CONTENEDORES
          */
         content.setAlignment(Pos.CENTER_LEFT);
-
+        content.setFillHeight(true);
         content.setStyle(
                 "-fx-padding: 3 10 3 10;"
         );

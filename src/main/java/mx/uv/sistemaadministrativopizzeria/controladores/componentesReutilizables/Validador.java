@@ -206,6 +206,16 @@ public class Validador {
         );
     }
     
+    public static void permitirDecimal(TextInputControl campo,
+                                   int longitudMaxima) {
+
+    aplicarFiltro(
+            campo,
+            "[0-9.]*",
+            longitudMaxima
+    );
+}
+    
     public static void passwordSegura(TextInputControl campo,
                                   String mensaje)
         throws DatosFaltantesException {
