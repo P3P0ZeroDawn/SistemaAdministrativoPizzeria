@@ -11,6 +11,7 @@ import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
 
 public class ComponenteElaboracionDAO {
 
+
     public static List<ComponenteElaboracion> obtenerPorProducto(
             int idProductoPreparado) {
 
@@ -23,9 +24,11 @@ public class ComponenteElaboracionDAO {
                     MySQLConnectionManager.buildConnection();
 
             String query =
-                    "SELECT * "
-                    + "FROM componenteelaboracion "
-                    + "WHERE idPreparado = ?";
+                    "SELECT ce.cantidad, p.* "
+                    + "FROM componenteelaboracion ce "
+                    + "JOIN producto p "
+                    + "ON ce.idProducto = p.idProducto "
+                    + "WHERE ce.idPreparado = ?";
 
             PreparedStatement ps =
                     conn.prepareStatement(query);
@@ -40,9 +43,7 @@ public class ComponenteElaboracionDAO {
                         new ComponenteElaboracion();
 
                 Producto producto =
-                        ProductoDAO.buscarProducto(
-                                rs.getInt("idProducto")
-                        );
+                        ProductoDAO.serializarProducto(rs);
 
                 componente.setProducto(producto);
 
@@ -52,8 +53,6 @@ public class ComponenteElaboracionDAO {
 
                 lista.add(componente);
             }
-
-            conn.close();
 
         } catch (SQLException ex) {
 
@@ -68,6 +67,7 @@ public class ComponenteElaboracionDAO {
 
         return lista;
     }
+
 
     public static boolean guardarComponentes(
             int idProductoPreparado,
