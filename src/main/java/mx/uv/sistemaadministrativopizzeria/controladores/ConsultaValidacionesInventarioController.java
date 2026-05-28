@@ -103,7 +103,7 @@ public class ConsultaValidacionesInventarioController implements Initializable {
     
     private void configurarTabla(){
         tcProducto.setCellValueFactory(new PropertyValueFactory<>("nombreProducto"));
-        tcExistenciaSistema.setCellValueFactory(new PropertyValueFactory<>("cantidadProducto"));
+        tcExistenciaSistema.setCellValueFactory(new PropertyValueFactory<>("cantidadSistema"));
         tcExistenciaReal.setCellValueFactory(new PropertyValueFactory<>("cantidadReal"));
         tcEstatusExistencia.setCellValueFactory(new PropertyValueFactory<>("estatusExistencia"));
         tcEstatusExistencia.setCellFactory(param -> new CeldaEstadoTabla<>(estatus -> {

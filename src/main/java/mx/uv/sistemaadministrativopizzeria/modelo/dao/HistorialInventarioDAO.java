@@ -70,16 +70,144 @@ public class HistorialInventarioDAO {
         return lista;
     }
     
+    public static boolean guardarHistorialInventario(
+    List<ProductoHistorial> productos) {
+
+
+    try {
+
+        MySQLConnectionManager conn =
+                MySQLConnectionManager
+                        .buildConnection();
+
+        conn.setAutoCommit(false);
+
+        /*
+         * INSERTAR HISTORIAL
+         */
+        String queryHistorial =
+                "INSERT INTO historialinventario "
+                + "(fecha) VALUES (NOW())";
+
+        PreparedStatement psHistorial =
+                conn.prepareStatement(
+                        queryHistorial,
+                        PreparedStatement
+                                .RETURN_GENERATED_KEYS
+                );
+
+        psHistorial.executeUpdate();
+
+        ResultSet rs =
+                psHistorial.getGeneratedKeys();
+
+        int idHistorial = -1;
+
+        if (rs.next()) {
+
+            idHistorial = rs.getInt(1);
+        }
+
+        if (idHistorial <= 0) {
+
+            conn.rollback();
+
+            conn.close();
+
+            return false;
+        }
+
+        /*
+         * INSERTAR PRODUCTOS
+         */
+        String queryProducto =
+                "INSERT INTO productohistorial "
+                + "(idHistorialInventario, "
+                + "idProducto, "
+                + "cantidadSistema, "
+                + "cantidadReal, "
+                + "razon, "
+                + "estatusExistencia) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
+
+        PreparedStatement psProducto =
+                conn.prepareStatement(
+                        queryProducto
+                );
+
+        for (ProductoHistorial p : productos) {
+
+            psProducto.setInt(
+                    1,
+                    idHistorial
+            );
+
+            psProducto.setInt(
+                    2,
+                    p.getProducto()
+                            .getIdProducto()
+            );
+
+            psProducto.setDouble(
+                    3,
+                    p.getCantidadSistema()
+            );
+
+            psProducto.setDouble(
+                    4,
+                    p.getCantidadReal()
+            );
+
+            psProducto.setString(
+                    5,
+                    p.getRazon()
+            );
+
+            psProducto.setString(
+                    6,
+                    p.getEstatusExistencia()
+                            .name()
+            );
+
+            psProducto.addBatch();
+        }
+
+        psProducto.executeBatch();
+
+        conn.commit();
+
+        conn.close();
+
+        return true;
+
+    } catch (SQLException ex) {
+
+        System.getLogger(
+                HistorialInventarioDAO.class
+                        .getName()
+        ).log(
+                System.Logger.Level.ERROR,
+                (String) null,
+                ex
+        );
+    }
+
+    return false;
+
+
+    }
+
+    
     private static ProductoHistorial serializarProductoHistorial(ResultSet rs) throws SQLException, NullPointerException{
         ProductoHistorial producto = null;
         if(rs != null){
             producto = new ProductoHistorial();
             producto.setProducto(new Producto());
             producto.setIdProductoHistorial(rs.getInt("idProductoHistorial"));
-            producto.setCantidadReal(rs.getInt("cantidadReal"));
+            producto.setCantidadReal(rs.getDouble("cantidadReal"));
             producto.setRazon(rs.getString("razon"));
             producto.getProducto().setIdProducto(rs.getInt("idProducto"));
-            producto.getProducto().setCantidad(rs.getDouble("cantidadSistema"));
+            producto.setCantidadSistema(rs.getDouble("cantidadSistema"));
             producto.getProducto().setNombre(rs.getString("nombre"));
             producto.getProducto().setCodigo(rs.getString("codigo"));
             

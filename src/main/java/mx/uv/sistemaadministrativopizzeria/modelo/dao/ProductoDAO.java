@@ -149,6 +149,56 @@ public class ProductoDAO {
 
         return producto;
     }
+    
+    public static List<Producto>
+    obtenerProductosValidacionInventario() {
+
+
+    List<Producto> lista =
+            new ArrayList<>();
+
+    try {
+
+        MySQLConnectionManager conn =
+                MySQLConnectionManager
+                        .buildConnection();
+
+        String query =
+                "SELECT * FROM producto "
+                + "WHERE activo = 1 "
+                + "AND esPreparado = 0";
+
+        PreparedStatement ps =
+                conn.prepareStatement(query);
+
+        ResultSet rs =
+                ps.executeQuery();
+
+        while (rs.next()) {
+
+            lista.add(
+                    serializarProducto(rs)
+            );
+        }
+
+        conn.close();
+
+    } catch (SQLException ex) {
+
+        System.getLogger(
+                ProductoDAO.class.getName()
+        ).log(
+                System.Logger.Level.ERROR,
+                (String) null,
+                ex
+        );
+    }
+
+    return lista;
+
+
+    }
+
 
     public static Producto buscarProducto(int idProducto) {
 

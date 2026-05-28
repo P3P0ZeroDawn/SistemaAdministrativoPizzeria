@@ -15,15 +15,15 @@ import java.util.ArrayList;
 public class HistorialInventario {
     private int idHistorialInventario;
     private LocalDateTime fecha;
-    private ArrayList ProductoHistorial;
+    private ArrayList<ProductoHistorial> productosHistorial;
 
     public HistorialInventario() {
     }
 
-    public HistorialInventario(int idHistorialInventario, LocalDateTime fecha, ArrayList ProductoHistorial) {
+    public HistorialInventario(int idHistorialInventario, LocalDateTime fecha, ArrayList<ProductoHistorial> productosHistorial) {
         this.idHistorialInventario = idHistorialInventario;
         this.fecha = fecha;
-        this.ProductoHistorial = ProductoHistorial;
+        this.productosHistorial = productosHistorial;
     }
     
     public int getIdHistorialInventario() {
@@ -42,12 +42,12 @@ public class HistorialInventario {
         this.fecha = fecha;
     }
 
-    public ArrayList getProductoHistorial() {
-        return ProductoHistorial;
+    public ArrayList getProductosHistorial() {
+        return productosHistorial;
     }
 
-    public void setProductoHistorial(ArrayList ProductoHistorial) {
-        this.ProductoHistorial = ProductoHistorial;
+    public void setProductosHistorial(ArrayList<ProductoHistorial> productosHistorial) {
+        this.productosHistorial = productosHistorial;
     }
     
     @Override

@@ -10,22 +10,24 @@ package mx.uv.sistemaadministrativopizzeria.modelo.beans;
  */
 public class ProductoHistorial {
     private int idProductoHistorial;
-    private int cantidadReal;
+    private Double cantidadReal;
     private String razon;
     private EstatusExistencia estatusExistencia;
     private Producto producto;
+    private Double cantidadSistema;
     
     public enum EstatusExistencia {Correcta, Faltante, Sobrante};
 
     public ProductoHistorial() {
     }
 
-    public ProductoHistorial(int idProductoHistorial, int cantidadReal, String razon, EstatusExistencia estatusExistencia, Producto producto) {
+    public ProductoHistorial(int idProductoHistorial, Double cantidadReal, String razon, EstatusExistencia estatusExistencia, Producto producto, Double cantidadSistema) {
         this.idProductoHistorial = idProductoHistorial;
         this.cantidadReal = cantidadReal;
         this.razon = razon;
         this.estatusExistencia = estatusExistencia;
         this.producto = producto;
+        this.cantidadSistema = cantidadSistema;
     }
 
     public int getIdProductoHistorial() {
@@ -36,11 +38,11 @@ public class ProductoHistorial {
         this.idProductoHistorial = idProductoHistorial;
     }
 
-    public int getCantidadReal() {
+    public Double getCantidadReal() {
         return cantidadReal;
     }
 
-    public void setCantidadReal(int cantidadReal) {
+    public void setCantidadReal(Double cantidadReal) {
         this.cantidadReal = cantidadReal;
     }
 
@@ -71,8 +73,12 @@ public class ProductoHistorial {
     public String getNombreProducto(){
         return producto.getNombre();
     }
-    
-    public Double getCantidadProducto(){
-        return producto.getCantidad();
+
+    public Double getCantidadSistema() {
+        return cantidadSistema;
+    }
+
+    public void setCantidadSistema(Double cantidadSistema) {
+        this.cantidadSistema = cantidadSistema;
     }
 }
