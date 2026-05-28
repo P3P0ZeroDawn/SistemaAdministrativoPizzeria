@@ -30,6 +30,8 @@ import mx.uv.sistemaadministrativopizzeria.excepciones.DatosFaltantesException;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoDAO;
 import java.nio.file.Files;
+import mx.uv.sistemaadministrativopizzeria.App;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Ventana;
 
 /**
  * FXML Controller class
@@ -323,14 +325,31 @@ public class DatosProductoController implements Initializable {
         try {
 
             Producto productoRecuperado = recuperarProducto();
-            boolean resultado = false;
+            boolean resultado;
+
             if (modo == ModoFormulario.REGISTRO) {
 
-                resultado =
+                int idGenerado =
                         ProductoDAO.registrarProducto(
                                 productoRecuperado,
                                 recuperarFotoBytes()
                         );
+
+                resultado = idGenerado > 0;
+
+                if (resultado) {
+
+                    productoRecuperado.setIdProducto(
+                            idGenerado
+                    );
+
+                    /*
+                     * IMPORTANTE:
+                     * Guardamos el producto recién creado
+                     * para poder usarlo después
+                     */
+                    productoEdicion = productoRecuperado;
+                }
 
             } else {
 
@@ -385,6 +404,82 @@ public class DatosProductoController implements Initializable {
 
     @FXML
     private void clicBtnModificarComponentes(ActionEvent event) {
+        if (modo == ModoFormulario.REGISTRO
+                && productoEdicion == null) {
+
+            JavaFXUtils.mostrarAdvertencia(
+                    "Guardar primero",
+                    "Primero debes guardar el producto",
+                    false
+            );
+
+            return;
+        }
+        try {
+
+            Producto producto;
+
+            /*
+             * Si estamos editando, usamos el producto existente
+             */
+            if (modo == ModoFormulario.EDICION) {
+
+                producto = productoEdicion;
+
+            } else {
+
+                /*
+                 * En registro todavía no existe en BD,
+                 * pero sí necesitamos un objeto temporal
+                 */
+                producto = recuperarProducto();
+
+                /*
+                 * Si ya fue guardado previamente,
+                 * usamos el ID existente
+                 */
+                if (productoEdicion != null) {
+
+                    producto.setIdProducto(
+                            productoEdicion.getIdProducto()
+                    );
+                }
+            }
+
+            Ventana<ComponentesProductoController> ventana
+                    = App.abrirVentanaEmergente(
+                            "componentesProducto",
+                            "Componentes del producto",
+                            900,
+                            600,
+                            true
+                    );
+
+            ventana.getController().configurar(producto);
+
+            ventana.getStage().showAndWait();
+
+        } catch (DatosFaltantesException ex) {
+
+            JavaFXUtils.mostrarAdvertencia(
+                    "Datos faltantes",
+                    "Completa primero los datos básicos del producto",
+                    false
+            );
+
+        } catch (Exception ex) {
+
+            System.getLogger(DatosProductoController.class.getName())
+                    .log(System.Logger.Level.ERROR,
+                            (String) null,
+                            ex);
+
+            JavaFXUtils.mostrarError(
+                    "Error",
+                    "No se pudo abrir la ventana de componentes",
+                    false
+            );
+        }
     }
     
     private byte[] recuperarFotoBytes() {

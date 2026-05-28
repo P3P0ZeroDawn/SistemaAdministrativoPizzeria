@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import mx.uv.sistemaadministrativopizzeria.modelo.MySQLConnectionManager;
-import mx.uv.sistemaadministrativopizzeria.modelo.beans.ComponenteProducto;
+import mx.uv.sistemaadministrativopizzeria.modelo.beans.ComponenteElaboracion;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Pedido;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoPedido;
@@ -62,7 +62,7 @@ public class PedidoDAO {
                         throw new SQLException("El producto preparado '" + prod.getNombre() + "' no tiene insumos asignados en memoria.");
                     }
                     
-                    for (ComponenteProducto comp : prod.getComponentes()) {
+                    for (ComponenteElaboracion comp : prod.getComponentes()) {
                         double cantidadRequerida = comp.getCantidad() * cantidadPedida;
                         
                         String queryInsumo = "UPDATE producto SET cantidad = cantidad - ? WHERE idProducto = ? AND cantidad >= ?";

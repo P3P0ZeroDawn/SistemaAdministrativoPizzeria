@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
 package mx.uv.sistemaadministrativopizzeria.controladores;
 
 import java.net.URL;
@@ -10,31 +6,71 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.JavaFXUtils;
 
-/**
- * FXML Controller class
- *
- * @author hp
- */
 public class CantidadProductoController implements Initializable {
+
+    private Double cantidad;
 
     @FXML
     private TextField tfCantidad;
 
-    /**
-     * Initializes the controller class.
-     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-    }    
+
+    }
+
+    public void configurar() {
+
+    }
+
+    public Double getCantidad() {
+        return cantidad;
+    }
 
     @FXML
     private void clicBtnCancelar(ActionEvent event) {
+
+        ((Stage) tfCantidad.getScene()
+                .getWindow())
+                .close();
     }
 
     @FXML
     private void clicBtnConfirmar(ActionEvent event) {
+
+        try {
+
+            Double valor =
+                    Double.valueOf(
+                            tfCantidad.getText().trim()
+                    );
+
+            if (valor <= 0) {
+
+                JavaFXUtils.mostrarAdvertencia(
+                        "Cantidad inválida",
+                        "Ingrese una cantidad mayor a 0",
+                        false
+                );
+
+                return;
+            }
+
+            cantidad = valor;
+
+            ((Stage) tfCantidad.getScene()
+                    .getWindow())
+                    .close();
+
+        } catch (NumberFormatException ex) {
+
+            JavaFXUtils.mostrarError(
+                    "Cantidad inválida",
+                    "Ingrese un número válido",
+                    false
+            );
+        }
     }
-    
 }

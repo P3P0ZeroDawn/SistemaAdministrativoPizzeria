@@ -1,33 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package mx.uv.sistemaadministrativopizzeria.modelo.beans;
 
-/**
- *
- * @author pedro
- */
-public class ComponenteElaboracion {
-    private int idComponenteElaboración;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemObservableList;
+
+public class ComponenteElaboracion implements ItemObservableList {
+
     private Producto producto;
-    private int cantidad;
+    private Double cantidad;
 
     public ComponenteElaboracion() {
     }
 
-    public ComponenteElaboracion(int idComponenteElaboración, Producto producto, int cantidad) {
-        this.idComponenteElaboración = idComponenteElaboración;
+    public ComponenteElaboracion(
+            Producto producto,
+            Double cantidad) {
+
         this.producto = producto;
         this.cantidad = cantidad;
-    }
-
-    public int getIdComponenteElaboración() {
-        return idComponenteElaboración;
-    }
-
-    public void setIdComponenteElaboración(int idComponenteElaboración) {
-        this.idComponenteElaboración = idComponenteElaboración;
     }
 
     public Producto getProducto() {
@@ -38,13 +26,21 @@ public class ComponenteElaboracion {
         this.producto = producto;
     }
 
-    public int getCantidad() {
+    public Double getCantidad() {
         return cantidad;
     }
 
-    public void setCantidad(int cantidad) {
+    public void setCantidad(Double cantidad) {
         this.cantidad = cantidad;
     }
 
-    
+    @Override
+    public String getString() {
+
+        if (producto != null) {
+            return producto.getNombre();
+        }
+
+        return "";
+    }
 }

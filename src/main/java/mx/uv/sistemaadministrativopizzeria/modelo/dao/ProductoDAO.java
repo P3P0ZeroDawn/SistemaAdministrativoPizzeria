@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.image.Image;
 import mx.uv.sistemaadministrativopizzeria.modelo.MySQLConnectionManager;
-import mx.uv.sistemaadministrativopizzeria.modelo.beans.ComponenteProducto;
+import mx.uv.sistemaadministrativopizzeria.modelo.beans.ComponenteElaboracion;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
 
 /**
@@ -87,34 +87,66 @@ public class ProductoDAO {
         return producto;
     }
     
-    public static Producto obtenerProductosProducto(Producto producto) {
-        List<ComponenteProducto> lista = null;
+    public static Producto obtenerProductosProducto(
+        Producto producto) {
+
+        List<ComponenteElaboracion> lista =
+                new ArrayList<>();
+
         try {
-            lista = new ArrayList<>();
-            MySQLConnectionManager conn = MySQLConnectionManager.buildConnection();
-            String query = "SELECT p.idProducto, p.nombre, p.codigo, p.descripcion, p.precio, p.foto,"
-                    + " p.cantidad, p.unidadMedida, p.activo, p.esPreparado,p.esInsumo, ce.cantidad AS cantidadCP "
-                    + " FROM producto AS p JOIN ComponenteElaboracion AS ce"
-                    + " ON p.idProducto = ce.idProducto;";
-            PreparedStatement ps = conn.prepareStatement(query);
+
+            MySQLConnectionManager conn =
+                    MySQLConnectionManager.buildConnection();
+
+            String query =
+                    "SELECT p.*, ce.cantidad AS cantidadCP "
+                    + "FROM producto p "
+                    + "JOIN componenteelaboracion ce "
+                    + "ON p.idProducto = ce.idProducto "
+                    + "WHERE ce.idPreparado = ?";
+
+            PreparedStatement ps =
+                    conn.prepareStatement(query);
+
+            ps.setInt(1,
+                    producto.getIdProducto());
+
             ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
-                Producto p = serializarProducto(rs);
-                ComponenteProducto componente = new ComponenteProducto();
+
+                Producto p =
+                        serializarProducto(rs);
+
+                ComponenteElaboracion componente =
+                        new ComponenteElaboracion();
+
                 componente.setProducto(p);
-                componente.setCantidad(rs.getDouble("cantidadCP"));
+
+                componente.setCantidad(
+                        rs.getDouble("cantidadCP")
+                );
+
                 lista.add(componente);
             }
+
             conn.close();
+
         } catch (SQLException ex) {
-            System.getLogger(ProductoDAO.class.getName())
-                    .log(System.Logger.Level.ERROR,
-                            (String) null,
-                            ex);
+
+            System.getLogger(
+                    ProductoDAO.class.getName()
+            ).log(
+                    System.Logger.Level.ERROR,
+                    (String) null,
+                    ex
+            );
         }
-        if(lista != null){
-            producto.setComponentes(new ArrayList<>(lista));
-        }
+
+        producto.setComponentes(
+                new ArrayList<>(lista)
+        );
+
         return producto;
     }
 
@@ -156,7 +188,7 @@ public class ProductoDAO {
         return producto;
     }
 
-    public static boolean registrarProducto(
+    public static int registrarProducto(
         Producto producto,
         byte[] fotoBytes) {
 
@@ -175,7 +207,10 @@ public class ProductoDAO {
                         + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
                 PreparedStatement ps =
-                        conn.prepareStatement(query);
+                        conn.prepareStatement(
+                                query,
+                                java.sql.Statement.RETURN_GENERATED_KEYS
+                        );
 
                 ps.setString(1,
                         producto.getNombre());
@@ -186,24 +221,15 @@ public class ProductoDAO {
                 ps.setString(3,
                         producto.getDescripcion());
 
-                /*
-                 * PUEDE SER NULL
-                 */
                 ps.setObject(4,
                         producto.getPrecio());
 
                 ps.setBytes(5,
                         fotoBytes);
 
-                /*
-                 * PUEDE SER NULL
-                 */
                 ps.setObject(6,
                         producto.getCantidad());
 
-                /*
-                 * PUEDE SER NULL
-                 */
                 ps.setString(7,
                         producto.getUnidadMedida());
 
@@ -216,22 +242,39 @@ public class ProductoDAO {
                 ps.setInt(10,
                         producto.getEsInsumo() ? 1 : 0);
 
-                ps.executeUpdate();
+                int filas =
+                        ps.executeUpdate();
+
+                if (filas > 0) {
+
+                    ResultSet rs =
+                            ps.getGeneratedKeys();
+
+                    if (rs.next()) {
+
+                        int idGenerado =
+                                rs.getInt(1);
+
+                        conn.close();
+
+                        return idGenerado;
+                    }
+                }
 
                 conn.close();
-
-                return true;
 
             } catch (SQLException ex) {
 
                 System.getLogger(ProductoDAO.class.getName())
-                        .log(System.Logger.Level.ERROR,
+                        .log(
+                                System.Logger.Level.ERROR,
                                 (String) null,
-                                ex);
+                                ex
+                        );
             }
         }
 
-        return false;
+        return -1;
     }
 
     public static boolean actualizarProducto(

@@ -26,7 +26,7 @@ public class Producto implements ItemObservableList, ItemConImagen{
     private Boolean esPreparado;
     private Boolean esInsumo;
     private Boolean activo;
-    private ArrayList<ComponenteProducto> componentes;
+    private ArrayList<ComponenteElaboracion> componentes;
 
     public Producto() {
     }
@@ -34,7 +34,7 @@ public class Producto implements ItemObservableList, ItemConImagen{
     public Producto(int idProducto, String nombre, String codigo,
             String descripcion, Double precio, String restricciones,
             Image foto, Double cantidad, String unidadMedida, Boolean esPreparado,
-            Boolean esInsumo, Boolean activo, ArrayList<ComponenteProducto> componentes) {
+            Boolean esInsumo, Boolean activo, ArrayList<ComponenteElaboracion> componentes) {
         this.idProducto = idProducto;
         this.nombre = nombre;
         this.codigo = codigo;
@@ -146,11 +146,11 @@ public class Producto implements ItemObservableList, ItemConImagen{
         this.activo = activo;
     }
 
-    public ArrayList<ComponenteProducto> getComponentes() {
+    public ArrayList<ComponenteElaboracion> getComponentes() {
         return componentes;
     }
 
-    public void setComponentes(ArrayList<ComponenteProducto> componentes) {
+    public void setComponentes(ArrayList<ComponenteElaboracion> componentes) {
         this.componentes = componentes;
     }
 
@@ -162,5 +162,10 @@ public class Producto implements ItemObservableList, ItemConImagen{
     @Override
     public Image getImagen() {
         return foto;
+    }
+    
+    @Override
+    public String toString() {
+        return nombre;
     }
 }
