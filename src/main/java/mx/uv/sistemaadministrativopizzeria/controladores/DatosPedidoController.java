@@ -7,6 +7,7 @@ package mx.uv.sistemaadministrativopizzeria.controladores;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -24,6 +25,7 @@ import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizable
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.BotonAccion;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemTextoBoton;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ModoFormulario;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Ventana;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Pedido;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoPedido;
@@ -144,10 +146,29 @@ public class DatosPedidoController implements Initializable {
             btnSeleccionUsuario.setVisible(false);
             btnConfirmacion.setText("Confirmar");
             llenarPedido();
+            lbUsuario.setText(pedido.getNombreUsuario());
+            lbFechaPedido.setText("" + pedido.getFechaPedido());
         } else{
+            this.pedido = new Pedido();
             lbFecha.setVisible(false);
             lbFechaPedido.setVisible(false);
         }
+    }
+    
+    private int seleccionarCantidad(){
+        int cantidad = 0;
+        try {
+            Ventana<CantidadProductoController> ventana = App.abrirVentanaEmergente( "cantidadProducto",
+                    "Cantidad", 400, 200, true);
+            
+            ventana.getController().configurar();
+            ventana.getStage().showAndWait();
+
+            cantidad = ventana.getController().getCantidad().intValue();
+        } catch (IOException ex) {
+            System.getLogger(DatosPedidoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        return cantidad;
     }
     
     private void agregarProducto(Producto producto, int cantidad){
@@ -167,6 +188,8 @@ public class DatosPedidoController implements Initializable {
             proPedido.setCantidad(cantidad);
             proPedidos.add(proPedido);
         }
+        pedido.setTotalAPagar(pedido.getTotalAPagar() + (producto.getPrecio() * cantidad));
+        lbTotal.setText("" + pedido.getTotalAPagar());
     }
     
     private void disminuirPedido(ProductoPedido pedido){
@@ -182,6 +205,19 @@ public class DatosPedidoController implements Initializable {
     
     @FXML
     private void btnClicSeleccionUsuario(ActionEvent event) {
+        try {
+            Ventana<SeleccionUsuarioController> ventana = App.abrirVentanaEmergente("seleccionUsuario",
+                    "Selección de usuario", 400, 200, true);
+            if(pedido == null) pedido = new Pedido();
+            ventana.getController().setPedido(pedido);
+            ventana.getStage().showAndWait();
+            
+            if(pedido.getIdUsuario() != -1){
+                lbUsuario.setText(pedido.getNombreUsuario());
+            }
+        } catch (IOException ex) {
+            System.getLogger(DatosPedidoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }
 
     @FXML
@@ -195,6 +231,20 @@ public class DatosPedidoController implements Initializable {
 
     @FXML
     private void clicConfirmar(ActionEvent event) {
+        if(pedido != null && !proPedidos.isEmpty() && pedido.getIdUsuario() != -1){
+            if(modo.equals(ModoFormulario.EDICION)) return;
+            pedido.setFechaPedido(LocalDate.now());
+            
+            pedido.setProductos(new ArrayList<>(proPedidos));
+            int resultado = PedidoDAO.realizarPedido(pedido);
+            if(resultado != 0){
+                System.out.println("EXITOO-----");
+            } else{
+                System.out.println("Fallo");
+            }
+            
+        } else{
+            System.out.println("Faltan datos");
+        }
     }
-    
 }

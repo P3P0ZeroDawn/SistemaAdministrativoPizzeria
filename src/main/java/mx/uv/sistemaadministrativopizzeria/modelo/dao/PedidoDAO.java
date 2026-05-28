@@ -91,12 +91,11 @@ public class PedidoDAO {
             }
             
             // Registrar el Pedido
-            String queryPedido = "INSERT INTO pedido (idUsuario, fechaPedido, total, estatus) VALUES (?, ?, ?, ?)";
+            String queryPedido = "INSERT INTO pedido (idUsuario, fechaPedido, total) VALUES (?, ?, ?)";
             PreparedStatement psPedido = conn.prepareStatement(queryPedido);
             psPedido.setInt(1, pedido.getIdUsuario());
             psPedido.setDate(2, Date.valueOf(pedido.getFechaPedido())); // Convertimos LocalDate a java.sql.Date
-            psPedido.setDouble(3, pedido.getTotalAPagar());
-            psPedido.setString(4, pedido.getEstatus().name());
+            psPedido.setDouble(3, pedido.getTotalAPagar()); 
             psPedido.executeUpdate();
             
             // 3. Obtener el ID autoincrementable que MySQL le asignó al Pedido

@@ -29,6 +29,7 @@ public class Pedido implements ItemObservableList{
     public enum EstatusPedido {EnPreparacion, Entregado, Cancelado};
 
     public Pedido() {
+        this.totalAPagar = 0.0;
     }
 
     public Pedido(int idPedido, int idUsuario, LocalDate fechaPedido, Double totalAPagar, EstatusPedido estatus, ArrayList<ProductoPedido> productos,String nombreUsuario) {
