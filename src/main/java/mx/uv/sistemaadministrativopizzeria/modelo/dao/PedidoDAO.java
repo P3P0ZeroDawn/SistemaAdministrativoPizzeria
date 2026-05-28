@@ -95,7 +95,7 @@ public class PedidoDAO {
             PreparedStatement psPedido = conn.prepareStatement(queryPedido);
             psPedido.setInt(1, pedido.getIdUsuario());
             psPedido.setDate(2, Date.valueOf(pedido.getFechaPedido())); // Convertimos LocalDate a java.sql.Date
-            psPedido.setDouble(3, pedido.getTotalAPagar()); 
+            psPedido.setDouble(3, pedido.getTotalAPagar());
             psPedido.executeUpdate();
             
             // 3. Obtener el ID autoincrementable que MySQL le asignó al Pedido
@@ -126,6 +126,7 @@ public class PedidoDAO {
             System.getLogger(PedidoDAO.class.getName()).log(System.Logger.Level.ERROR, ex.getMessage(), ex);
             try {
                 if (conn != null) {
+                    conn.setAutoCommit(true);
                     conn.rollback();
                 }
             } catch (SQLException rollbackEx) {
@@ -134,6 +135,7 @@ public class PedidoDAO {
         } finally {
             try {
                 if (conn != null) {
+                    conn.setAutoCommit(true);
                     conn.close();
                 }
             } catch (SQLException closeEx) {

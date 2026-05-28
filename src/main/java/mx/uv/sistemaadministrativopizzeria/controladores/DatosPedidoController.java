@@ -117,6 +117,11 @@ public class DatosPedidoController implements Initializable {
     
     private void llenarProductos(){
         List<Producto> lista = ProductoDAO.obtenerProductos();
+        for(Producto p: lista){
+            if(p.getEsPreparado()){
+                p = ProductoDAO.obtenerProductosProducto(p);
+            }
+        }
         productos.addAll(lista);
         lvProducto.setItems(productos);
     }
@@ -212,7 +217,7 @@ public class DatosPedidoController implements Initializable {
             ventana.getController().setPedido(pedido);
             ventana.getStage().showAndWait();
             
-            if(pedido.getIdUsuario() != -1){
+            if(pedido.getIdUsuario() != -1 && pedido.getIdUsuario() > 0){
                 lbUsuario.setText(pedido.getNombreUsuario());
             }
         } catch (IOException ex) {
@@ -231,7 +236,7 @@ public class DatosPedidoController implements Initializable {
 
     @FXML
     private void clicConfirmar(ActionEvent event) {
-        if(pedido != null && !proPedidos.isEmpty() && pedido.getIdUsuario() != -1){
+        if(pedido != null && !proPedidos.isEmpty() && pedido.getIdUsuario() != -1 && pedido.getIdUsuario() > 0){
             if(modo.equals(ModoFormulario.EDICION)) return;
             pedido.setFechaPedido(LocalDate.now());
             

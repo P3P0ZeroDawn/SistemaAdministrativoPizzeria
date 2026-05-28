@@ -99,11 +99,8 @@ public class ProductoDAO {
                     MySQLConnectionManager.buildConnection();
 
             String query =
-                    "SELECT p.*, ce.cantidad AS cantidadCP "
-                    + "FROM producto p "
-                    + "JOIN componenteelaboracion ce "
-                    + "ON p.idProducto = ce.idProducto "
-                    + "WHERE ce.idPreparado = ?";
+                    "SELECT * FROM v_productoComponente"
+                    + " WHERE idPreparado = ?;";
 
             PreparedStatement ps =
                     conn.prepareStatement(query);
