@@ -4,6 +4,10 @@ module mx.uv.sistemaadministrativopizzeria {
     requires java.sql;
     requires java.base;
     requires java.desktop;
+    requires com.opencsv;
+    requires kernel;
+    requires layout;
+    requires io;
     requires javafx.swing;
     
     opens mx.uv.sistemaadministrativopizzeria to javafx.fxml;

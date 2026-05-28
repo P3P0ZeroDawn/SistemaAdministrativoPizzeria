@@ -4,7 +4,9 @@
  */
 package mx.uv.sistemaadministrativopizzeria.controladores;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +22,17 @@ import javafx.scene.control.TextField;
 import mx.uv.sistemaadministrativopizzeria.App;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.BotonAccion;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Exportador;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemTextoBoton;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.JavaFXUtils;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ModoFormulario;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Ventana;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoDAO;
+import java.awt.Desktop;
+import java.io.File;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 /**
  * FXML Controller class
@@ -133,6 +140,161 @@ public class ConsultaProductosController implements Initializable {
 
     @FXML
     private void btnGenerarReporte(ActionEvent event) {
+
+        List<Producto> listaProductos =
+                ProductoDAO.obtenerProductos();
+
+        if (listaProductos.isEmpty()) {
+
+            JavaFXUtils.mostrarAdvertencia(
+                    "Sin datos",
+                    "No hay productos para exportar",
+                    false
+            );
+
+            return;
+        }
+
+        try {
+
+            Ventana<SeleccionReporteController>
+                    ventana =
+                    App.abrirVentanaEmergente(
+                            "seleccionReporte",
+                            "Exportar reporte",
+                            350,
+                            140,
+                            true
+                    );
+
+            ventana.getStage()
+                    .showAndWait();
+
+            String formato =
+                    ventana.getController()
+                            .getFormatoSeleccionado();
+
+            if (formato == null) {
+                return;
+            }
+
+            FileChooser selector =
+                    new FileChooser();
+
+            Stage stageActual =
+                    (Stage) lvProductos
+                            .getScene()
+                            .getWindow();
+
+            File archivo;
+
+            /*
+             * PDF
+             */
+            if (formato.equals("PDF")) {
+
+                selector.setTitle(
+                        "Exportar inventario PDF"
+                );
+
+                selector.getExtensionFilters().add(
+                        new FileChooser.ExtensionFilter(
+                                "Archivos PDF",
+                                "*.pdf"
+                        )
+                );
+
+                selector.setInitialFileName(
+                        "InventarioProductos.pdf"
+                );
+
+                archivo =
+                        selector.showSaveDialog(
+                                stageActual
+                        );
+
+                if (archivo != null) {
+
+                    Exportador.exportarInventarioPDF(
+                            archivo.getAbsolutePath(),
+                            listaProductos
+                    );
+
+                    if (archivo.exists()) {
+
+                        Desktop.getDesktop()
+                                .open(archivo);
+                    }
+
+                    JavaFXUtils.mostrarMensaje(
+                            "Reporte generado",
+                            "El PDF fue generado correctamente",
+                            false
+                    );
+                }
+
+            } else {
+
+                /*
+                 * CSV
+                 */
+                selector.setTitle(
+                        "Exportar inventario CSV"
+                );
+
+                selector.getExtensionFilters().add(
+                        new FileChooser.ExtensionFilter(
+                                "Archivos CSV",
+                                "*.csv"
+                        )
+                );
+
+                selector.setInitialFileName(
+                        "InventarioProductos.csv"
+                );
+
+                archivo =
+                        selector.showSaveDialog(
+                                stageActual
+                        );
+
+                if (archivo != null) {
+
+                    Exportador.exportarInventarioCSV(
+                            archivo.getAbsolutePath(),
+                            listaProductos
+                    );
+
+                    if (archivo.exists()) {
+
+                        Desktop.getDesktop()
+                                .open(archivo);
+                    }
+
+                    JavaFXUtils.mostrarMensaje(
+                            "Reporte generado",
+                            "El CSV fue generado correctamente",
+                            false
+                    );
+                }
+            }
+
+        } catch (Exception ex) {
+
+            System.getLogger(
+                    ConsultaProductosController.class.getName()
+            ).log(
+                    System.Logger.Level.ERROR,
+                    (String) null,
+                    ex
+            );
+
+            JavaFXUtils.mostrarError(
+                    "Error",
+                    "No se pudo generar el reporte",
+                    false
+            );
+        }
     }
 
     @FXML
