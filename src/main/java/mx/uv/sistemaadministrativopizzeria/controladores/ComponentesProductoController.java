@@ -314,19 +314,17 @@ public class ComponentesProductoController
             return;
         }
 
-        /*
-         * VALIDAR COMPONENTES
-         */
-        if (componentes.isEmpty()) {
-
-            JavaFXUtils.mostrarError(
-                    "Sin componentes",
-                    "Debes agregar al menos un componente",
-                    false
-            );
-
-            return;
-        }
+                /*
+                 * VALIDAR COMPONENTES
+                 */
+                if (componentes.isEmpty()) {
+                        try {
+                                throw new mx.uv.sistemaadministrativopizzeria.excepciones.ComponentesFaltantesException();
+                        } catch (mx.uv.sistemaadministrativopizzeria.excepciones.ComponentesFaltantesException ex) {
+                                JavaFXUtils.mostrarError("Sin componentes", ex.getMessage(), false);
+                                return;
+                        }
+                }
 
         /*
          * ELIMINAR ANTERIORES

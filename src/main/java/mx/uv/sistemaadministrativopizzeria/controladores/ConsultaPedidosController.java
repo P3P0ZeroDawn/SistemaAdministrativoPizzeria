@@ -35,6 +35,14 @@ import mx.uv.sistemaadministrativopizzeria.modelo.dao.PedidoDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoPedidoDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.UsuarioDAO;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Exportador;
+import mx.uv.sistemaadministrativopizzeria.controladores.SeleccionReporteController;
+import java.awt.Desktop;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import java.io.File;
 
 /**
  * FXML Controller class
@@ -131,10 +139,10 @@ public class ConsultaPedidosController implements Initializable {
                         cancelarPedido(pedido):
                         PedidoDAO.cambiarEstatus(pedido.getIdPedido(), estatusSeleccionado);
                 if(resultado != 0){
-                    JavaFXUtils.mostrarMensaje("Cambio exitoso", "Se cambio el estado con exito", false);
+                    JavaFXUtils.mostrarMensaje("Cambio exitoso", "Se cambió el estado con éxito", false);
                     llenarLista();
                 } else{
-                    JavaFXUtils.mostrarError("Cambio fallido", "No se logro combiar el estatus del pedido", false);
+                    JavaFXUtils.mostrarError("Cambio fallido", "No se logró cambiar el estatus del pedido", false);
                 }
             }
         } catch (IOException ex) {
@@ -144,7 +152,7 @@ public class ConsultaPedidosController implements Initializable {
     
     private int cancelarPedido(Pedido pedido){
         try {
-            if(pedido == null) throw new NullPointerException("No existe ningun pedido");
+            if(pedido == null) throw new NullPointerException("No existe ningún pedido");
             pedido = ProductoPedidoDAO.obtenerProPedidos(pedido);
             for(ProductoPedido p: pedido.getProductos()){
                 p.setProducto(ProductoDAO.obtenerProducto(p.getProducto().getIdProducto()));
@@ -226,12 +234,91 @@ public class ConsultaPedidosController implements Initializable {
 
     @FXML
     private void btnExportar(ActionEvent event) {
+        try {
+            if (pedidos == null || pedidos.isEmpty()) {
+                JavaFXUtils.mostrarAdvertencia("Sin resultados", "No hay pedidos para exportar", false);
+                return;
+            }
+
+            Ventana<SeleccionReporteController> ventana = App.abrirVentanaEmergente(
+                    "seleccionReporte",
+                    "Exportar reporte",
+                    350,
+                    140,
+                    true
+            );
+
+            ventana.getStage().showAndWait();
+
+            String formato = ventana.getController().getFormatoSeleccionado();
+            if (formato == null) return;
+
+            // Preparar lista con productos cargados
+            ArrayList<Pedido> listaExport = new ArrayList<>(pedidos);
+            for (int i = 0; i < listaExport.size(); i++) {
+                Pedido p = listaExport.get(i);
+                p = ProductoPedidoDAO.obtenerProPedidos(p);
+                if (p.getProductos() != null) {
+                    for (mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoPedido pp : p.getProductos()) {
+                        pp.setProducto(ProductoDAO.obtenerProducto(pp.getProducto().getIdProducto()));
+                        if (pp.getProducto().getEsPreparado()) {
+                            pp.setProducto(ProductoDAO.obtenerProductosProducto(pp.getProducto()));
+                        }
+                    }
+                }
+                listaExport.set(i, p);
+            }
+
+            FileChooser selector = new FileChooser();
+            Stage stageActual = (Stage) lvPedidos.getScene().getWindow();
+
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+            String sugerencia = "ReportePedidos_" + LocalDateTime.now().format(df);
+
+            if (formato.equals("PDF")) {
+                selector.setTitle("Exportar pedidos PDF");
+                selector.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
+                selector.setInitialFileName(sugerencia + ".pdf");
+
+                File archivo = selector.showSaveDialog(stageActual);
+                if (archivo == null) return;
+
+                Exportador.exportarPedidosBusquedaPDF(archivo.getAbsolutePath(), listaExport);
+
+                if (archivo.exists()) {
+                    Desktop.getDesktop().open(archivo);
+                }
+
+                JavaFXUtils.mostrarMensaje("Exportado", "El PDF fue generado correctamente", false);
+
+            } else {
+                // CSV
+                selector.setTitle("Exportar pedidos CSV");
+                selector.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos CSV", "*.csv"));
+                selector.setInitialFileName(sugerencia + ".csv");
+
+                File archivo = selector.showSaveDialog(stageActual);
+                if (archivo == null) return;
+
+                Exportador.exportarPedidosCSV(archivo.getAbsolutePath(), listaExport);
+
+                if (archivo.exists()) {
+                    Desktop.getDesktop().open(archivo);
+                }
+
+                JavaFXUtils.mostrarMensaje("Exportado", "El CSV fue generado correctamente", false);
+            }
+
+        } catch (Exception ex) {
+            System.getLogger(ConsultaPedidosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            JavaFXUtils.mostrarError("Error", "No se pudo exportar el reporte", false);
+        }
     }
 
     @FXML
     private void btnVolver(ActionEvent event) {
         try {
-            App.setRoot("menuEmpleadoAdministrador");
+            App.setRoot("menuEmpleado");
         } catch (IOException ex) {
             System.getLogger(ConsultaUsuariosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }

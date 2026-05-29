@@ -253,7 +253,7 @@ public class HistorialInventarioDAO {
             String estatusString = rs.getString("estatusExistencia");
             Blob blob = rs.getBlob("foto");
             if (estatusString == null) {
-                throw new NullPointerException("No se logro recuperar toda la información. Estatus no valido");
+                throw new NullPointerException("No se logró recuperar toda la información. Estatus no válido");
             }
             if (blob != null) {
                 byte[] bytes = blob.getBytes(1, (int) blob.length());
@@ -267,10 +267,10 @@ public class HistorialInventarioDAO {
                 ProductoHistorial.EstatusExistencia estatus = ProductoHistorial.EstatusExistencia.valueOf(estatusString);
                 producto.setEstatusExistencia(estatus);
             } catch (IllegalArgumentException e) {
-                throw new NullPointerException("No se logro convertir un dato.La información recuperada pudo corromperse");
+                throw new NullPointerException("No se logró convertir un dato. La información recuperada pudo corromperse");
             }
             return producto;
         }
-        throw new NullPointerException("No se logro recuperar toda la información");
+        throw new NullPointerException("No se logró recuperar toda la información");
     }
 }

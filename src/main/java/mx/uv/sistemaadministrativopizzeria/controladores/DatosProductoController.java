@@ -15,6 +15,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import java.util.Optional;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -27,11 +30,14 @@ import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizable
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ModoFormulario;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Validador;
 import mx.uv.sistemaadministrativopizzeria.excepciones.DatosFaltantesException;
+import mx.uv.sistemaadministrativopizzeria.excepciones.ProductoPreparadoSinInsumosException;
+import mx.uv.sistemaadministrativopizzeria.modelo.dao.ComponenteElaboracionDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoDAO;
 import java.nio.file.Files;
 import mx.uv.sistemaadministrativopizzeria.App;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Ventana;
+import mx.uv.sistemaadministrativopizzeria.excepciones.ProductoUsadoEnPedidoException;
 
 /**
  * FXML Controller class
@@ -204,7 +210,7 @@ public class DatosProductoController implements Initializable {
     
     private void abrirSeleccionadorFoto(){
         FileChooser dialogoSeleccion = new FileChooser();
-        dialogoSeleccion.setTitle("Selecciona la foto del alumno(a)");
+        dialogoSeleccion.setTitle("Seleccione la foto del producto");
         String descripcionFormato = "Archivos de imagen (*.png, *.jpg, *.jpeg)";
         List<String> formatos = new ArrayList();
         formatos.add("*.png");
@@ -334,36 +340,62 @@ public class DatosProductoController implements Initializable {
             Producto productoRecuperado = recuperarProducto();
             boolean resultado;
 
-            if (modo == ModoFormulario.REGISTRO) {
-                
-                if(ProductoDAO.verificarCodigoExistente(productoRecuperado.getCodigo())){
-                    JavaFXUtils.mostrarError("Código de producto inválido", "El código ya se encuentra registrado", false);
-                    return;
-                }
+                        if (modo == ModoFormulario.REGISTRO) {
 
-                int idGenerado =
-                        ProductoDAO.registrarProducto(
-                                productoRecuperado,
-                                recuperarFotoBytes()
-                        );
 
-                resultado = idGenerado > 0;
 
-                if (resultado) {
+                                // Si es preparado, forzamos agregar insumos: preguntar y abrir la ventana de componentes
+                                if (productoRecuperado.getEsPreparado()) {
+                                        boolean confirmar = JavaFXUtils.mostrarConfirmacion("Producto preparado", "Un producto preparado requiere al menos un insumo. ¿Deseas guardar y agregar insumos ahora?");
+                                        if (!confirmar) {
+                                                JavaFXUtils.mostrarAdvertencia("Guardado cancelado", "No se puede guardar un producto preparado sin insumos", false);
+                                                return;
+                                        }
+                                }
 
-                    productoRecuperado.setIdProducto(
-                            idGenerado
-                    );
 
-                    /*
-                     * IMPORTANTE:
-                     * Guardamos el producto recién creado
-                     * para poder usarlo después
-                     */
-                    productoEdicion = productoRecuperado;
-                }
+                                                                int idGenerado;
+                                                                try {
+                                                                        idGenerado = ProductoDAO.registrarProducto(productoRecuperado, recuperarFotoBytes());
+                                                                } catch (mx.uv.sistemaadministrativopizzeria.excepciones.CodigoProductoExistenteException cex) {
+                                                                        JavaFXUtils.mostrarError("Código de producto inválido", cex.getMessage(), false);
+                                                                        return;
+                                                                }
 
-            } else {
+                                                                resultado = idGenerado > 0;
+
+                                if (resultado) {
+                                        productoRecuperado.setIdProducto(idGenerado);
+                                        // Guardamos el producto recién creado para poder usarlo después
+                                        productoEdicion = productoRecuperado;
+
+                                        // Si es preparado, abrir ventana de componentes inmediatamente y verificar que se agregaron insumos
+                                        if (productoRecuperado.getEsPreparado()) {
+                                                try {
+                                                        Ventana<ComponentesProductoController> ventana = App.abrirVentanaEmergente("componentesProducto", "Componentes del producto", 900, 600, true);
+                                                        ventana.getController().configurar(productoEdicion);
+                                                        ventana.getStage().showAndWait();
+
+                                                        // Verificar que existan componentes
+                                                        java.util.List mxcomp = ComponenteElaboracionDAO.obtenerPorProducto(productoEdicion.getIdProducto());
+                                                        if (mxcomp == null || mxcomp.isEmpty()) {
+                                                                // No se agregaron componentes: eliminar producto y alertar
+                                                                ProductoDAO.eliminarProducto(productoEdicion);
+                                                                productoEdicion = null;
+                                                                throw new ProductoPreparadoSinInsumosException();
+                                                        }
+                                                } catch (ProductoPreparadoSinInsumosException pex) {
+                                                        JavaFXUtils.mostrarError("Faltan insumos", pex.getMessage(), false);
+                                                        return;
+                                                } catch (IOException ex) {
+                                                System.getLogger(DatosProductoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                                            } catch (ProductoUsadoEnPedidoException ex) {
+                                                System.getLogger(DatosProductoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                                            }
+                                        }
+                                }
+
+                        } else {
 
                 productoRecuperado.setIdProducto(
                         productoEdicion.getIdProducto()
@@ -377,24 +409,12 @@ public class DatosProductoController implements Initializable {
                         );
             }
 
-            if (resultado) {
-
-                JavaFXUtils.mostrarMensaje(
-                        "Producto guardado",
-                        "El producto se guardó correctamente",
-                        false
-                );
-
-                ((Stage) tfNombre.getScene().getWindow()).close();
-
-            } else {
-
-                JavaFXUtils.mostrarError(
-                        "Error",
-                        "No se pudo guardar el producto",
-                        false
-                );
-            }
+                        if (resultado) {
+                                JavaFXUtils.mostrarMensaje("Producto guardado", "El producto se guardó correctamente", false);
+                                ((Stage) tfNombre.getScene().getWindow()).close();
+                        } else {
+                                JavaFXUtils.mostrarError("Error", "No se pudo guardar el producto", false);
+                        }
 
         } catch (DatosFaltantesException ex) {
 

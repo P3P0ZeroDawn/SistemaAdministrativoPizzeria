@@ -14,7 +14,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import mx.uv.sistemaadministrativopizzeria.App;
-import static mx.uv.sistemaadministrativopizzeria.App.configurarVentana;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
 
 /**
@@ -22,12 +21,24 @@ import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
  *
  * @author pedro
  */
-public class MenuEmpleadoAdministradorController implements Initializable {
+public class MenuEmpleadoController implements Initializable {
 
     @FXML
     private Label lbNombreEmpleado;
     
     Usuario usuario;
+    @FXML
+    private Button btnIniciarSesion;
+    @FXML
+    private Button btnPedidos;
+    @FXML
+    private Button btnAcercaDe;
+    @FXML
+    private Button btnValidaciones;
+    @FXML
+    private Button btnUsuarios;
+    @FXML
+    private Button btnProductos;
 
     /**
      * Initializes the controller class.
@@ -38,7 +49,26 @@ public class MenuEmpleadoAdministradorController implements Initializable {
         lbNombreEmpleado.setText(usuario.getNombre() +
                 " " + usuario.getApellidoPaterno() +
                 " " + usuario.getApellidoMaterno());
+        configurarOpcionesPorRol();
     }    
+
+    private void configurarOpcionesPorRol() {
+        if (usuario == null || usuario.getRolEmpleado() == null) {
+            return;
+        }
+
+        boolean esCajero = usuario.getRolEmpleado().equals(Usuario.rolEmpleado.Cajero);
+        if (esCajero) {
+            ocultarBoton(btnValidaciones);
+            ocultarBoton(btnUsuarios);
+            ocultarBoton(btnProductos);
+        }
+    }
+
+    private void ocultarBoton(Button boton) {
+        boton.setVisible(false);
+        boton.setManaged(false);
+    }
 
     @FXML
     private void clicBtnCerrarSesion(ActionEvent event) {
@@ -46,7 +76,7 @@ public class MenuEmpleadoAdministradorController implements Initializable {
         try {
             App.setRoot("inicioSesion");
         } catch (IOException ex) {
-            System.getLogger(MenuEmpleadoAdministradorController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            System.getLogger(MenuEmpleadoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
 
@@ -55,7 +85,7 @@ public class MenuEmpleadoAdministradorController implements Initializable {
         try {
             App.setRoot("consultaUsuarios");
         } catch (IOException ex) {
-            System.getLogger(MenuEmpleadoAdministradorController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            System.getLogger(MenuEmpleadoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
 
@@ -64,7 +94,7 @@ public class MenuEmpleadoAdministradorController implements Initializable {
         try {
             App.setRoot("acercaDe");
         } catch (IOException ex) {
-            System.getLogger(MenuEmpleadoAdministradorController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            System.getLogger(MenuEmpleadoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
 
@@ -73,7 +103,7 @@ public class MenuEmpleadoAdministradorController implements Initializable {
         try {
             App.setRoot("consultaProductos");
         } catch (IOException ex) {
-            System.getLogger(MenuEmpleadoAdministradorController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            System.getLogger(MenuEmpleadoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
 
@@ -82,7 +112,7 @@ public class MenuEmpleadoAdministradorController implements Initializable {
         try {
             App.setRoot("consultaPedidos");
         } catch (IOException ex) {
-            System.getLogger(MenuEmpleadoAdministradorController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            System.getLogger(MenuEmpleadoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
 
@@ -100,7 +130,7 @@ public class MenuEmpleadoAdministradorController implements Initializable {
             ((Stage) lbNombreEmpleado.getScene().getWindow()).centerOnScreen();
             App.setRoot("consultaValidacionesInventario");
         } catch (IOException ex) {
-            System.getLogger(MenuEmpleadoAdministradorController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            System.getLogger(MenuEmpleadoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
     

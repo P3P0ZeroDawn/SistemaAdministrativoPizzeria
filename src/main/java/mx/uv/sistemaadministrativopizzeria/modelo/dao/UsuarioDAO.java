@@ -16,6 +16,7 @@ import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizable
 import mx.uv.sistemaadministrativopizzeria.modelo.MySQLConnectionManager;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.JavaFXUtils;
+import mx.uv.sistemaadministrativopizzeria.excepciones.UsuarioConPedidosException;
 
 /**
  *
@@ -317,11 +318,30 @@ public class UsuarioDAO {
         return lista;
     }
     
-    public static boolean eliminarUsuario(Usuario usuario) {
+    public static boolean eliminarUsuario(Usuario usuario) throws UsuarioConPedidosException {
 
         if (usuario != null) {
 
             try {
+
+                // Si es cliente, verificar si tiene pedidos registrados
+                if (usuario.getTipoUsuario() == Usuario.tipoUsuario.Cliente) {
+                    MySQLConnectionManager connCheck = MySQLConnectionManager.buildConnection();
+                    String queryCheck = "SELECT COUNT(*) AS total FROM pedido WHERE idUsuario = ?";
+                    java.sql.PreparedStatement psCheck = connCheck.prepareStatement(queryCheck);
+                    psCheck.setInt(1, usuario.getIdUsuario());
+                    java.sql.ResultSet rsCheck = psCheck.executeQuery();
+                    if (rsCheck.next()) {
+                        int total = rsCheck.getInt("total");
+                        connCheck.close();
+                        if (total > 0) {
+                            throw new UsuarioConPedidosException("El usuario es cliente y tiene pedidos registrados.");
+                        }
+                    } else {
+                        connCheck.close();
+                    }
+                }
+
 
                 MySQLConnectionManager conn
                         = MySQLConnectionManager.buildConnection();

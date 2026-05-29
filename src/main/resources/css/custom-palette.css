@@ -1,0 +1,190 @@
+/* Paleta personalizada del proyecto */
+
+/* Colores */
+/* Fondo: #FAF7F2 */
+/* Paneles: #FFFFFF */
+/* Primario: #C08457 */
+/* Hover: #A16207 */
+/* Texto: #2D2D2D */
+/* Bordes: #E7DCCF */
+/* Secundario: #F1EAE0 */
+
+/* Override primer-light variables so base theme adopts our palette */
+.root {
+    /* Base palette variables overriding primer-light.css */
+    /* Core */
+    -color-bg-default: #FAF7F2; /* Fondo */
+    -color-bg-inset: #FFFFFF; /* Paneles */
+    -color-bg-subtle: #F1EAE0; /* Secundario */
+
+    /* Accent / primary */
+    -color-accent-0: #F7EDE4;
+    -color-accent-1: #EACFBF;
+    -color-accent-2: #D4B092;
+    -color-accent-emphasis: #C08457; /* Primario */
+    -color-accent-hover: #A16207; /* Hover */
+
+    /* Text and borders */
+    -color-fg-default: #2D2D2D; /* Texto */
+    -color-border-default: #E7DCCF; /* Bordes */
+
+    -fx-background-color: -color-bg-default;
+    -fx-font-size: 14px;
+}
+
+/* Panels and content panes */
+.pane, .anchor-pane, .vbox, .hbox, .stack-pane, .border-pane {
+    -fx-background-color: #FFFFFF; /* paneles */
+    -fx-border-color: transparent;
+}
+
+/* Labels and text */
+.label, .text, .text-flow, .text-area, .text-input, .text-field {
+    -fx-text-fill: #2D2D2D;
+}
+
+/* Controls borders */
+.text-field, .text-area, .combo-box, .choice-box, .list-view, .table-view {
+    -fx-border-color: #E7DCCF;
+    -fx-border-width: 1;
+    -fx-background-color: white;
+}
+
+.button, Button {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-text-fill: white;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-border-color: transparent;
+    -fx-padding: 6 12 6 12;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 4, 0.5, 0, 2);
+}
+.button:hover, Button:hover {
+    -fx-background-color: -color-accent-hover;
+}
+.button:pressed, Button:pressed {
+    -fx-background-color: derive(-color-accent-emphasis, -15%);
+}
+
+/* outline / ghost buttons */
+.button.ghost, Button.ghost {
+    -fx-background-color: transparent;
+    -fx-border-color: -color-accent-emphasis;
+    -fx-text-fill: -color-accent-emphasis;
+}
+.button.ghost:hover, Button.ghost:hover {
+    -fx-background-color: -color-bg-subtle; /* secundario */
+}
+.button:disabled {
+    -fx-opacity: 0.6;
+}
+
+/* Secondary (ghost) buttons - use outline */
+.button.ghost, Button.ghost {
+    -fx-background-color: transparent;
+    -fx-border-color: -color-accent-emphasis;
+    -fx-text-fill: -color-accent-emphasis;
+}
+.button.ghost:hover, Button.ghost:hover {
+    -fx-background-color: -color-bg-subtle; /* secundario */
+}
+
+/* List cells */
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2D2D2D;
+}
+.list-cell:filled:selected, .list-cell:selected {
+    -fx-background-color: -color-bg-subtle;
+}
+
+/* Table rows */
+.table-row-cell:odd { -fx-background-color: transparent; }
+.table-row-cell:even { -fx-background-color: #FAF7F2; }
+
+/* Dialogs and alerts */
+.dialog-pane {
+    -fx-background-color: -color-bg-inset;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1;
+}
+.dialog-pane .header-panel {
+    -fx-background-color: -color-bg-subtle;
+}
+.dialog-pane .content {
+    -fx-text-fill: -color-fg-default;
+}
+.alert-personalizada {
+    -fx-background-color: -color-bg-inset;
+}
+.alert-personalizada .content {
+    -fx-text-fill: -color-fg-default;
+}
+.alert-personalizada .button {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-text-fill: white;
+}
+.alert-personalizada .button:hover {
+    -fx-background-color: -color-accent-hover;
+}
+
+/* Ensure buttons inside dialogs use primary styling */
+.dialog-pane .button, .dialog-pane Button {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-text-fill: white;
+}
+.dialog-pane .button:hover, .dialog-pane Button:hover {
+    -fx-background-color: -color-accent-hover;
+}
+
+/* Tooltips */
+.tooltip {
+    -fx-background-color: -color-bg-inset;
+    -fx-text-fill: -color-fg-default;
+    -fx-border-color: -color-border-default;
+}
+
+/* Drop shadows: apply the provided soft shadow to panels, dialog panes and cards */
+.pane, .anchor-pane, .vbox, .hbox, .stack-pane, .border-pane, .dialog-pane, .card {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 18, 0.2, 0, 4);
+}
+
+/* Slight shadow on hover for list cells and buttons to improve perceived depth */
+.list-cell:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0.18, 0, 3);
+}
+.button:hover, Button:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 10, 0.18, 0, 2);
+}
+
+/* Override elevated classes with graduated shadows */
+.elevated-1 {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0.2, 0, 3);
+}
+.elevated-2 {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.07), 12, 0.2, 0, 4);
+}
+.elevated-3 {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 18, 0.2, 0, 6);
+}
+
+/* Badges and small chips (if implemented via labels) */
+.badge {
+    -fx-background-color: #F1EAE0;
+    -fx-text-fill: #2D2D2D;
+    -fx-padding: 4 8 4 8;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+/* Scroll bars subtle */
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+
+/* Focus rings */
+*:focused {
+    -fx-effect: none;
+    -fx-border-color: #C08457;
+}

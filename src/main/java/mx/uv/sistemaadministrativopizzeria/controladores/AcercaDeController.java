@@ -30,7 +30,7 @@ public class AcercaDeController implements Initializable {
     @FXML
     private void btnVolver(ActionEvent event) {
         try {
-            App.setRoot("menuEmpleadoAdministrador");
+            App.setRoot("menuEmpleado");
         } catch (IOException ex) {
             System.getLogger(ConsultaUsuariosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }

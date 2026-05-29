@@ -45,15 +45,18 @@ public class InicioSesionController implements Initializable {
         usuarioRecuperado = UsuarioDAO.validarLogin(usuario, contrasenia);
         
         if(usuarioRecuperado != null){
-            JavaFXUtils.mostrarMensaje(usuarioRecuperado.getNombre(), usuarioRecuperado.getNombre() + usuarioRecuperado.getApellidoPaterno() + usuarioRecuperado.getApellidoMaterno(), false);
+            String nombreCompleto = (usuarioRecuperado.getNombre() != null ? usuarioRecuperado.getNombre() : "")
+                    + (usuarioRecuperado.getApellidoPaterno() != null ? " " + usuarioRecuperado.getApellidoPaterno() : "")
+                    + (usuarioRecuperado.getApellidoMaterno() != null ? " " + usuarioRecuperado.getApellidoMaterno() : "");
+            JavaFXUtils.mostrarMensaje("Bienvenido", "Bienvenido, " + nombreCompleto.trim(), false);
             App.setMetadato("usuario", usuarioRecuperado);
             try {
-                App.setRoot("MenuEmpleadoAdministrador");
+                App.setRoot("menuEmpleado");
             } catch (IOException ex) {
                 System.getLogger(InicioSesionController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
             }
         }else{
-            JavaFXUtils.mostrarMensaje("No se pudo iniciar sesion", "Credenciales inválidas", false);
+            JavaFXUtils.mostrarMensaje("No se pudo iniciar sesión", "Credenciales inválidas", false);
         }
     }
     

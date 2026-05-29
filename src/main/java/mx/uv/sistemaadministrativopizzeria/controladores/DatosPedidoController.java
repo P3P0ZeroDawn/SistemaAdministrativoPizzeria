@@ -33,6 +33,8 @@ import mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoPedido;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.PedidoDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoPedidoDAO;
+import mx.uv.sistemaadministrativopizzeria.excepciones.CantidadInsuficienteException;
+import mx.uv.sistemaadministrativopizzeria.modelo.beans.ComponenteElaboracion;
 
 /**
  * FXML Controller class
@@ -137,7 +139,7 @@ public class DatosPedidoController implements Initializable {
 
     private void llenarPedido(){
         try {
-            if(pedido == null) throw new NullPointerException("No existe ningun pedido");
+            if(pedido == null) throw new NullPointerException("No existe ningún pedido");
             pedido = ProductoPedidoDAO.obtenerProPedidos(pedido);
             for(ProductoPedido p: pedido.getProductos()){
                 p.setProducto(ProductoDAO.obtenerProducto(p.getProducto().getIdProducto()));
@@ -182,7 +184,11 @@ public class DatosPedidoController implements Initializable {
             if (num != null) {
                 Integer cantidad = num.intValue(); // Lo recuperas como Integer
                 if (cantidad > 0) {
-                    agregarProducto(producto, cantidad);
+                    try {
+                        agregarProducto(producto, cantidad);
+                    } catch (CantidadInsuficienteException ex) {
+                        JavaFXUtils.mostrarError("Cantidad insuficiente", ex.getMessage(), false);
+                    }
                 }
             }
         } catch (IOException ex) {
@@ -190,7 +196,67 @@ public class DatosPedidoController implements Initializable {
         }
     }
     
-    private void agregarProducto(Producto producto, int cantidad){
+    private void agregarProducto(Producto producto, int cantidad) throws CantidadInsuficienteException{
+        // Si el producto tiene cantidad definida, verificar stock disponible
+        if (producto.getCantidad() != null) {
+            int disponible = producto.getCantidad().intValue();
+
+            // determinar ya reservado en la lista
+            int reservado = 0;
+            for (ProductoPedido pp : proPedidos) {
+                if (pp.getProducto().getIdProducto() == producto.getIdProducto()) {
+                    reservado += pp.getCantidad();
+                }
+            }
+
+            if (reservado + cantidad > disponible) {
+                int quedan = Math.max(0, disponible - reservado);
+                throw new CantidadInsuficienteException("Solo quedan " + quedan + " unidades disponibles.");
+            }
+        }
+
+        // Si el producto es preparado, verificar que cada insumo tenga stock suficiente
+        if (producto.getEsPreparado() != null && producto.getEsPreparado()) {
+            if (producto.getComponentes() == null || producto.getComponentes().isEmpty()) {
+                // intentar cargar componentes si no vienen
+                producto = ProductoDAO.obtenerProductosProducto(producto);
+            }
+            for (ComponenteElaboracion comp : producto.getComponentes()) {
+                Producto insumo = comp.getProducto();
+                if (insumo.getCantidad() == null) continue; // sin control de stock
+
+                double disponible = insumo.getCantidad();
+                double requerido = comp.getCantidad() * cantidad;
+
+                // calcular reservado por otros items del pedido (tanto insumos directos como preparados que usan este insumo)
+                double reservado = 0;
+                for (ProductoPedido pp : proPedidos) {
+                    Producto ppProd = pp.getProducto();
+                    if (ppProd.getIdProducto() == insumo.getIdProducto()) {
+                        // se está pidiendo directamente el insumo
+                        reservado += pp.getCantidad();
+                    } else if (ppProd.getEsPreparado() != null && ppProd.getEsPreparado()) {
+                        // preparado: encontrar cuánto de este insumo consume por unidad
+                        if (ppProd.getComponentes() == null || ppProd.getComponentes().isEmpty()) {
+                            ppProd = ProductoDAO.obtenerProductosProducto(ppProd);
+                        }
+                        if (ppProd.getComponentes() != null) {
+                            for (ComponenteElaboracion comp2 : ppProd.getComponentes()) {
+                                if (comp2.getProducto().getIdProducto() == insumo.getIdProducto()) {
+                                    reservado += pp.getCantidad() * comp2.getCantidad();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (reservado + requerido > disponible) {
+                    double quedan = Math.max(0, disponible - reservado);
+                    throw new CantidadInsuficienteException("Insumo '" + insumo.getNombre() + "': solo quedan " + ((int)Math.floor(quedan)) + " unidades disponibles.");
+                }
+            }
+        }
+
         Boolean existe = false;
         for(ProductoPedido p: proPedidos){
             if(p.getProducto().getIdProducto() == producto.getIdProducto()){
@@ -214,12 +280,69 @@ public class DatosPedidoController implements Initializable {
     private void aumentarPedido(ProductoPedido pPedido){
         for(ProductoPedido p: proPedidos){
             if(p.getProducto().getIdProducto() == pPedido.getProducto().getIdProducto()){
-                p.setCantidad(p.getCantidad() + 1);
-                int index = proPedidos.indexOf(p);
-                proPedidos.set(index, p);
-                this.pedido.setTotalAPagar(this.pedido.getTotalAPagar() 
-                        + p.getProducto().getPrecio());
-                lbTotal.setText("" + this.pedido.getTotalAPagar());
+                try {
+                    // verificar disponibilidad antes de aumentar
+                    Producto producto = p.getProducto();
+                    if (producto.getCantidad() != null) {
+                        int disponible = producto.getCantidad().intValue();
+                        int reservado = 0;
+                        for (ProductoPedido pp : proPedidos) {
+                            if (pp.getProducto().getIdProducto() == producto.getIdProducto()) {
+                                reservado += pp.getCantidad();
+                            }
+                        }
+                        if (reservado + 1 > disponible) {
+                            int quedan = Math.max(0, disponible - reservado);
+                            throw new CantidadInsuficienteException("Solo quedan " + quedan + " unidades disponibles.");
+                        }
+                    }
+
+                    // Si el producto es preparado, validar insumos
+                    if (producto.getEsPreparado() != null && producto.getEsPreparado()) {
+                        if (producto.getComponentes() == null || producto.getComponentes().isEmpty()) {
+                            producto = ProductoDAO.obtenerProductosProducto(producto);
+                        }
+                        for (ComponenteElaboracion comp : producto.getComponentes()) {
+                            Producto insumo = comp.getProducto();
+                            if (insumo.getCantidad() == null) continue;
+
+                            double disponibleComp = insumo.getCantidad();
+                            double requeridoComp = comp.getCantidad() * 1; // aumento en 1 unidad
+
+                            double reservadoComp = 0;
+                            for (ProductoPedido pp : proPedidos) {
+                                Producto ppProd = pp.getProducto();
+                                if (ppProd.getIdProducto() == insumo.getIdProducto()) {
+                                    reservadoComp += pp.getCantidad();
+                                } else if (ppProd.getEsPreparado() != null && ppProd.getEsPreparado()) {
+                                    if (ppProd.getComponentes() == null || ppProd.getComponentes().isEmpty()) {
+                                        ppProd = ProductoDAO.obtenerProductosProducto(ppProd);
+                                    }
+                                    if (ppProd.getComponentes() != null) {
+                                        for (ComponenteElaboracion comp2 : ppProd.getComponentes()) {
+                                            if (comp2.getProducto().getIdProducto() == insumo.getIdProducto()) {
+                                                reservadoComp += pp.getCantidad() * comp2.getCantidad();
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (reservadoComp + requeridoComp > disponibleComp) {
+                                int quedan = (int)Math.max(0, Math.floor(disponibleComp - reservadoComp));
+                                throw new CantidadInsuficienteException("Insumo '" + insumo.getNombre() + "': solo quedan " + quedan + " unidades disponibles.");
+                            }
+                        }
+                    }
+
+                    p.setCantidad(p.getCantidad() + 1);
+                    int index = proPedidos.indexOf(p);
+                    proPedidos.set(index, p);
+                    this.pedido.setTotalAPagar(this.pedido.getTotalAPagar() + p.getProducto().getPrecio());
+                    lbTotal.setText("" + this.pedido.getTotalAPagar());
+                } catch (CantidadInsuficienteException ex) {
+                    JavaFXUtils.mostrarError("Cantidad insuficiente", ex.getMessage(), false);
+                }
                 break;
             }
         }
@@ -284,7 +407,7 @@ public class DatosPedidoController implements Initializable {
                    
         } else{
             if(pedido.getIdUsuario() <= 0){
-                JavaFXUtils.mostrarMensaje("Datos faltantes", "Por favor selecciones un usuario para el pedido", false);
+                JavaFXUtils.mostrarMensaje("Datos faltantes", "Por favor seleccione un usuario para el pedido", false);
             } else{
                 JavaFXUtils.mostrarMensaje("Datos faltantes", "Faltan datos para realizar el pedido", false);
             }

@@ -43,7 +43,7 @@ public class ProductoPedidoDAO {
             pedido.setProductos(new ArrayList<>(lista));
             return pedido;
         }
-        throw new SQLException("No se logro recuperar toda la información");
+        throw new SQLException("No se logró recuperar toda la información");
     }
     
     private static ProductoPedido serializarProductoPedido(ResultSet rs) throws SQLException, NullPointerException{
@@ -57,6 +57,6 @@ public class ProductoPedidoDAO {
             productoP.setProducto(producto);
             return productoP;
         }
-        throw new NullPointerException("No se logro recuperar toda la información");
+        throw new NullPointerException("No se logró recuperar toda la información");
     }
 }

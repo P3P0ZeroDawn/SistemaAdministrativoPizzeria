@@ -117,7 +117,7 @@ public class ConsultaUsuariosController implements Initializable {
                             "datosUsuario",
                             "Alta de usuario",
                             800,
-                            600,
+                            700,
                             true
                     );
 
@@ -136,7 +136,7 @@ public class ConsultaUsuariosController implements Initializable {
     @FXML
     private void btnVolver(ActionEvent event) {
         try {
-            App.setRoot("menuEmpleadoAdministrador");
+            App.setRoot("menuEmpleado");
         } catch (IOException ex) {
             System.getLogger(ConsultaUsuariosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
@@ -177,7 +177,7 @@ public class ConsultaUsuariosController implements Initializable {
                             "datosUsuario",
                             "Editar usuario",
                             800,
-                            600,
+                            700,
                             true
                     );
 
@@ -202,12 +202,16 @@ public class ConsultaUsuariosController implements Initializable {
                 );
         
             if(confirmado){
-                boolean resultado = UsuarioDAO.eliminarUsuario(usuario);
-                if(resultado){
-                    cargarDatos();
-                    JavaFXUtils.mostrarMensaje("Eliminación de usuario", "Usuario eliminado correctamente", false);
-                }  
-            }  
+                try {
+                    boolean resultado = UsuarioDAO.eliminarUsuario(usuario);
+                    if(resultado){
+                        cargarDatos();
+                        JavaFXUtils.mostrarMensaje("Eliminación de usuario", "Usuario eliminado correctamente", false);
+                    }
+                } catch (mx.uv.sistemaadministrativopizzeria.excepciones.UsuarioConPedidosException ex) {
+                    JavaFXUtils.mostrarError("No se puede eliminar usuario", ex.getMessage(), false);
+                }
+            }
         }else{
             JavaFXUtils.mostrarError("No se puede eliminar", "El usuario seleccionado es el usuario activo", false);
         }  

@@ -297,9 +297,9 @@ public class ProductoDAO {
         return producto;
     }
 
-    public static int registrarProducto(
-        Producto producto,
-        byte[] fotoBytes) {
+        public static int registrarProducto(
+                Producto producto,
+                byte[] fotoBytes) throws mx.uv.sistemaadministrativopizzeria.excepciones.CodigoProductoExistenteException {
 
         if (producto != null) {
 
@@ -351,8 +351,13 @@ public class ProductoDAO {
                 ps.setInt(10,
                         producto.getEsInsumo() ? 1 : 0);
 
-                int filas =
-                        ps.executeUpdate();
+                                // Verificar código duplicado antes de insertar
+                                if (verificarCodigoExistente(producto.getCodigo())) {
+                                        conn.close();
+                                        throw new mx.uv.sistemaadministrativopizzeria.excepciones.CodigoProductoExistenteException();
+                                }
+
+                                int filas = ps.executeUpdate();
 
                 if (filas > 0) {
 
@@ -561,7 +566,7 @@ public class ProductoDAO {
     }
 
     public static boolean eliminarProducto(
-            Producto producto) {
+            Producto producto) throws mx.uv.sistemaadministrativopizzeria.excepciones.ProductoUsadoEnPedidoException {
 
         if (producto != null) {
 
@@ -569,6 +574,16 @@ public class ProductoDAO {
 
                 MySQLConnectionManager conn =
                         MySQLConnectionManager.buildConnection();
+
+                                // Revisar si el producto fue usado en algún pedido
+                                String queryCheck = "SELECT 1 FROM productoPedido WHERE idProducto = ? LIMIT 1";
+                                java.sql.PreparedStatement psCheck = conn.prepareStatement(queryCheck);
+                                psCheck.setInt(1, producto.getIdProducto());
+                                java.sql.ResultSet rsCheck = psCheck.executeQuery();
+                                if (rsCheck.next()) {
+                                        conn.close();
+                                        throw new mx.uv.sistemaadministrativopizzeria.excepciones.ProductoUsadoEnPedidoException();
+                                }
 
                 String query =
                         "UPDATE producto "

@@ -300,7 +300,7 @@ public class ConsultaProductosController implements Initializable {
     @FXML
     private void btnVolver(ActionEvent event) {
         try {
-            App.setRoot("menuEmpleadoAdministrador");
+            App.setRoot("menuEmpleado");
         } catch (IOException ex) {
             System.getLogger(ConsultaUsuariosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
@@ -344,22 +344,17 @@ public class ConsultaProductosController implements Initializable {
                         "¿Seguro que desea eliminar este producto?"
                 );
 
-        if (confirmado) {
-
-            boolean resultado =
-                    ProductoDAO.eliminarProducto(producto);
-
-            if (resultado) {
-
-                cargarDatos();
-
-                JavaFXUtils.mostrarMensaje(
-                        "Producto eliminado",
-                        "El producto fue eliminado correctamente",
-                        false
-                );
-            }
-        }
+                if (confirmado) {
+                        try {
+                                boolean resultado = ProductoDAO.eliminarProducto(producto);
+                                if (resultado) {
+                                        cargarDatos();
+                                        JavaFXUtils.mostrarMensaje("Producto eliminado", "El producto fue eliminado correctamente", false);
+                                }
+                        } catch (mx.uv.sistemaadministrativopizzeria.excepciones.ProductoUsadoEnPedidoException ex) {
+                                JavaFXUtils.mostrarError("Imposible eliminar", ex.getMessage(), false);
+                        }
+                }
     }
     
     private void cargarVistaEdicion(Producto producto){

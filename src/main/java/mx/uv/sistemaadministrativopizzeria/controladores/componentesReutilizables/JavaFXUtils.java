@@ -55,6 +55,10 @@ public class JavaFXUtils {
         alerta.getDialogPane().getStylesheets().add(
                 App.class.getResource("/css/primer-light.css").toExternalForm()
         );
+        // aplicar paleta personalizada encima
+        alerta.getDialogPane().getStylesheets().add(
+            App.class.getResource("/css/custom-palette.css").toExternalForm()
+        );
         //---Le asignamos a la alerta su clase de estilo---//
         alerta.getDialogPane().getStyleClass().add(
                 "alert-personalizada"

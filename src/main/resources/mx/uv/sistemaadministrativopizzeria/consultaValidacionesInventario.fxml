@@ -98,7 +98,7 @@
             <TableColumn fx:id="tcUnidad" prefWidth="119.20001220703125" text="Unidad" />
             <TableColumn fx:id="tcExistenciaReal" prefWidth="110.0" text="Existencia real" />
             <TableColumn fx:id="tcRazon" prefWidth="150.0" text="Razón" />
-            <TableColumn fx:id="tcEstatusExistencia" prefWidth="243.0" text="Estado" />
+            <TableColumn fx:id="tcEstatusExistencia" prefWidth="213.0" text="Estado" />
         </columns>
          <BorderPane.margin>
             <Insets bottom="20.0" left="15.0" right="15.0" top="10.0" />

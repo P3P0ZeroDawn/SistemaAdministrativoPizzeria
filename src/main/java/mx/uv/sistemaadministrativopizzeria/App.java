@@ -34,16 +34,28 @@ public class App extends Application {
                 900, 700,
                 false
         );
-        scene = new Scene(loadFXML("inicioSesion"), 800, 600);
+        Parent root = loadFXML("inicioSesion");
+        scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(
-                App.class.getResource("/css/primer-light.css").toExternalForm()
+            App.class.getResource("/css/primer-light.css").toExternalForm()
         );
+        // Aplicar encima la paleta personalizada a la escena y al root para asegurar precedencia
+        String custom = App.class.getResource("/css/custom-palette.css").toExternalForm();
+        scene.getStylesheets().add(custom);
+        root.getStylesheets().add(custom);
         stage.setScene(scene);
         stage.show();
     }
 
     public static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
+        Parent root = loadFXML(fxml);
+        scene.setRoot(root);
+        try {
+            String custom = App.class.getResource("/css/custom-palette.css").toExternalForm();
+            root.getStylesheets().add(custom);
+        } catch (Exception e) {
+            // ignore if resource not found
+        }
     }
     
     public static <T> Ventana<T> abrirVentanaEmergente(
@@ -55,7 +67,7 @@ public class App extends Application {
     ) throws IOException {
 
         FXMLLoader loader = new FXMLLoader(
-                App.class.getResource(fxml + ".fxml")
+            App.class.getResource(fxml + ".fxml")
         );
 
         Parent root = loader.load();
@@ -63,8 +75,12 @@ public class App extends Application {
         Scene nuevaEscena = new Scene(root, ancho, alto);
 
         nuevaEscena.getStylesheets().add(
-                App.class.getResource("/css/primer-light.css").toExternalForm()
+            App.class.getResource("/css/primer-light.css").toExternalForm()
         );
+        // Aplicar encima la paleta personalizada a escena y root
+        String customEmergente = App.class.getResource("/css/custom-palette.css").toExternalForm();
+        nuevaEscena.getStylesheets().add(customEmergente);
+        root.getStylesheets().add(customEmergente);
 
         Stage stage = new Stage();
 
@@ -88,6 +104,13 @@ public class App extends Application {
         
         Parent root = loader.load();
         scene.setRoot(root);
+        // Añadir custom css al root para asegurar que tenga precedencia sobre stylesheets definidos en FXML
+        try {
+            String custom2 = App.class.getResource("/css/custom-palette.css").toExternalForm();
+            root.getStylesheets().add(custom2);
+        } catch (Exception e) {
+            // ignore if resource not found
+        }
         Stage stage = (Stage) scene.getWindow();
         
         T controller = loader.getController();

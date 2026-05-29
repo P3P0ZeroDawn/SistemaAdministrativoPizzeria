@@ -233,19 +233,9 @@ public class DatosUsuarioController implements Initializable {
 
             Validador.requerido(tfUsuario,
                     "El usuario es obligatorio");
-            if (modo == ModoFormulario.REGISTRO){
-                Validador.requerido(pfContrasenia,
-                        "La contraseña es obligatoria");
-                
-                Validador.passwordSegura(
-                        pfContrasenia,
-                        "La contraseña debe tener mínimo 8 caracteres y contener mayúsculas, minúsculas, números y símbolos"
-                );
-
-                Validador.passwordsIguales(
-                        pfContrasenia,
-                        pfConfirmacionContrasenia,
-                        "Las contraseñas no coinciden");
+            if (modo == ModoFormulario.REGISTRO
+                    || chbModifContrasenia.isSelected()){
+                validarCamposContrasenia();
             }
         }
         Usuario usuario = new Usuario();
@@ -271,6 +261,24 @@ public class DatosUsuarioController implements Initializable {
             usuario.setRolEmpleado(cbRolEmpleado.getValue());
         }
         return usuario;
+    }
+
+    private void validarCamposContrasenia() throws DatosFaltantesException {
+        Validador.requerido(pfContrasenia,
+                "La contraseña es obligatoria");
+
+        Validador.requerido(pfConfirmacionContrasenia,
+                "La confirmación de la contraseña es obligatoria");
+
+        Validador.passwordSegura(
+                pfContrasenia,
+                "La contraseña debe tener mínimo 8 caracteres y contener mayúsculas, minúsculas, números y símbolos"
+        );
+
+        Validador.passwordsIguales(
+                pfContrasenia,
+                pfConfirmacionContrasenia,
+                "Las contraseñas no coinciden");
     }
     
     private void validarContrasenias() {

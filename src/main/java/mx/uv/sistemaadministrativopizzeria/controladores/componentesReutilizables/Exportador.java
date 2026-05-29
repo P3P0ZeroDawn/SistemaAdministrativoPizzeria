@@ -341,6 +341,53 @@ public class Exportador {
         documento.close();
     }
 
+        public static void exportarPedidosCSV(
+                        String rutaCSV,
+                        java.util.List<mx.uv.sistemaadministrativopizzeria.modelo.beans.Pedido> pedidos)
+                        throws java.io.IOException {
+
+                CSVWriter csv = new CSVWriter(new FileWriter(rutaCSV));
+
+                String[] encabezados = {
+                        "CLIENTE",
+                        "FECHA",
+                        "ESTATUS",
+                        "TOTAL",
+                        "PRODUCTOS"
+                };
+
+                csv.writeNext(encabezados);
+
+                for (mx.uv.sistemaadministrativopizzeria.modelo.beans.Pedido pedido : pedidos) {
+                        String cliente = textoSeguro(pedido.getNombreUsuario());
+                        String fechaStr = pedido.getFechaPedido() != null ? pedido.getFechaPedido().toString() : "-";
+                        String estatus = pedido.getEstatus() != null ? pedido.getEstatus().toString() : "-";
+                        String total = valorSeguroDinero(pedido.getTotalAPagar());
+
+                        StringBuilder productosTxt = new StringBuilder();
+                        if (pedido.getProductos() != null && !pedido.getProductos().isEmpty()) {
+                                for (mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoPedido pp : pedido.getProductos()) {
+                                        String nombre = pp.getProducto() != null ? pp.getProducto().getNombre() : "-";
+                                        productosTxt.append(nombre).append(" x").append(pp.getCantidad()).append("; ");
+                                }
+                        } else {
+                                productosTxt.append("No se cargaron productos");
+                        }
+
+                        String[] fila = {
+                                cliente,
+                                fechaStr,
+                                estatus,
+                                total,
+                                productosTxt.toString()
+                        };
+
+                        csv.writeNext(fila);
+                }
+
+                csv.close();
+        }
+
     /*
      * ============================
      * CELDAS
@@ -449,4 +496,166 @@ public class Exportador {
                 )
                 : "No aplica";
     }
+
+        /*
+         * ============================
+         * EXPORTAR PEDIDO A PDF
+         * ============================
+         */
+        public static void exportarPedidoPDF(
+                        String rutaPDF,
+                        mx.uv.sistemaadministrativopizzeria.modelo.beans.Pedido pedido)
+                        throws java.io.FileNotFoundException,
+                        java.net.MalformedURLException {
+
+                PdfDocument pdf = new PdfDocument(new PdfWriter(rutaPDF));
+
+                Document documento = new Document(pdf);
+
+                documento.setMargins(30, 30, 30, 30);
+
+                // --- Header / logo (best-effort) ---
+                try {
+                        Image logo = new Image(ImageDataFactory.create("src/main/resources/imagenes/logo.png"));
+                        logo.setWidth(110);
+                        logo.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                        documento.add(logo);
+                } catch (Exception ex) {
+                        System.out.println("No se pudo cargar el logo");
+                }
+
+                Paragraph titulo = new Paragraph("PEDIDO")
+                                .setBold()
+                                .setFontSize(18)
+                                .setTextAlignment(TextAlignment.CENTER)
+                                .setMarginBottom(5);
+
+                documento.add(titulo);
+
+                Paragraph meta = new Paragraph(
+                                "Cliente: " + (pedido.getNombreUsuario() != null ? pedido.getNombreUsuario() : "-")
+                                + "    Fecha: " + (pedido.getFechaPedido() != null ? pedido.getFechaPedido().toString() : "-")
+                                + "    Estatus: " + (pedido.getEstatus() != null ? pedido.getEstatus().toString() : "-")
+                );
+
+                meta.setTextAlignment(TextAlignment.CENTER);
+                meta.setFontColor(ColorConstants.GRAY);
+                meta.setMarginBottom(10);
+                documento.add(meta);
+
+                // Table: Producto | Cantidad | Precio unitario | Subtotal
+                float[] columnas = {4, 1, 2, 2};
+                Table tabla = new Table(columnas);
+                tabla.useAllAvailableWidth();
+
+                tabla.addHeaderCell(crearHeaderTabla("PRODUCTO"));
+                tabla.addHeaderCell(crearHeaderTabla("CANT."));
+                tabla.addHeaderCell(crearHeaderTabla("PRECIO"));
+                tabla.addHeaderCell(crearHeaderTabla("SUBTOTAL"));
+
+                double total = 0.0;
+
+                if (pedido.getProductos() != null) {
+                        for (mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoPedido pp : pedido.getProductos()) {
+                                String nombre = pp.getProducto() != null ? pp.getProducto().getNombre() : "-";
+                                Double precio = pp.getProducto() != null ? pp.getProducto().getPrecio() : null;
+                                int cantidad = pp.getCantidad();
+                                double subtotal = (precio != null ? precio : 0.0) * cantidad;
+                                total += subtotal;
+
+                                tabla.addCell(crearCeldaTabla(textoSeguro(nombre), ColorConstants.WHITE));
+                                tabla.addCell(crearCeldaTabla(String.valueOf(cantidad), ColorConstants.WHITE));
+                                tabla.addCell(crearCeldaTabla(valorSeguroDinero(precio), ColorConstants.WHITE));
+                                tabla.addCell(crearCeldaTabla(valorSeguroDinero(subtotal), ColorConstants.WHITE));
+                        }
+                }
+
+                documento.add(tabla);
+
+                Paragraph resumen = new Paragraph("Total: " + valorSeguroDinero(total));
+                resumen.setTextAlignment(TextAlignment.RIGHT);
+                resumen.setBold();
+                resumen.setMarginTop(10);
+                documento.add(resumen);
+
+                documento.close();
+        }
+
+        /*
+         * ============================
+         * EXPORTAR LISTA DE PEDIDOS (RESULTADOS DE BÚSQUEDA)
+         * ============================
+         */
+        public static void exportarPedidosBusquedaPDF(
+                        String rutaPDF,
+                        java.util.List<mx.uv.sistemaadministrativopizzeria.modelo.beans.Pedido> pedidos)
+                        throws java.io.FileNotFoundException,
+                        java.net.MalformedURLException {
+
+                PdfDocument pdf = new PdfDocument(new PdfWriter(rutaPDF));
+                Document documento = new Document(pdf);
+                documento.setMargins(30, 30, 30, 30);
+
+                try {
+                        Image logo = new Image(ImageDataFactory.create("src/main/resources/imagenes/logo.png"));
+                        logo.setWidth(110);
+                        logo.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                        documento.add(logo);
+                } catch (Exception ex) {
+                        System.out.println("No se pudo cargar el logo");
+                }
+
+                Paragraph titulo = new Paragraph("REPORTE DE PEDIDOS")
+                                .setBold()
+                                .setFontSize(18)
+                                .setTextAlignment(TextAlignment.CENTER)
+                                .setMarginBottom(5);
+
+                documento.add(titulo);
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                Paragraph fecha = new Paragraph("Fecha de generación: " + LocalDateTime.now().format(formatter));
+                fecha.setTextAlignment(TextAlignment.CENTER);
+                fecha.setFontColor(ColorConstants.GRAY);
+                fecha.setMarginBottom(10);
+                documento.add(fecha);
+
+                // Cabecera de la tabla de pedidos (sin ID)
+                float[] columnas = {3, 2, 2, 2, 5};
+                Table tabla = new Table(columnas);
+                tabla.useAllAvailableWidth();
+
+                tabla.addHeaderCell(crearHeaderTabla("CLIENTE"));
+                tabla.addHeaderCell(crearHeaderTabla("FECHA"));
+                tabla.addHeaderCell(crearHeaderTabla("ESTATUS"));
+                tabla.addHeaderCell(crearHeaderTabla("TOTAL"));
+                tabla.addHeaderCell(crearHeaderTabla("PRODUCTOS"));
+
+                for (mx.uv.sistemaadministrativopizzeria.modelo.beans.Pedido pedido : pedidos) {
+                            String cliente = textoSeguro(pedido.getNombreUsuario());
+                        String fechaStr = pedido.getFechaPedido() != null ? pedido.getFechaPedido().toString() : "-";
+                        String estatus = pedido.getEstatus() != null ? pedido.getEstatus().toString() : "-";
+                        String total = valorSeguroDinero(pedido.getTotalAPagar());
+
+                        // Concatenar productos
+                        StringBuilder productosTxt = new StringBuilder();
+                        if (pedido.getProductos() != null && !pedido.getProductos().isEmpty()) {
+                                for (mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoPedido pp : pedido.getProductos()) {
+                                        String nombre = pp.getProducto() != null ? pp.getProducto().getNombre() : "-";
+                                        productosTxt.append(nombre).append(" x").append(pp.getCantidad()).append("; ");
+                                }
+                        } else {
+                                productosTxt.append("No se cargaron productos");
+                        }
+
+                        tabla.addCell(crearCeldaTabla(cliente, ColorConstants.WHITE));
+                        tabla.addCell(crearCeldaTabla(fechaStr, ColorConstants.WHITE));
+                        tabla.addCell(crearCeldaTabla(estatus, ColorConstants.WHITE));
+                        tabla.addCell(crearCeldaTabla(total, ColorConstants.WHITE));
+                        tabla.addCell(crearCeldaTabla(productosTxt.toString(), ColorConstants.WHITE));
+                }
+
+                documento.add(tabla);
+                documento.close();
+        }
 }

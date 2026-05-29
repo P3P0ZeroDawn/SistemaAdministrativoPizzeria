@@ -178,20 +178,22 @@ public class PedidoDAO {
 
             String estatusString = rs.getString("estatus");
             if (estatusString == null) {
-                throw new NullPointerException("No se logro recuperar toda la información. Estatus no valido");
+                throw new NullPointerException("No se logró recuperar toda la información. Estatus no válido");
             }
             try {
                 Pedido.EstatusPedido estatus = Pedido.EstatusPedido.valueOf(estatusString);
                 pedido.setEstatus(estatus);
             } catch (IllegalArgumentException e) {
-                throw new NullPointerException("No se logro convertir un dato.La información recuperada pudo corromperse");
+                throw new NullPointerException("No se logró convertir un dato. La información recuperada pudo corromperse");
             }
-            String nombreUsuario = "" + rs.getString("nombre")
-                    + rs.getString("apellidoPaterno") + rs.getString("apellidoMaterno");
-            pedido.setNombreUsuario(nombreUsuario);
+                String nombre = rs.getString("nombre") != null ? rs.getString("nombre") : "";
+                String apPat = rs.getString("apellidoPaterno") != null ? rs.getString("apellidoPaterno") : "";
+                String apMat = rs.getString("apellidoMaterno") != null ? rs.getString("apellidoMaterno") : "";
+                String nombreUsuario = (nombre + " " + apPat + " " + apMat).trim().replaceAll("\\s+", " ");
+                pedido.setNombreUsuario(nombreUsuario);
             return pedido;
         }
-        throw new NullPointerException("No se logro recuperar toda la información");
+        throw new NullPointerException("No se logró recuperar toda la información");
     }
 
     public static int actualizarPedido(Pedido pedido) {

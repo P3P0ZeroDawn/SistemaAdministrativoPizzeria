@@ -23,7 +23,6 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -116,7 +115,6 @@ public class ConsultaValidacionesInventarioController implements Initializable {
     }
     
     private void configurarTabla() {
-
         // ================= IMAGEN =================
         tcImagen.setCellValueFactory(p ->
                 new ReadOnlyObjectWrapper<>(p.getValue())
@@ -252,7 +250,7 @@ public class ConsultaValidacionesInventarioController implements Initializable {
                 false
             );
             ((Stage) dpBusFecha.getScene().getWindow()).centerOnScreen();
-            App.setRoot("menuEmpleadoAdministrador");
+            App.setRoot("menuEmpleado");
         } catch (IOException ex) {
             System.getLogger(ConsultaUsuariosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }

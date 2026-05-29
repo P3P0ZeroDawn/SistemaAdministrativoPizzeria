@@ -18,7 +18,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.CeldaEstadoTabla;
@@ -179,15 +178,15 @@ public class RealizarValidacionInventarioController implements Initializable {
                     return;
                 }
 
-                tf.setText(
-                        value == null || value == 0.0
-                                ? ""
-                                : String.valueOf(value)
-                );
+                if (!tf.isFocused()) {
+                    tf.setText(
+                            value == null || value == 0.0
+                                    ? ""
+                                    : String.valueOf(value)
+                    );
+                }
 
-                tf.prefWidthProperty().bind(
-                        getTableColumn().widthProperty().subtract(10)
-                );
+                tf.setPrefWidth(getTableColumn().getWidth() - 10);
 
                 setGraphic(tf);
             }
@@ -197,16 +196,17 @@ public class RealizarValidacionInventarioController implements Initializable {
         tcRazon.setCellValueFactory(p ->
                 new SimpleStringProperty(p.getValue().getRazon())
         );
+        tcRazon.setEditable(true);
 
         tcRazon.setCellFactory(col -> new TableCell<>() {
 
             private final TextField tf = new TextField();
 
             {
-                // VALIDACIONES
                 Validador.permitirTextoNumerico(tf, 150);
 
-                // OCUPAR TODA LA CELDA
+                tf.setEditable(true);
+                tf.setFocusTraversable(true);
                 tf.setMaxWidth(Double.MAX_VALUE);
 
                 setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
@@ -235,11 +235,11 @@ public class RealizarValidacionInventarioController implements Initializable {
                     return;
                 }
 
-                tf.setText(value == null ? "" : value);
+                if (!tf.isFocused()) {
+                    tf.setText(value == null ? "" : value);
+                }
 
-                tf.prefWidthProperty().bind(
-                        getTableColumn().widthProperty().subtract(10)
-                );
+                tf.setPrefWidth(getTableColumn().getWidth() - 10);
 
                 setGraphic(tf);
             }

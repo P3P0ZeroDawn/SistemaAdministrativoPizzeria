@@ -103,7 +103,7 @@
 
                   <TableColumn fx:id="tcRazon" prefWidth="167.0" text="Razón" />
 
-                  <TableColumn fx:id="tcEstado" prefWidth="247.0" text="Estado" />
+                  <TableColumn fx:id="tcEstado" prefWidth="217.0" text="Estado" />
 
               </columns>
          <BorderPane.margin>
