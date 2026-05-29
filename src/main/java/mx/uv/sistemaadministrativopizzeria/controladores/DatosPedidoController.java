@@ -91,26 +91,34 @@ public class DatosPedidoController implements Initializable {
                 },
                 new BotonAccion<>(
                         "Agregar",
-                        pedido -> {
-                            agregarProducto(pedido, 2);
+                        "/imagenes/agregar.png",
+                        producto -> {
+                            seleccionarCantidad(producto);
                 })
         ));
     }
     
     private void configurarListaPedidos(){
         lvPedido.setCellFactory(param -> new ItemTextoBoton<>(
+                2, //posicion en el que se insertar el Badge
                 pedido -> {
                     List<Badge> badges = new ArrayList<>();
 
-                    badges.add(new Badge("X " + pedido.getCantidad(), "#E6E6E6"));
+                    badges.add(new Badge("" + pedido.getCantidad(), "#E6E6E6"));
                     
                     return badges;
                 },
                 new BotonAccion<>(
                         "Eliminar",
-                        "/imagenes/uno.png",
+                        "/imagenes/restar.png",
                         pedido -> {
                             disminuirPedido(pedido);
+                }),
+                new BotonAccion<>(
+                        "Aumentar",
+                        "/imagenes/mas.png",
+                        pedido -> {
+                            aumentarPedido(pedido);
                 })
         ));
     }
@@ -153,6 +161,7 @@ public class DatosPedidoController implements Initializable {
             llenarPedido();
             lbUsuario.setText(pedido.getNombreUsuario());
             lbFechaPedido.setText("" + pedido.getFechaPedido());
+            lbTotal.setText("" + pedido.getTotalAPagar());
         } else{
             this.pedido = new Pedido();
             lbFecha.setVisible(false);
@@ -160,8 +169,7 @@ public class DatosPedidoController implements Initializable {
         }
     }
     
-    private int seleccionarCantidad(){
-        int cantidad = 0;
+    private void seleccionarCantidad(Producto producto){
         try {
             Ventana<CantidadProductoController> ventana = App.abrirVentanaEmergente( "cantidadProducto",
                     "Cantidad", 400, 200, true);
@@ -169,11 +177,16 @@ public class DatosPedidoController implements Initializable {
             ventana.getController().configurar();
             ventana.getStage().showAndWait();
 
-            cantidad = ventana.getController().getCantidad().intValue();
+            Number num = ventana.getController().getCantidad();
+            if (num != null) {
+                Integer cantidad = num.intValue(); // Lo recuperas como Integer
+                if (cantidad > 0) {
+                    agregarProducto(producto, cantidad);
+                }
+            }
         } catch (IOException ex) {
             System.getLogger(DatosPedidoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
-        return cantidad;
     }
     
     private void agregarProducto(Producto producto, int cantidad){
@@ -197,12 +210,33 @@ public class DatosPedidoController implements Initializable {
         lbTotal.setText("" + pedido.getTotalAPagar());
     }
     
-    private void disminuirPedido(ProductoPedido pedido){
+    private void aumentarPedido(ProductoPedido pPedido){
         for(ProductoPedido p: proPedidos){
-            if(p.getProducto().getIdProducto() == pedido.getProducto().getIdProducto()){
-                p.setCantidad(p.getCantidad() - 1);
+            if(p.getProducto().getIdProducto() == pPedido.getProducto().getIdProducto()){
+                p.setCantidad(p.getCantidad() + 1);
                 int index = proPedidos.indexOf(p);
                 proPedidos.set(index, p);
+                this.pedido.setTotalAPagar(this.pedido.getTotalAPagar() 
+                        + p.getProducto().getPrecio());
+                lbTotal.setText("" + this.pedido.getTotalAPagar());
+                break;
+            }
+        }
+    }
+    
+    private void disminuirPedido(ProductoPedido pPedido){
+        for(ProductoPedido p: proPedidos){
+            if(p.getProducto().getIdProducto() == pPedido.getProducto().getIdProducto()){
+                p.setCantidad(p.getCantidad() - 1);
+                int index = proPedidos.indexOf(p);
+                if(p.getCantidad() > 0){
+                    proPedidos.set(index, p);
+                } else {
+                    proPedidos.remove(index);
+                }
+                this.pedido.setTotalAPagar(this.pedido.getTotalAPagar() 
+                        - p.getProducto().getPrecio());
+                lbTotal.setText("" + this.pedido.getTotalAPagar());
                 break;
             }
         }
@@ -227,6 +261,10 @@ public class DatosPedidoController implements Initializable {
 
     @FXML
     private void clicBtnCancelar(ActionEvent event) {
+        cerrarVentana();
+    }
+    
+    private void cerrarVentana(){
         try {
             App.setRoot("consultaPedidos");
         } catch (IOException ex) {
@@ -237,19 +275,50 @@ public class DatosPedidoController implements Initializable {
     @FXML
     private void clicConfirmar(ActionEvent event) {
         if(pedido != null && !proPedidos.isEmpty() && pedido.getIdUsuario() != -1 && pedido.getIdUsuario() > 0){
-            if(modo.equals(ModoFormulario.EDICION)) return;
-            pedido.setFechaPedido(LocalDate.now());
-            
-            pedido.setProductos(new ArrayList<>(proPedidos));
-            int resultado = PedidoDAO.realizarPedido(pedido);
-            if(resultado != 0){
-                System.out.println("EXITOO-----");
-            } else{
-                System.out.println("Fallo");
+            if(modo.equals(ModoFormulario.REGISTRO)){
+                nuevoPedido();
+            } else {
+                edicionPedido();
             }
-            
+                   
         } else{
             System.out.println("Faltan datos");
         }
+    }
+    
+    private void nuevoPedido() {
+        pedido.setFechaPedido(LocalDate.now());
+
+        pedido.setProductos(new ArrayList<>(proPedidos));
+        int resultado = PedidoDAO.realizarPedido(pedido);
+        if (resultado != 0) {
+            System.out.println("EXITOO-----");
+            cerrarVentana();
+        } else {
+            System.out.println("Fallo");
+        }
+    }
+    
+    private void edicionPedido() {
+        for (ProductoPedido pp : proPedidos) {
+            Producto prod = pp.getProducto();
+            if (prod.getEsPreparado() && (prod.getComponentes() == null || prod.getComponentes().isEmpty())) {
+                pp.setProducto(ProductoDAO.obtenerProductosProducto(prod));
+            }
+        }
+
+        pedido.setProductos(new ArrayList<>(proPedidos));
+
+        int resultado = PedidoDAO.actualizarPedido(pedido);
+        if (resultado != 0) {
+            System.out.println("EDICIÓN EXITOSA-----");
+            cerrarVentana();
+        } else {
+            System.out.println("Fallo al editar el pedido");
+        }
+    }
+    
+    private void actualizarTotal(){
+        
     }
 }

@@ -8,69 +8,94 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.JavaFXUtils;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Validador;
 
 public class CantidadProductoController implements Initializable {
 
-    private Double cantidad;
+    private Number cantidad;
+    private boolean esDecimal;
 
     @FXML
     private TextField tfCantidad;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        // Inicialización básica por defecto si es necesaria
+    }
 
+    /**
+     * Configura el comportamiento de la ventana.
+     *
+     * @param esDecimal true si se permiten decimales, false si solo enteros.
+     */
+    public void configurar(boolean esDecimal) {
+        this.esDecimal = esDecimal;
+        this.cantidad = null;
+        tfCantidad.clear();
+
+        if (esDecimal) {
+            Validador.permitirDecimal(tfCantidad, 10);
+        } else {
+            Validador.permitirSoloNumeros(tfCantidad, 10);
+        }
     }
 
     public void configurar() {
-
+        configurar(true); 
     }
 
-    public Double getCantidad() {
+    /**
+     * Devuelve el valor recuperado. Puedes usar .doubleValue() o .intValue()
+     * según ocupes.
+     */
+    public Number getCantidad() {
         return cantidad;
     }
 
     @FXML
     private void clicBtnCancelar(ActionEvent event) {
-
-        ((Stage) tfCantidad.getScene()
-                .getWindow())
-                .close();
+        this.cantidad = null;
+        cerrarVentana();
     }
 
     @FXML
     private void clicBtnConfirmar(ActionEvent event) {
+        String texto = tfCantidad.getText().trim();
+
+        if (texto.isEmpty()) {
+            JavaFXUtils.mostrarAdvertencia("Campo requerido", "Por favor, ingrese una cantidad.", false);
+            return;
+        }
 
         try {
-
-            Double valor =
-                    Double.valueOf(
-                            tfCantidad.getText().trim()
-                    );
-
-            if (valor <= 0) {
-
-                JavaFXUtils.mostrarAdvertencia(
-                        "Cantidad inválida",
-                        "Ingrese una cantidad mayor a 0",
-                        false
-                );
-
-                return;
+            if (esDecimal) {
+                Double valorDouble = Double.valueOf(texto);
+                if (valorDouble <= 0) {
+                    mostrarErrorMenorCero();
+                    return;
+                }
+                cantidad = valorDouble;
+            } else {
+                Integer valorInt = Integer.valueOf(texto);
+                if (valorInt <= 0) {
+                    mostrarErrorMenorCero();
+                    return;
+                }
+                cantidad = valorInt;
             }
 
-            cantidad = valor;
-
-            ((Stage) tfCantidad.getScene()
-                    .getWindow())
-                    .close();
+            cerrarVentana();
 
         } catch (NumberFormatException ex) {
-
-            JavaFXUtils.mostrarError(
-                    "Cantidad inválida",
-                    "Ingrese un número válido",
-                    false
-            );
+            JavaFXUtils.mostrarError("Cantidad inválida", "Ingrese un número válido.", false);
         }
+    }
+
+    private void mostrarErrorMenorCero() {
+        JavaFXUtils.mostrarAdvertencia("Cantidad inválida", "Ingrese una cantidad mayor a 0.", false);
+    }
+
+    private void cerrarVentana() {
+        ((Stage) tfCantidad.getScene().getWindow()).close();
     }
 }

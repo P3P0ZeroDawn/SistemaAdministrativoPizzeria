@@ -220,17 +220,12 @@ public class ComponentesProductoController
             ventana.getStage()
                     .showAndWait();
 
-            Double cantidad =
-                    ventana.getController()
-                            .getCantidad();
-
-            if (cantidad != null
-                    && cantidad > 0) {
-
-                agregarComponente(
-                        producto,
-                        cantidad
-                );
+            Number num = ventana.getController().getCantidad();
+            if (num != null) {
+                Double cantidad = num.doubleValue();
+                if (cantidad > 0) {
+                    agregarComponente(producto, cantidad);
+                }
             }
 
         } catch (Exception ex) {

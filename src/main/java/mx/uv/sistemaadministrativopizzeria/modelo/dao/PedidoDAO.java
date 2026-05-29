@@ -22,10 +22,10 @@ import mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoPedido;
  * @author hp
  */
 public class PedidoDAO {
-    
-    public static List<Pedido> obtenerPedidos(){
+
+    public static List<Pedido> obtenerPedidos() {
         List<Pedido> lista = null;
-        try{
+        try {
             lista = new ArrayList<>();
             MySQLConnectionManager conn = MySQLConnectionManager.buildConnection();
             String query = "SELECT p.idPedido, p.idUsuario, p.fechaPedido, p.total, p.estatus,"
@@ -33,44 +33,44 @@ public class PedidoDAO {
                     + " FROM pedido AS p JOIN Usuario AS u ON p.idUsuario = u.idUsuario;";
             PreparedStatement ps = conn.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 lista.add(serializarPedido(rs));
             }
             conn.close();
-        } catch (SQLException ex){
+        } catch (SQLException ex) {
             System.getLogger(PedidoDAO.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
         return lista;
     }
-    
+
     public static int realizarPedido(Pedido pedido) {
         int resultado = 0;
         MySQLConnectionManager conn = null;
-        
+
         try {
             conn = MySQLConnectionManager.buildConnection();
-            
+
             conn.setAutoCommit(false);
-            
+
             //Descontar inventario 
             for (ProductoPedido pp : pedido.getProductos()) {
                 Producto prod = pp.getProducto();
                 int cantidadPedida = pp.getCantidad();
-                
+
                 if (prod.getEsPreparado()) {
                     if (prod.getComponentes() == null || prod.getComponentes().isEmpty()) {
                         throw new SQLException("El producto preparado '" + prod.getNombre() + "' no tiene insumos asignados en memoria.");
                     }
-                    
+
                     for (ComponenteElaboracion comp : prod.getComponentes()) {
                         double cantidadRequerida = comp.getCantidad() * cantidadPedida;
-                        
+
                         String queryInsumo = "UPDATE producto SET cantidad = cantidad - ? WHERE idProducto = ? AND cantidad >= ?";
                         PreparedStatement psInsumo = conn.prepareStatement(queryInsumo);
                         psInsumo.setDouble(1, cantidadRequerida);
                         psInsumo.setInt(2, comp.getProducto().getIdProducto());
-                        psInsumo.setDouble(3, cantidadRequerida); 
-                        
+                        psInsumo.setDouble(3, cantidadRequerida);
+
                         int rowsInsumo = psInsumo.executeUpdate();
                         if (rowsInsumo == 0) {
                             throw new SQLException("Stock insuficiente para el insumo: " + comp.getProducto().getNombre());
@@ -82,14 +82,14 @@ public class PedidoDAO {
                     psProd.setDouble(1, (double) cantidadPedida);
                     psProd.setInt(2, prod.getIdProducto());
                     psProd.setDouble(3, (double) cantidadPedida);
-                    
+
                     int rowsProd = psProd.executeUpdate();
                     if (rowsProd == 0) {
                         throw new SQLException("Stock insuficiente para el producto: " + prod.getNombre());
                     }
                 }
             }
-            
+
             // Registrar el Pedido
             String queryPedido = "INSERT INTO pedido (idUsuario, fechaPedido, total) VALUES (?, ?, ?)";
             PreparedStatement psPedido = conn.prepareStatement(queryPedido);
@@ -97,7 +97,7 @@ public class PedidoDAO {
             psPedido.setDate(2, Date.valueOf(pedido.getFechaPedido())); // Convertimos LocalDate a java.sql.Date
             psPedido.setDouble(3, pedido.getTotalAPagar());
             psPedido.executeUpdate();
-            
+
             // 3. Obtener el ID autoincrementable que MySQL le asignó al Pedido
             int idPedidoGenerado = 0;
             PreparedStatement psId = conn.prepareStatement("SELECT LAST_INSERT_ID()");
@@ -108,7 +108,7 @@ public class PedidoDAO {
             } else {
                 throw new SQLException("No se pudo obtener el ID generado para el pedido.");
             }
-            
+
             //Registrar productoPedidos
             String queryPP = "INSERT INTO productoPedido (idProducto, idPedido, cantidad) VALUES (?, ?, ?)";
             PreparedStatement psPP = conn.prepareStatement(queryPP);
@@ -116,12 +116,12 @@ public class PedidoDAO {
                 psPP.setInt(1, pp.getProducto().getIdProducto());
                 psPP.setInt(2, idPedidoGenerado);
                 psPP.setInt(3, pp.getCantidad());
-                psPP.executeUpdate(); 
+                psPP.executeUpdate();
             }
-            
-            conn.commit(); 
-            resultado = 1; 
-            
+
+            conn.commit();
+            resultado = 1;
+
         } catch (SQLException ex) {
             System.getLogger(PedidoDAO.class.getName()).log(System.Logger.Level.ERROR, ex.getMessage(), ex);
             try {
@@ -142,34 +142,167 @@ public class PedidoDAO {
                 System.getLogger(PedidoDAO.class.getName()).log(System.Logger.Level.ERROR, "Error al cerrar conexión", closeEx);
             }
         }
-        
+
         return resultado;
     }
-    
-    private static Pedido serializarPedido(ResultSet rs) throws SQLException, NullPointerException{
+
+    private static Pedido serializarPedido(ResultSet rs) throws SQLException, NullPointerException {
         Pedido pedido = null;
-        if(rs != null){
+        if (rs != null) {
             pedido = new Pedido();
             pedido.setIdPedido(rs.getInt("idPedido"));
             pedido.setIdUsuario(rs.getInt("idUsuario"));
             pedido.setFechaPedido(rs.getObject("fechaPedido", LocalDate.class));
             pedido.setTotalAPagar(rs.getDouble("total"));
-            
+
             String estatusString = rs.getString("estatus");
-            if(estatusString == null){
+            if (estatusString == null) {
                 throw new NullPointerException("No se logro recuperar toda la información. Estatus no valido");
             }
-            try{
+            try {
                 Pedido.EstatusPedido estatus = Pedido.EstatusPedido.valueOf(estatusString);
                 pedido.setEstatus(estatus);
-            } catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 throw new NullPointerException("No se logro convertir un dato.La información recuperada pudo corromperse");
             }
-            String nombreUsuario = "" + rs.getString("nombre") 
+            String nombreUsuario = "" + rs.getString("nombre")
                     + rs.getString("apellidoPaterno") + rs.getString("apellidoMaterno");
             pedido.setNombreUsuario(nombreUsuario);
             return pedido;
         }
         throw new NullPointerException("No se logro recuperar toda la información");
+    }
+
+    public static int actualizarPedido(Pedido pedido) {
+        int resultado = 0;
+        MySQLConnectionManager conn = null;
+
+        try {
+            conn = MySQLConnectionManager.buildConnection();
+            conn.setAutoCommit(false);
+
+            int idPedido = pedido.getIdPedido();
+
+            // PASO 1: Recuperar el pedido viejo para DEVOLVER los productos al inventario
+            String queryViejo = "SELECT pp.idProducto, pp.cantidad, p.esPreparado FROM productoPedido pp "
+                    + "JOIN producto p ON pp.idProducto = p.idProducto WHERE pp.idPedido = ?";
+            PreparedStatement psViejo = conn.prepareStatement(queryViejo);
+            psViejo.setInt(1, idPedido);
+            ResultSet rsViejo = psViejo.executeQuery();
+
+            while (rsViejo.next()) {
+                int idProdViejo = rsViejo.getInt("idProducto");
+                int cantVieja = rsViejo.getInt("cantidad");
+                boolean esPreparadoViejo = rsViejo.getInt("esPreparado") == 1;
+
+                if (esPreparadoViejo) {
+                    // CORRECCIÓN: Seleccionamos 'idComponente' (que hace referencia al idProducto del insumo)
+                    String queryInsumosViejos = "SELECT idProducto, cantidadCP FROM v_productoComponente WHERE idPreparado = ?";
+                    PreparedStatement psInsV = conn.prepareStatement(queryInsumosViejos);
+                    psInsV.setInt(1, idProdViejo);
+                    ResultSet rsInsV = psInsV.executeQuery();
+
+                    while (rsInsV.next()) {
+                        // CORRECCIÓN: Leemos la columna 'idComponente' para obtener el ID real del insumo en la tabla producto
+                        int idInsumo = rsInsV.getInt("idProducto");
+                        double cantComponente = rsInsV.getDouble("cantidadCP");
+
+                        // Devolver las cantidades al stock original
+                        String updateInsumo = "UPDATE producto SET cantidad = cantidad + ? WHERE idProducto = ?";
+                        PreparedStatement psUpIns = conn.prepareStatement(updateInsumo);
+                        psUpIns.setDouble(1, cantComponente * cantVieja);
+                        psUpIns.setInt(2, idInsumo);
+                        psUpIns.executeUpdate();
+                    }
+                } else {
+                    // Si era producto normal, solo lo sumamos de vuelta
+                    String queryRegresarProd = "UPDATE producto SET cantidad = cantidad + ? WHERE idProducto = ?";
+                    PreparedStatement psRegresarProd = conn.prepareStatement(queryRegresarProd);
+                    psRegresarProd.setDouble(1, (double) cantVieja);
+                    psRegresarProd.setInt(2, idProdViejo);
+                    psRegresarProd.executeUpdate();
+                }
+            }
+
+            // PASO 2: Eliminar las relaciones antiguas de productoPedido
+            String queryEliminarPP = "DELETE FROM productoPedido WHERE idPedido = ?";
+            PreparedStatement psEliminarPP = conn.prepareStatement(queryEliminarPP);
+            psEliminarPP.setInt(1, idPedido);
+            psEliminarPP.executeUpdate();
+
+            // PASO 3: Descontar el NUEVO inventario e Insertar los nuevos productoPedido
+            for (ProductoPedido pp : pedido.getProductos()) {
+                Producto prod = pp.getProducto();
+                int cantidadPedida = pp.getCantidad();
+
+                if (prod.getEsPreparado()) {
+                    if (prod.getComponentes() == null || prod.getComponentes().isEmpty()) {
+                        throw new SQLException("El producto preparado '" + prod.getNombre() + "' no tiene insumos asignados.");
+                    }
+
+                    for (ComponenteElaboracion comp : prod.getComponentes()) {
+                        double cantidadRequerida = comp.getCantidad() * cantidadPedida;
+                        String queryInsumo = "UPDATE producto SET cantidad = cantidad - ? WHERE idProducto = ? AND cantidad >= ?";
+                        PreparedStatement psInsumo = conn.prepareStatement(queryInsumo);
+                        psInsumo.setDouble(1, cantidadRequerida);
+                        psInsumo.setInt(2, comp.getProducto().getIdProducto());
+                        psInsumo.setDouble(3, cantidadRequerida);
+
+                        if (psInsumo.executeUpdate() == 0) {
+                            throw new SQLException("Stock insuficiente para el insumo: " + comp.getProducto().getNombre());
+                        }
+                    }
+                } else {
+                    String queryProd = "UPDATE producto SET cantidad = cantidad - ? WHERE idProducto = ? AND cantidad >= ?";
+                    PreparedStatement psProd = conn.prepareStatement(queryProd);
+                    psProd.setDouble(1, (double) cantidadPedida);
+                    psProd.setInt(2, prod.getIdProducto());
+                    psProd.setDouble(3, (double) cantidadPedida);
+
+                    if (psProd.executeUpdate() == 0) {
+                        throw new SQLException("Stock insuficiente para el producto: " + prod.getNombre());
+                    }
+                }
+
+                // Insertar la nueva relación actualizada
+                String queryInsertarPP = "INSERT INTO productoPedido (idProducto, idPedido, cantidad) VALUES (?, ?, ?)";
+                PreparedStatement psInsertarPP = conn.prepareStatement(queryInsertarPP);
+                psInsertarPP.setInt(1, prod.getIdProducto());
+                psInsertarPP.setInt(2, idPedido);
+                psInsertarPP.setInt(3, cantidadPedida);
+                psInsertarPP.executeUpdate();
+            }
+
+            // PASO 4: Actualizar los datos generales del Pedido (Total)
+            String queryUpdatePedido = "UPDATE pedido SET total = ? WHERE idPedido = ?";
+            PreparedStatement psUpdatePedido = conn.prepareStatement(queryUpdatePedido);
+            psUpdatePedido.setDouble(1, pedido.getTotalAPagar());
+            psUpdatePedido.setInt(2, idPedido);
+            psUpdatePedido.executeUpdate();
+
+            conn.commit();
+            resultado = 1;
+
+        } catch (SQLException ex) {
+            System.getLogger(PedidoDAO.class.getName()).log(System.Logger.Level.ERROR, ex.getMessage(), ex);
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (SQLException rollbackEx) {
+                System.getLogger(PedidoDAO.class.getName()).log(System.Logger.Level.ERROR, "Error en rollback", rollbackEx);
+            }
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
+            } catch (SQLException closeEx) {
+                System.getLogger(PedidoDAO.class.getName()).log(System.Logger.Level.ERROR, "Error al cerrar conexión", closeEx);
+            }
+        }
+
+        return resultado;
     }
 }

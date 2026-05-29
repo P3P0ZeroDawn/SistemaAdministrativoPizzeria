@@ -58,6 +58,126 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
 
         this.content = new HBox(20);
 
+        configurarItemTextoBoton();
+        
+        /*
+         * ESTRUCTURA
+         */
+        accionesBox.getChildren().add(badgesBox);
+
+        content.getChildren().add(imageContainer);
+        
+        content.getChildren().add(label);
+
+        content.getChildren().add(accionesBox);
+
+        /*
+         * BOTONES
+         */
+        for (BotonAccion<T> config : botones) {
+
+            Button btn = new Button();
+
+            if (config.getTexto() != null && config.getRutaIcono() == null) {
+                btn.setText(config.getTexto());
+            }
+            
+            if (config.getRutaIcono() != null) {
+                agregarIcono(config, btn);
+            }
+            /*
+             * TAMAÑO BOTON
+             */
+            if (config.getTexto() != null && !config.getTexto().isBlank()) {
+
+                btn.setPrefHeight(42);
+
+            } else {
+
+                btn.setPrefSize(42, 42);
+            }
+
+            btn.setAlignment(Pos.CENTER);
+
+            btn.setOnAction(e -> {
+
+                if (getItem() != null) {
+
+                    config.getAccion().accept(getItem());
+                }
+            });
+
+            accionesBox.getChildren().add(btn);
+        }
+    }
+    
+    @SafeVarargs
+    public ItemTextoBoton(
+            int posicion,
+            Function<T, List<Badge>> badgesProvider,
+            BotonAccion<T>... botones
+    ){
+        this.badgesProvider = badgesProvider;
+
+        this.label = new Label();
+        
+        this.imageView = new ImageView();
+
+        this.imageContainer = new StackPane();
+
+        this.badgesBox = new HBox(10);
+
+        this.accionesBox = new HBox(12);
+
+        this.content = new HBox(20);
+        
+        configurarItemTextoBoton();
+        
+        content.getChildren().add(imageContainer);
+        content.getChildren().add(label);
+        content.getChildren().add(accionesBox);
+
+        // Si la posición elegida es INICIO, lo agregamos antes que los botones
+        if (posicion == 1) {
+            accionesBox.getChildren().add(badgesBox);
+        }
+
+        /* --- CONSTRUCCIÓN DE BOTONES --- */
+        int i;
+        for (i = 0; i < botones.length; i++) {
+            BotonAccion<T> config = botones[i];
+            Button btn = new Button();
+
+            if (config.getTexto() != null && config.getRutaIcono() == null) {
+                btn.setText(config.getTexto());
+            }
+            if (config.getRutaIcono() != null) {
+                agregarIcono(config, btn);
+            }
+            if (config.getTexto() != null && !config.getTexto().isBlank()) {
+                btn.setPrefHeight(42);
+            } else {
+                btn.setPrefSize(42, 42);
+            }
+            btn.setAlignment(Pos.CENTER);
+            btn.setOnAction(e -> {
+                if (getItem() != null) {
+                    config.getAccion().accept(getItem());
+                }
+            });
+
+            // Agregamos el botón actual al contenedor
+            accionesBox.getChildren().add(btn);
+
+            // INTERCEPCIÓN EN MEDIO: Si la posición es MEDIO y acabamos de poner el primer botón
+            if (posicion == (i+2)) {
+                accionesBox.getChildren().add(badgesBox);
+            }
+        }
+    }
+    
+    
+    private void configurarItemTextoBoton(){
         /*
          * TAMAÑO CELDA
          */
@@ -124,70 +244,25 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
                 + "-fx-font-weight: regular;"
         );
 
+    }
+
+    private void agregarIcono(BotonAccion<T> config, Button btn) {
+        Image img = new Image(
+                getClass().getResourceAsStream(
+                        config.getRutaIcono()
+                )
+        );
+
+        ImageView iv = new ImageView(img);
+
         /*
-         * ESTRUCTURA
-         */
-        accionesBox.getChildren().add(badgesBox);
-
-        content.getChildren().add(imageContainer);
-        
-        content.getChildren().add(label);
-
-        content.getChildren().add(accionesBox);
-
-        /*
-         * BOTONES
-         */
-        for (BotonAccion<T> config : botones) {
-
-            Button btn = new Button();
-
-            if (config.getTexto() != null && config.getRutaIcono() == null) {
-                btn.setText(config.getTexto());
-            }
-            
-            if (config.getRutaIcono() != null) {
-                Image img = new Image(
-                        getClass().getResourceAsStream(
-                                config.getRutaIcono()
-                        )
-                );
-
-                ImageView iv = new ImageView(img);
-
-                /*
                  * TAMAÑO ICONOS
-                 */
-                iv.setFitWidth(20);
+         */
+        iv.setFitWidth(20);
 
-                iv.setFitHeight(20);
+        iv.setFitHeight(20);
 
-                btn.setGraphic(iv);
-            }
-            /*
-             * TAMAÑO BOTON
-             */
-            if (config.getTexto() != null && !config.getTexto().isBlank()) {
-
-                btn.setPrefHeight(42);
-
-            } else {
-
-                btn.setPrefSize(42, 42);
-            }
-
-            btn.setAlignment(Pos.CENTER);
-
-            btn.setOnAction(e -> {
-
-                if (getItem() != null) {
-
-                    config.getAccion().accept(getItem());
-                }
-            });
-
-            accionesBox.getChildren().add(btn);
-        }
+        btn.setGraphic(iv);
     }
 
     @Override

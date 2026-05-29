@@ -84,8 +84,7 @@ public class ConsultaPedidosController implements Initializable {
                             editarPedido(pedido);
                 }),
                 new BotonAccion<>(
-                        "Eliminar",
-                        "/imagenes/eliminar.png",
+                        "Cambiar estatus",
                         pedido -> {
                             //eliminarUsuario((Usuario) usuario);
                 })
