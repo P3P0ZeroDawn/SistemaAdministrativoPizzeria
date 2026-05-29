@@ -33,6 +33,7 @@ import java.awt.Desktop;
 import java.io.File;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 
 /**
  * FXML Controller class
@@ -92,7 +93,7 @@ public class ConsultaProductosController implements Initializable {
                 new BotonAccion<>(
 
                     "Editar",
-                    "/imagenes/editar.png",
+                    FontAwesomeSolid.EDIT,
 
                     producto -> {
                         cargarVistaEdicion(producto);
@@ -102,7 +103,7 @@ public class ConsultaProductosController implements Initializable {
                 new BotonAccion<>(
 
                     "Eliminar",
-                    "/imagenes/eliminar.png",
+                    FontAwesomeSolid.TRASH,
 
                     producto -> {
                         eliminarProducto(producto);

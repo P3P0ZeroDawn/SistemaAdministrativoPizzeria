@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 /**
  * Permite mostrar:
@@ -33,7 +34,7 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
     private final Label label;
 
     private final Function<T, List<Badge>> badgesProvider;
-    
+
     private final ImageView imageView;
 
     private final StackPane imageContainer;
@@ -47,7 +48,7 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
         this.badgesProvider = badgesProvider;
 
         this.label = new Label();
-        
+
         this.imageView = new ImageView();
 
         this.imageContainer = new StackPane();
@@ -59,14 +60,14 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
         this.content = new HBox(20);
 
         configurarItemTextoBoton();
-        
+
         /*
          * ESTRUCTURA
          */
         accionesBox.getChildren().add(badgesBox);
 
         content.getChildren().add(imageContainer);
-        
+
         content.getChildren().add(label);
 
         content.getChildren().add(accionesBox);
@@ -78,23 +79,29 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
 
             Button btn = new Button();
 
-            if (config.getTexto() != null && config.getRutaIcono() == null) {
+            if (config.getTexto() != null && config.getIcono()== null) {
                 btn.setText(config.getTexto());
             }
-            
-            if (config.getRutaIcono() != null) {
+
+            if (config.getIcono()!= null) {
                 agregarIcono(config, btn);
             }
+
             /*
              * TAMAÑO BOTON
              */
-            if (config.getTexto() != null && !config.getTexto().isBlank()) {
+            if (config.getTexto() != null
+                    && !config.getTexto().isBlank()) {
 
                 btn.setPrefHeight(42);
+                btn.setMinHeight(42);
+                btn.setMaxHeight(42);
 
             } else {
 
                 btn.setPrefSize(42, 42);
+                btn.setMinSize(42, 42);
+                btn.setMaxSize(42, 42);
             }
 
             btn.setAlignment(Pos.CENTER);
@@ -110,17 +117,18 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
             accionesBox.getChildren().add(btn);
         }
     }
-    
+
     @SafeVarargs
     public ItemTextoBoton(
             int posicion,
             Function<T, List<Badge>> badgesProvider,
             BotonAccion<T>... botones
-    ){
+    ) {
+
         this.badgesProvider = badgesProvider;
 
         this.label = new Label();
-        
+
         this.imageView = new ImageView();
 
         this.imageContainer = new StackPane();
@@ -130,54 +138,81 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
         this.accionesBox = new HBox(12);
 
         this.content = new HBox(20);
-        
+
         configurarItemTextoBoton();
-        
+
         content.getChildren().add(imageContainer);
+
         content.getChildren().add(label);
+
         content.getChildren().add(accionesBox);
 
-        // Si la posición elegida es INICIO, lo agregamos antes que los botones
+        /*
+         * BADGES
+         */
         if (posicion == 1) {
             accionesBox.getChildren().add(badgesBox);
         }
 
-        /* --- CONSTRUCCIÓN DE BOTONES --- */
+        /*
+         * BOTONES
+         */
         int i;
+
         for (i = 0; i < botones.length; i++) {
+
             BotonAccion<T> config = botones[i];
+
             Button btn = new Button();
 
-            if (config.getTexto() != null && config.getRutaIcono() == null) {
+            if (config.getTexto() != null
+                    && config.getIcono()== null) {
+
                 btn.setText(config.getTexto());
             }
-            if (config.getRutaIcono() != null) {
+
+            if (config.getIcono()!= null) {
                 agregarIcono(config, btn);
             }
-            if (config.getTexto() != null && !config.getTexto().isBlank()) {
+
+            if (config.getTexto() != null
+                    && !config.getTexto().isBlank()) {
+
                 btn.setPrefHeight(42);
+                btn.setMinHeight(42);
+                btn.setMaxHeight(42);
+
             } else {
+
                 btn.setPrefSize(42, 42);
+                btn.setMinSize(42, 42);
+                btn.setMaxSize(42, 42);
             }
+
             btn.setAlignment(Pos.CENTER);
+
             btn.setOnAction(e -> {
+
                 if (getItem() != null) {
+
                     config.getAccion().accept(getItem());
                 }
             });
 
-            // Agregamos el botón actual al contenedor
             accionesBox.getChildren().add(btn);
 
-            // INTERCEPCIÓN EN MEDIO: Si la posición es MEDIO y acabamos de poner el primer botón
-            if (posicion == (i+2)) {
+            /*
+             * INSERTAR BADGES EN POSICIÓN
+             */
+            if (posicion == (i + 2)) {
+
                 accionesBox.getChildren().add(badgesBox);
             }
         }
     }
-    
-    
-    private void configurarItemTextoBoton(){
+
+    private void configurarItemTextoBoton() {
+
         /*
          * TAMAÑO CELDA
          */
@@ -185,21 +220,37 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
 
         setPrefHeight(80);
 
+        setMaxHeight(80);
+
         setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 
         /*
-         * CONFIGURACION CONTENEDORES
+         * CONTENEDOR PRINCIPAL
          */
         content.setAlignment(Pos.CENTER_LEFT);
-        content.setFillHeight(true);
+
+        content.setFillHeight(false);
+
         content.setStyle(
                 "-fx-padding: 3 10 3 10;"
         );
 
-        badgesBox.setAlignment(Pos.CENTER);
+        /*
+         * BADGES
+         */
+        badgesBox.setAlignment(Pos.CENTER_LEFT);
 
+        badgesBox.setMinHeight(30);
+
+        badgesBox.setPrefHeight(30);
+
+        badgesBox.setMaxHeight(30);
+
+        /*
+         * ACCIONES
+         */
         accionesBox.setAlignment(Pos.CENTER);
-        
+
         /*
          * IMAGEN
          */
@@ -243,26 +294,15 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
                 "-fx-font-size: 18px;"
                 + "-fx-font-weight: regular;"
         );
-
     }
 
     private void agregarIcono(BotonAccion<T> config, Button btn) {
-        Image img = new Image(
-                getClass().getResourceAsStream(
-                        config.getRutaIcono()
-                )
-        );
 
-        ImageView iv = new ImageView(img);
+        FontIcon icon = new FontIcon(config.getIcono());
 
-        /*
-                 * TAMAÑO ICONOS
-         */
-        iv.setFitWidth(20);
+        icon.setIconSize(20);
 
-        iv.setFitHeight(20);
-
-        btn.setGraphic(iv);
+        btn.setGraphic(icon);
     }
 
     @Override
@@ -276,32 +316,26 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
 
             setGraphic(null);
 
-        } else {
+            return;
+        }
 
-            /*
-            * IMAGEN
-            */
-           if (item instanceof ItemConImagen) {
+        /*
+         * IMAGEN
+         */
+        if (item instanceof ItemConImagen) {
 
-                ItemConImagen itemConImagen =
-                        (ItemConImagen) item;
+            ItemConImagen itemConImagen =
+                    (ItemConImagen) item;
 
-                if (itemConImagen.getImagen() != null) {
+            if (itemConImagen.getImagen() != null) {
 
-                    imageView.setImage(
-                            itemConImagen.getImagen()
-                    );
+                imageView.setImage(
+                        itemConImagen.getImagen()
+                );
 
-                    imageContainer.setVisible(true);
+                imageContainer.setVisible(true);
 
-                    imageContainer.setManaged(true);
-
-                } else {
-
-                    imageContainer.setVisible(false);
-
-                    imageContainer.setManaged(false);
-                }
+                imageContainer.setManaged(true);
 
             } else {
 
@@ -309,54 +343,77 @@ public class ItemTextoBoton<T extends ItemObservableList> extends ListCell<T> {
 
                 imageContainer.setManaged(false);
             }
-            
-            /*
-             * TEXTO PRINCIPAL
-             */
-            label.setText(item.getString());
 
-            /*
-             * LIMPIAR BADGES
-             */
-            badgesBox.getChildren().clear();
+        } else {
 
-            /*
-             * GENERAR BADGES
-             */
-            if (badgesProvider != null) {
+            imageContainer.setVisible(false);
 
-                List<Badge> badges =
-                        badgesProvider.apply(item);
+            imageContainer.setManaged(false);
+        }
 
-                if (badges != null) {
+        /*
+         * TEXTO PRINCIPAL
+         */
+        label.setText(item.getString());
 
-                    for (Badge badge : badges) {
+        /*
+         * LIMPIAR BADGES
+         */
+        badgesBox.getChildren().clear();
 
-                        Label lblBadge =
-                                new Label(badge.getTexto());
+        /*
+         * GENERAR BADGES
+         */
+        if (badgesProvider != null) {
 
-                        lblBadge.setAlignment(Pos.CENTER);
+            List<Badge> badges =
+                    badgesProvider.apply(item);
 
-                        lblBadge.setStyle(
-                                "-fx-background-color: "
-                                + badge.getColor()
-                                + ";"
-                                + "-fx-text-fill: black;"
-                                + "-fx-padding: 6 14 6 14;"
-                                + "-fx-background-radius: 10;"
-                                + "-fx-font-size: 18px;"
-                                + "-fx-font-weight: regular;"
-                        );
+            if (badges != null) {
 
-                        badgesBox.getChildren()
-                                .add(lblBadge);
-                    }
+                for (Badge badge : badges) {
+
+                    Label lblBadge =
+                            new Label(badge.getTexto());
+
+                    lblBadge.setAlignment(Pos.CENTER);
+
+                    /*
+                     * TAMAÑOS FIJOS
+                     */
+                    lblBadge.setMinHeight(30);
+
+                    lblBadge.setPrefHeight(30);
+
+                    lblBadge.setMaxHeight(30);
+
+                    lblBadge.setMinWidth(110);
+
+                    lblBadge.setPrefWidth(110);
+
+                    lblBadge.setWrapText(false);
+
+                    /*
+                     * ESTILO
+                     */
+                    lblBadge.setStyle(
+                            "-fx-background-color: "
+                            + badge.getColor()
+                            + ";"
+                            + "-fx-text-fill: black;"
+                            + "-fx-background-radius: 999;"
+                            + "-fx-font-size: 14px;"
+                            + "-fx-font-weight: bold;"
+                    );
+
+                    badgesBox.getChildren()
+                            .add(lblBadge);
                 }
             }
-
-            setText(null);
-
-            setGraphic(content);
         }
+
+        setText(null);
+
+        setGraphic(content);
     }
 }

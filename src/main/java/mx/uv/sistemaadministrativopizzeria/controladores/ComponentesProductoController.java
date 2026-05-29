@@ -21,6 +21,7 @@ import mx.uv.sistemaadministrativopizzeria.modelo.beans.ComponenteElaboracion;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ComponenteElaboracionDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoDAO;
+import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 
 public class ComponentesProductoController
         implements Initializable {
@@ -105,7 +106,7 @@ public class ComponentesProductoController
                         },
                         new BotonAccion<>(
                                 "Agregar",
-                                "/imagenes/agregar.png",
+                                FontAwesomeSolid.PLUS,
                                 producto -> {
                                     solicitarCantidad(
                                             producto
@@ -140,7 +141,7 @@ public class ComponentesProductoController
                         },
                         new BotonAccion<>(
                                 "Quitar",
-                                "/imagenes/eliminar.png",
+                                FontAwesomeSolid.MINUS,
                                 componente -> {
                                     disminuirComponente(
                                             componente

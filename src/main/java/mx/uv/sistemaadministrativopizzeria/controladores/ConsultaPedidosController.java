@@ -43,6 +43,7 @@ import java.time.format.DateTimeFormatter;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
+import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 
 /**
  * FXML Controller class
@@ -93,7 +94,7 @@ public class ConsultaPedidosController implements Initializable {
                 },
                 new BotonAccion<>(
                         "Editar",
-                        "/imagenes/editar.png",
+                        FontAwesomeSolid.EDIT,
                         pedido -> {
                             editarPedido(pedido);
                 }),
@@ -113,6 +114,13 @@ public class ConsultaPedidosController implements Initializable {
             return;
         }
         try {
+            App.configurarVentana(((Stage) cbBusUsuario.getScene().getWindow()),
+                    "Edición de pedido",
+                    1020, 700,
+                    1020, 700,
+                    1020, 700,
+                    true);
+            ((Stage) cbBusUsuario.getScene().getWindow()).centerOnScreen();
             Ventana<DatosPedidoController> ventana = App.setRootVentana("datosPedido");
             
             ventana.getController().configurar(ModoFormulario.EDICION, pedido);
@@ -224,6 +232,13 @@ public class ConsultaPedidosController implements Initializable {
     @FXML
     private void btnRealizarPedido(ActionEvent event) {
         try {
+            App.configurarVentana(((Stage) cbBusUsuario.getScene().getWindow()),
+                    "Edición de pedido",
+                    1020, 700,
+                    1020, 700,
+                    1020, 700,
+                    true);
+            ((Stage) cbBusUsuario.getScene().getWindow()).centerOnScreen();
             Ventana<DatosPedidoController> ventana = App.setRootVentana("datosPedido");
             
             ventana.getController().configurar(ModoFormulario.REGISTRO, null);

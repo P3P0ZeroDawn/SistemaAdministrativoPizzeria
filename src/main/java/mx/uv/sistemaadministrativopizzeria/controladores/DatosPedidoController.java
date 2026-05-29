@@ -20,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import mx.uv.sistemaadministrativopizzeria.App;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.BotonAccion;
@@ -35,6 +36,7 @@ import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoPedidoDAO;
 import mx.uv.sistemaadministrativopizzeria.excepciones.CantidadInsuficienteException;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.ComponenteElaboracion;
+import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 
 /**
  * FXML Controller class
@@ -94,7 +96,7 @@ public class DatosPedidoController implements Initializable {
                 },
                 new BotonAccion<>(
                         "Agregar",
-                        "/imagenes/agregar.png",
+                        FontAwesomeSolid.PLUS,
                         producto -> {
                             seleccionarCantidad(producto);
                 })
@@ -113,13 +115,13 @@ public class DatosPedidoController implements Initializable {
                 },
                 new BotonAccion<>(
                         "Eliminar",
-                        "/imagenes/restar.png",
+                        FontAwesomeSolid.MINUS,
                         pedido -> {
                             disminuirPedido(pedido);
                 }),
                 new BotonAccion<>(
                         "Aumentar",
-                        "/imagenes/mas.png",
+                        FontAwesomeSolid.PLUS,
                         pedido -> {
                             aumentarPedido(pedido);
                 })
@@ -390,6 +392,15 @@ public class DatosPedidoController implements Initializable {
     
     private void cerrarVentana(){
         try {
+             App.configurarVentana(
+                ((Stage) tfPedido.getScene().getWindow()),
+                "Sistema Administrativo Pizzeria Italia Pizza",
+                700, 300,
+                815, 650,
+                900, 700,
+                false
+            );
+            ((Stage) tfPedido.getScene().getWindow()).centerOnScreen();
             App.setRoot("consultaPedidos");
         } catch (IOException ex) {
             System.getLogger(DatosPedidoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);

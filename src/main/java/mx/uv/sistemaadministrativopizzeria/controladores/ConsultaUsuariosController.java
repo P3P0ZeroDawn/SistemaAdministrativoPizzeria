@@ -29,6 +29,7 @@ import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizable
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Ventana;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.UsuarioDAO;
+import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 
 /**
  * FXML Controller class
@@ -94,14 +95,14 @@ public class ConsultaUsuariosController implements Initializable {
                 },
                 new BotonAccion<>(
                         "Editar",
-                        "/imagenes/editar.png",
+                        FontAwesomeSolid.EDIT,
                         usuario -> {
                         cargarVistaEdicion((Usuario) usuario);
                 }),
                 
                 new BotonAccion<>(
                         "Eliminar",
-                        "/imagenes/eliminar.png",
+                        FontAwesomeSolid.TRASH,
                         usuario -> {
                         eliminarUsuario((Usuario) usuario);
                 })

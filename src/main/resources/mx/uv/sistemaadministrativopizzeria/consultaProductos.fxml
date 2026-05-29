@@ -6,14 +6,12 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <BorderPane prefHeight="600.0" prefWidth="800.0" stylesheets="@../../../css/primer-light.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.sistemaadministrativopizzeria.controladores.ConsultaProductosController">
     <top>
@@ -38,26 +36,17 @@
                               <Font size="14.0" />
                            </font>
                         </Button>
-                                <Region prefHeight="60.0" prefWidth="224.0" />
-                            </children>
-                        </HBox>
-                        <StackPane alignment="CENTER_RIGHT" prefWidth="100.0">
-                            <children>
-                                <Button alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#btnVolver" prefHeight="39.0" prefWidth="100.0" text="Volver" textAlignment="RIGHT">
+                                <Region prefHeight="60.0" prefWidth="180.0" />
+                                <Button alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#btnVolver" prefHeight="39.0" prefWidth="130.0" text="Volver" textAlignment="RIGHT">
                                     <font>
                                         <Font size="18.0" />
                                     </font>
+                                    <graphic>
+                                        <FontIcon iconLiteral="far-arrow-alt-circle-left"/>
+                                    </graphic>
                                 </Button>
-                                <ImageView fitHeight="20.0" fitWidth="20.0" mouseTransparent="true" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER_LEFT">
-                                    <image>
-                                        <Image url="@../../../imagenes/volver.png" />
-                                    </image>
-                                    <StackPane.margin>
-                                        <Insets left="5.0" />
-                                    </StackPane.margin>
-                                </ImageView>
                             </children>
-                        </StackPane>
+                        </HBox>
                     </children>
                 </HBox>
                 <HBox alignment="CENTER_LEFT" prefWidth="200.0" spacing="20.0">

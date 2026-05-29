@@ -5,6 +5,7 @@
 package mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables;
 
 import java.util.function.Consumer;
+import org.kordamp.ikonli.Ikon;
 
 /**
  *
@@ -13,21 +14,22 @@ import java.util.function.Consumer;
 public class BotonAccion<T> {
 
     private final String texto;
-    private final String rutaIcono;
+    private Ikon icono;
     private final Consumer<T> accion;
 
-    public BotonAccion(String texto,
-                       String rutaIcono,
-                       Consumer<T> accion) {
-
+    public BotonAccion(
+            String texto,
+            Ikon icono,
+            Consumer<T> accion
+    ) {
         this.texto = texto;
-        this.rutaIcono = rutaIcono;
+        this.icono = icono;
         this.accion = accion;
     }
 
     public BotonAccion(String texto, Consumer<T> accion) {
         this.texto = texto;
-        this.rutaIcono = null;
+        this.icono = null;
         this.accion = accion;
     }
 
@@ -35,8 +37,8 @@ public class BotonAccion<T> {
         return texto;
     }
 
-    public String getRutaIcono() {
-        return rutaIcono;
+    public Ikon getIcono() {
+        return icono;
     }
 
     public Consumer<T> getAccion() {

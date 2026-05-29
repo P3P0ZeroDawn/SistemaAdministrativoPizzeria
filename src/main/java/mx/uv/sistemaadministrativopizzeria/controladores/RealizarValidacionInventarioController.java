@@ -32,14 +32,22 @@ public class RealizarValidacionInventarioController implements Initializable {
 
     private ObservableList<ProductoHistorial> productos;
 
-    @FXML private TableView<ProductoHistorial> tvProductos;
-    @FXML private TableColumn<ProductoHistorial, ProductoHistorial> tcImagen;
-    @FXML private TableColumn<ProductoHistorial, String> tcProducto;
-    @FXML private TableColumn<ProductoHistorial, Double> tcSistema;
-    @FXML private TableColumn<ProductoHistorial, String> tcUnidad;
-    @FXML private TableColumn<ProductoHistorial, Double> tcReal;
-    @FXML private TableColumn<ProductoHistorial, String> tcRazon;
-    @FXML private TableColumn<ProductoHistorial, ProductoHistorial.EstatusExistencia> tcEstado;
+    @FXML
+    private TableView<ProductoHistorial> tvProductos;
+    @FXML
+    private TableColumn<ProductoHistorial, ProductoHistorial> tcImagen;
+    @FXML
+    private TableColumn<ProductoHistorial, String> tcProducto;
+    @FXML
+    private TableColumn<ProductoHistorial, Double> tcSistema;
+    @FXML
+    private TableColumn<ProductoHistorial, String> tcUnidad;
+    @FXML
+    private TableColumn<ProductoHistorial, Double> tcReal;
+    @FXML
+    private TableColumn<ProductoHistorial, String> tcRazon;
+    @FXML
+    private TableColumn<ProductoHistorial, ProductoHistorial.EstatusExistencia> tcEstado;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -50,11 +58,11 @@ public class RealizarValidacionInventarioController implements Initializable {
     // ================= CONFIGURACIÓN TABLA =================
     private void configurarTabla() {
 
-        tvProductos.setFixedCellSize(60);
+        
 
         // ---------------- IMAGEN ----------------
-        tcImagen.setCellValueFactory(p ->
-                new ReadOnlyObjectWrapper<>(p.getValue())
+        tcImagen.setCellValueFactory(p
+                -> new ReadOnlyObjectWrapper<>(p.getValue())
         );
 
         tcImagen.setCellFactory(col -> new TableCell<ProductoHistorial, ProductoHistorial>() {
@@ -69,9 +77,9 @@ public class RealizarValidacionInventarioController implements Initializable {
 
                 container.setAlignment(Pos.CENTER);
                 container.setStyle(
-                        "-fx-background-color: white;" +
-                        "-fx-background-radius: 10;" +
-                        "-fx-padding: 5;"
+                        "-fx-background-color: white;"
+                        + "-fx-background-radius: 10;"
+                        + "-fx-padding: 5;"
                 );
 
                 container.getChildren().add(iv);
@@ -100,47 +108,48 @@ public class RealizarValidacionInventarioController implements Initializable {
         });
 
         // ---------------- PRODUCTO ----------------
-        tcProducto.setCellValueFactory(p ->
-                new SimpleStringProperty(p.getValue().getNombreProducto())
+        tcProducto.setCellValueFactory(p
+                -> new SimpleStringProperty(p.getValue().getNombreProducto())
         );
 
         // ---------------- SISTEMA ----------------
-        tcSistema.setCellValueFactory(p ->
-                new ReadOnlyObjectWrapper<>(p.getValue().getCantidadSistema())
+        tcSistema.setCellValueFactory(p
+                -> new ReadOnlyObjectWrapper<>(p.getValue().getCantidadSistema())
         );
 
         // ---------------- UNIDAD ----------------
-        tcUnidad.setCellValueFactory(p ->
-                new SimpleStringProperty(p.getValue().getProducto().getUnidadMedida())
+        tcUnidad.setCellValueFactory(p
+                -> new SimpleStringProperty(p.getValue().getProducto().getUnidadMedida())
         );
 
         // ---------------- REAL (LIBRE EDICIÓN) ----------------
+        
         tcReal.setCellValueFactory(p ->
                 new ReadOnlyObjectWrapper<>(p.getValue().getCantidadReal())
         );
-
+        
         tcReal.setCellFactory(col -> new TableCell<>() {
 
             private final TextField tf = new TextField();
 
             {
-                // VALIDACIONES
                 Validador.permitirDecimal(tf, 10);
 
                 tf.setAlignment(Pos.CENTER);
 
-                // OCUPAR TODA LA CELDA
                 tf.setMaxWidth(Double.MAX_VALUE);
 
                 setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 
-                setStyle("-fx-padding: 3;");
+                setGraphic(tf);
 
                 tf.textProperty().addListener((obs, oldV, newV) -> {
 
                     ProductoHistorial item = getTableRow().getItem();
 
-                    if (item == null) return;
+                    if (item == null) {
+                        return;
+                    }
 
                     if (newV == null || newV.isBlank()) {
 
@@ -152,7 +161,6 @@ public class RealizarValidacionInventarioController implements Initializable {
 
                         double valor = Double.parseDouble(newV);
 
-                        // NO NEGATIVOS
                         if (valor < 0) {
                             tf.setText(oldV);
                             return;
@@ -175,29 +183,24 @@ public class RealizarValidacionInventarioController implements Initializable {
                 if (empty) {
 
                     setGraphic(null);
-                    return;
+
+                } else {
+
+                    if (!tf.isFocused()) {
+
+                        tf.setText(
+                                value == null || value == 0.0
+                                        ? ""
+                                        : String.valueOf(value)
+                        );
+                    }
+
+                    setGraphic(tf);
                 }
-
-                if (!tf.isFocused()) {
-                    tf.setText(
-                            value == null || value == 0.0
-                                    ? ""
-                                    : String.valueOf(value)
-                    );
-                }
-
-                tf.setPrefWidth(getTableColumn().getWidth() - 10);
-
-                setGraphic(tf);
             }
-        });        
+        });
 
         // ---------------- RAZÓN ----------------
-        tcRazon.setCellValueFactory(p ->
-                new SimpleStringProperty(p.getValue().getRazon())
-        );
-        tcRazon.setEditable(true);
-
         tcRazon.setCellFactory(col -> new TableCell<>() {
 
             private final TextField tf = new TextField();
@@ -205,13 +208,11 @@ public class RealizarValidacionInventarioController implements Initializable {
             {
                 Validador.permitirTextoNumerico(tf, 150);
 
-                tf.setEditable(true);
-                tf.setFocusTraversable(true);
                 tf.setMaxWidth(Double.MAX_VALUE);
 
                 setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
 
-                setStyle("-fx-padding: 3;");
+                setGraphic(tf);
 
                 tf.textProperty().addListener((obs, oldV, newV) -> {
 
@@ -232,27 +233,29 @@ public class RealizarValidacionInventarioController implements Initializable {
                 if (empty) {
 
                     setGraphic(null);
-                    return;
+
+                } else {
+
+                    if (!tf.isFocused()) {
+
+                        tf.setText(value == null ? "" : value);
+                    }
+
+                    setGraphic(tf);
                 }
-
-                if (!tf.isFocused()) {
-                    tf.setText(value == null ? "" : value);
-                }
-
-                tf.setPrefWidth(getTableColumn().getWidth() - 10);
-
-                setGraphic(tf);
             }
         });
 
         // ---------------- ESTADO ----------------
-        tcEstado.setCellValueFactory(p ->
-                new ReadOnlyObjectWrapper<>(p.getValue().getEstatusExistencia())
+        tcEstado.setCellValueFactory(p
+                -> new ReadOnlyObjectWrapper<>(p.getValue().getEstatusExistencia())
         );
 
         tcEstado.setCellFactory(param -> new CeldaEstadoTabla<>(estatus -> {
 
-            if (estatus == null) return null;
+            if (estatus == null) {
+                return null;
+            }
 
             switch (estatus) {
                 case Correcta:
@@ -277,8 +280,8 @@ public class RealizarValidacionInventarioController implements Initializable {
 
         productos = FXCollections.observableArrayList();
 
-        List<Producto> lista =
-                ProductoDAO.obtenerProductosValidacionInventario();
+        List<Producto> lista
+                = ProductoDAO.obtenerProductosValidacionInventario();
 
         for (Producto p : lista) {
 
@@ -303,8 +306,8 @@ public class RealizarValidacionInventarioController implements Initializable {
     private void clicBtnValidar(ActionEvent event) {
         validarExistencias();
     }
-    
-    private void validarExistencias(){
+
+    private void validarExistencias() {
         for (ProductoHistorial item : productos) {
             calcularEstatus(item);
         }
@@ -344,13 +347,15 @@ public class RealizarValidacionInventarioController implements Initializable {
         validarExistencias();
         for (ProductoHistorial p : productos) {
 
-            if (p.getEstatusExistencia() == null) continue;
+            if (p.getEstatusExistencia() == null) {
+                continue;
+            }
 
-            boolean diff =
-                    p.getEstatusExistencia() != ProductoHistorial.EstatusExistencia.Correcta;
+            boolean diff
+                    = p.getEstatusExistencia() != ProductoHistorial.EstatusExistencia.Correcta;
 
-            boolean razonVacia =
-                    p.getRazon() == null || p.getRazon().isBlank();
+            boolean razonVacia
+                    = p.getRazon() == null || p.getRazon().isBlank();
 
             if (diff && razonVacia) {
 
@@ -363,8 +368,8 @@ public class RealizarValidacionInventarioController implements Initializable {
             }
         }
 
-        boolean ok =
-                HistorialInventarioDAO.guardarHistorialInventario(productos);
+        boolean ok
+                = HistorialInventarioDAO.guardarHistorialInventario(productos);
 
         if (ok) {
             JavaFXUtils.mostrarMensaje(

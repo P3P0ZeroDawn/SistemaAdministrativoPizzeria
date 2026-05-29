@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" stylesheets="@../../../css/primer-light.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.sistemaadministrativopizzeria.controladores.DatosUsuarioController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="800.0" stylesheets="@../../../css/primer-light.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.sistemaadministrativopizzeria.controladores.DatosUsuarioController">
    <top>
       <VBox prefHeight="74.0" prefWidth="800.0" BorderPane.alignment="CENTER">
          <children>
@@ -40,214 +40,253 @@
    <center>
       <FlowPane alignment="TOP_CENTER" orientation="VERTICAL" prefHeight="494.0" prefWidth="1600.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="800.0">
+            <VBox>
                <children>
-                  <VBox prefHeight="100.0" prefWidth="199.0">
+                  <Label text="Datos personales">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <padding>
+                        <Insets left="30.0" />
+                     </padding>
+                  </Label>
+                  <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="800.0">
                      <children>
-                        <Label text="Nombre">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </Label>
-                        <TextField fx:id="tfNombre" prefHeight="25.0" prefWidth="168.0" />
-                     </children>
-                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                     </HBox.margin>
-                  </VBox>
-                  <VBox prefHeight="100.0" prefWidth="199.0">
-                     <children>
-                        <Label text="Apellido paterno">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </Label>
-                        <TextField fx:id="tfApellidoPaterno" prefHeight="25.0" prefWidth="168.0" />
-                     </children>
-                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                     </HBox.margin>
-                  </VBox>
-                  <VBox prefHeight="100.0" prefWidth="199.0">
-                     <children>
-                        <Label text="Apellido materno">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </Label>
-                        <TextField fx:id="tfApellidoMaterno" prefHeight="25.0" prefWidth="168.0" />
-                     </children>
-                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                     </HBox.margin>
-                  </VBox>
-               </children>
-            </HBox>
-            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="800.0">
-               <children>
-                  <VBox prefHeight="100.0" prefWidth="199.0">
-                     <children>
-                        <Label text="Teléfono">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </Label>
-                        <TextField fx:id="tfTelefono" prefHeight="25.0" prefWidth="168.0" />
-                     </children>
-                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                     </HBox.margin>
-                  </VBox>
-                  <VBox prefHeight="100.0" prefWidth="199.0">
-                     <children>
-                        <Label text="Correo Electrónico">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </Label>
-                        <TextField fx:id="tfCorreo" prefHeight="25.0" prefWidth="168.0" />
-                     </children>
-                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                     </HBox.margin>
-                  </VBox>
-                  <Region prefHeight="200.0" prefWidth="200.0">
-                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                     </HBox.margin>
-                  </Region>
-               </children>
-            </HBox>
-            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="800.0">
-               <children>
-                  <VBox prefHeight="60.0" prefWidth="84.0">
-                     <children>
-                        <Label prefHeight="20.0" prefWidth="106.0" text="CP">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </Label>
-                        <TextField fx:id="tfCp" prefHeight="25.0" prefWidth="168.0" />
-                     </children>
-                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                     </HBox.margin>
-                  </VBox>
-                  <VBox prefHeight="60.0" prefWidth="238.0">
-                     <children>
-                        <Label text="Calle">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </Label>
-                        <TextField fx:id="tfCalle" prefHeight="25.0" prefWidth="168.0" />
-                     </children>
-                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                     </HBox.margin>
-                  </VBox>
-                  <VBox prefHeight="60.0" prefWidth="83.0">
-                     <children>
-                        <Label text="Número">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </Label>
-                        <TextField fx:id="tfNumero" prefHeight="25.0" prefWidth="168.0" />
-                     </children>
-                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                     </HBox.margin>
-                  </VBox>
-                  <VBox prefHeight="60.0" prefWidth="151.0">
-                     <children>
-                        <Label text="Ciudad">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </Label>
-                        <TextField fx:id="tfCiudad" prefHeight="25.0" prefWidth="168.0" />
-                     </children>
-                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                     </HBox.margin>
-                  </VBox>
-               </children>
-            </HBox>
-            <HBox alignment="TOP_CENTER" prefHeight="135.0" prefWidth="800.0">
-               <children>
-                  <VBox prefHeight="132.0" prefWidth="201.0">
-                     <children>
-                        <Label text="Tipo de usuario">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </Label>
-                        <ComboBox fx:id="cbTipousuario" onAction="#clicCbTipoUsuario" prefHeight="36.0" prefWidth="207.0" />
-                        <VBox fx:id="vbRol" prefHeight="60.0" prefWidth="84.0" visible="false">
+                        <VBox prefHeight="100.0" prefWidth="199.0">
                            <children>
-                              <Label text="Rol">
+                              <Label text="Nombre">
                                  <VBox.margin>
                                     <Insets />
                                  </VBox.margin>
                               </Label>
-                              <ComboBox fx:id="cbRolEmpleado" disable="true" prefHeight="36.0" prefWidth="242.0" />
+                              <TextField fx:id="tfNombre" prefHeight="25.0" prefWidth="168.0" />
                            </children>
-                           <VBox.margin>
-                              <Insets top="20.0" />
-                           </VBox.margin>
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
                         </VBox>
-                     </children>
-                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                     </HBox.margin>
-                  </VBox>
-                  <VBox fx:id="vbUsuario" prefHeight="132.0" prefWidth="190.0" visible="false">
-                     <children>
-                        <Label text="Usuario">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </Label>
-                        <TextField fx:id="tfUsuario" disable="true" prefHeight="36.0" prefWidth="192.0" />
-                        <VBox prefHeight="132.0" prefWidth="190.0">
+                        <VBox prefHeight="100.0" prefWidth="199.0">
                            <children>
-                              <CheckBox fx:id="chbModifContrasenia" mnemonicParsing="false" text="Modificar contraseña" visible="false" />
-                           </children>
-                           <VBox.margin>
-                              <Insets top="20.0" />
-                           </VBox.margin>
-                        </VBox>
-                     </children>
-                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                     </HBox.margin>
-                  </VBox>
-                  <VBox fx:id="vbContrasenia" prefHeight="132.0" prefWidth="206.0" visible="false">
-                     <children>
-                        <VBox prefHeight="104.0" prefWidth="274.0">
-                           <children>
-                              <Label text="Contraseña">
+                              <Label text="Apellido paterno">
                                  <VBox.margin>
                                     <Insets />
                                  </VBox.margin>
                               </Label>
-                              <PasswordField fx:id="pfContrasenia" disable="true" prefHeight="25.0" prefWidth="168.0" />
+                              <TextField fx:id="tfApellidoPaterno" prefHeight="25.0" prefWidth="168.0" />
                            </children>
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
                         </VBox>
-                        <Label text="Confirmar Contraseña">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </Label>
-                        <PasswordField fx:id="pfConfirmacionContrasenia" disable="true" prefHeight="25.0" prefWidth="168.0" />
+                        <VBox prefHeight="100.0" prefWidth="199.0">
+                           <children>
+                              <Label text="Apellido materno">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </Label>
+                              <TextField fx:id="tfApellidoMaterno" prefHeight="25.0" prefWidth="168.0" />
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
+                        </VBox>
                      </children>
-                     <HBox.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                     </HBox.margin>
-                  </VBox>
+                  </HBox>
                </children>
-            </HBox>
+            </VBox>
+            <VBox>
+               <children>
+                  <Label text="Contacto">
+                     <padding>
+                        <Insets left="30.0" />
+                     </padding>
+                  </Label>
+                  <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="800.0">
+                     <children>
+                        <VBox prefHeight="100.0" prefWidth="199.0">
+                           <children>
+                              <Label text="Teléfono">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </Label>
+                              <TextField fx:id="tfTelefono" prefHeight="25.0" prefWidth="168.0" />
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
+                        </VBox>
+                        <VBox prefHeight="100.0" prefWidth="199.0">
+                           <children>
+                              <Label text="Correo Electrónico">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </Label>
+                              <TextField fx:id="tfCorreo" prefHeight="25.0" prefWidth="168.0" />
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
+                        </VBox>
+                        <Region prefHeight="200.0" prefWidth="200.0">
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
+                        </Region>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox>
+               <children>
+                  <Label text="Dirección">
+                     <padding>
+                        <Insets left="30.0" />
+                     </padding>
+                  </Label>
+                  <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="800.0">
+                     <children>
+                        <VBox prefHeight="60.0" prefWidth="84.0">
+                           <children>
+                              <Label prefHeight="20.0" prefWidth="106.0" text="CP">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </Label>
+                              <TextField fx:id="tfCp" prefHeight="25.0" prefWidth="168.0" />
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
+                        </VBox>
+                        <VBox prefHeight="60.0" prefWidth="238.0">
+                           <children>
+                              <Label text="Calle">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </Label>
+                              <TextField fx:id="tfCalle" prefHeight="25.0" prefWidth="168.0" />
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
+                        </VBox>
+                        <VBox prefHeight="60.0" prefWidth="83.0">
+                           <children>
+                              <Label text="Número">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </Label>
+                              <TextField fx:id="tfNumero" prefHeight="25.0" prefWidth="168.0" />
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
+                        </VBox>
+                        <VBox prefHeight="60.0" prefWidth="151.0">
+                           <children>
+                              <Label text="Ciudad">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </Label>
+                              <TextField fx:id="tfCiudad" prefHeight="25.0" prefWidth="168.0" />
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox>
+               <children>
+                  <Label text="Acceso">
+                     <padding>
+                        <Insets left="30.0" />
+                     </padding>
+                  </Label>
+                  <HBox alignment="TOP_CENTER" prefHeight="135.0" prefWidth="800.0">
+                     <children>
+                        <VBox prefHeight="132.0" prefWidth="201.0">
+                           <children>
+                              <Label text="Tipo de usuario">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </Label>
+                              <ComboBox fx:id="cbTipousuario" onAction="#clicCbTipoUsuario" prefHeight="36.0" prefWidth="207.0" />
+                              <VBox fx:id="vbRol" prefHeight="60.0" prefWidth="84.0" visible="false">
+                                 <children>
+                                    <Label text="Rol">
+                                       <VBox.margin>
+                                          <Insets />
+                                       </VBox.margin>
+                                    </Label>
+                                    <ComboBox fx:id="cbRolEmpleado" disable="true" prefHeight="36.0" prefWidth="242.0" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="20.0" />
+                                 </VBox.margin>
+                              </VBox>
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
+                        </VBox>
+                        <VBox fx:id="vbUsuario" prefHeight="132.0" prefWidth="190.0" visible="false">
+                           <children>
+                              <Label text="Usuario">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </Label>
+                              <TextField fx:id="tfUsuario" disable="true" prefHeight="36.0" prefWidth="192.0" />
+                              <VBox prefHeight="132.0" prefWidth="190.0">
+                                 <children>
+                                    <CheckBox fx:id="chbModifContrasenia" mnemonicParsing="false" text="Modificar contraseña" visible="false" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="20.0" />
+                                 </VBox.margin>
+                              </VBox>
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
+                        </VBox>
+                        <VBox fx:id="vbContrasenia" prefHeight="132.0" prefWidth="206.0" visible="false">
+                           <children>
+                              <VBox prefHeight="104.0" prefWidth="274.0">
+                                 <children>
+                                    <Label text="Contraseña">
+                                       <VBox.margin>
+                                          <Insets />
+                                       </VBox.margin>
+                                    </Label>
+                                    <PasswordField fx:id="pfContrasenia" disable="true" prefHeight="25.0" prefWidth="168.0" />
+                                 </children>
+                              </VBox>
+                              <Label text="Confirmar Contraseña">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </Label>
+                              <PasswordField fx:id="pfConfirmacionContrasenia" disable="true" prefHeight="25.0" prefWidth="168.0" />
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
          </children>
       </FlowPane>
    </center>
