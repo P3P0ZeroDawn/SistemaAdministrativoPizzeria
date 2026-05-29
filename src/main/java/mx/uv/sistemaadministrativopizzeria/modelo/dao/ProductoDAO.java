@@ -184,6 +184,31 @@ public class ProductoDAO {
         return producto;
     }
     
+    public static boolean verificarCodigoExistente(String codigo){
+        int count = 0;
+        
+        try{
+            MySQLConnectionManager conn = MySQLConnectionManager.buildConnection();
+            String query = "SELECT COUNT(*) FROM producto WHERE codigo = ?";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setString(1, codigo);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                count = rs.getInt(1);
+            }
+            conn.close();   
+        }catch(SQLException ex){
+            System.getLogger(
+                ProductoDAO.class.getName()
+            ).log(
+                    System.Logger.Level.ERROR,
+                    (String) null,
+                    ex
+            );
+        }
+        return (count > 0);
+    }
+    
     public static List<Producto>
     obtenerProductosValidacionInventario() {
 

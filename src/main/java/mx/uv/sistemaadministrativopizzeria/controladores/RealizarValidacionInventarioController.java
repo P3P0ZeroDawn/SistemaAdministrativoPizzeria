@@ -11,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -22,6 +23,7 @@ import javafx.stage.Stage;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.CeldaEstadoTabla;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.JavaFXUtils;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Validador;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoHistorial;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.HistorialInventarioDAO;
@@ -123,21 +125,46 @@ public class RealizarValidacionInventarioController implements Initializable {
             private final TextField tf = new TextField();
 
             {
+                // VALIDACIONES
+                Validador.permitirDecimal(tf, 10);
+
                 tf.setAlignment(Pos.CENTER);
+
+                // OCUPAR TODA LA CELDA
+                tf.setMaxWidth(Double.MAX_VALUE);
+
+                setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+
+                setStyle("-fx-padding: 3;");
 
                 tf.textProperty().addListener((obs, oldV, newV) -> {
 
                     ProductoHistorial item = getTableRow().getItem();
+
                     if (item == null) return;
 
+                    if (newV == null || newV.isBlank()) {
+
+                        item.setCantidadReal(0.0);
+                        return;
+                    }
+
                     try {
-                        double val = (newV == null || newV.isBlank())
-                                ? 0.0
-                                : Double.parseDouble(newV);
 
-                        item.setCantidadReal(val);
+                        double valor = Double.parseDouble(newV);
 
-                    } catch (NumberFormatException ignored) {}
+                        // NO NEGATIVOS
+                        if (valor < 0) {
+                            tf.setText(oldV);
+                            return;
+                        }
+
+                        item.setCantidadReal(valor);
+
+                    } catch (NumberFormatException e) {
+
+                        tf.setText(oldV);
+                    }
                 });
             }
 
@@ -147,14 +174,24 @@ public class RealizarValidacionInventarioController implements Initializable {
                 super.updateItem(value, empty);
 
                 if (empty) {
+
                     setGraphic(null);
                     return;
                 }
 
-                tf.setText(value == null || value == 0.0 ? "" : String.valueOf(value));
+                tf.setText(
+                        value == null || value == 0.0
+                                ? ""
+                                : String.valueOf(value)
+                );
+
+                tf.prefWidthProperty().bind(
+                        getTableColumn().widthProperty().subtract(10)
+                );
+
                 setGraphic(tf);
             }
-        });
+        });        
 
         // ---------------- RAZÓN ----------------
         tcRazon.setCellValueFactory(p ->
@@ -166,10 +203,22 @@ public class RealizarValidacionInventarioController implements Initializable {
             private final TextField tf = new TextField();
 
             {
+                // VALIDACIONES
+                Validador.permitirTextoNumerico(tf, 150);
+
+                // OCUPAR TODA LA CELDA
+                tf.setMaxWidth(Double.MAX_VALUE);
+
+                setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+
+                setStyle("-fx-padding: 3;");
+
                 tf.textProperty().addListener((obs, oldV, newV) -> {
 
                     ProductoHistorial item = getTableRow().getItem();
+
                     if (item != null) {
+
                         item.setRazon(newV);
                     }
                 });
@@ -181,11 +230,17 @@ public class RealizarValidacionInventarioController implements Initializable {
                 super.updateItem(value, empty);
 
                 if (empty) {
+
                     setGraphic(null);
                     return;
                 }
 
                 tf.setText(value == null ? "" : value);
+
+                tf.prefWidthProperty().bind(
+                        getTableColumn().widthProperty().subtract(10)
+                );
+
                 setGraphic(tf);
             }
         });

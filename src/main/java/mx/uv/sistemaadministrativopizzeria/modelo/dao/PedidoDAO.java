@@ -111,11 +111,12 @@ public class PedidoDAO {
             }
 
             // Registrar el Pedido
-            String queryPedido = "INSERT INTO pedido (idUsuario, fechaPedido, total) VALUES (?, ?, ?)";
+            String queryPedido = "INSERT INTO pedido (idUsuario, fechaPedido, total, estatus) VALUES (?, ?, ?, ?)";
             PreparedStatement psPedido = conn.prepareStatement(queryPedido);
             psPedido.setInt(1, pedido.getIdUsuario());
             psPedido.setDate(2, Date.valueOf(pedido.getFechaPedido())); // Convertimos LocalDate a java.sql.Date
             psPedido.setDouble(3, pedido.getTotalAPagar());
+            psPedido.setString(4, Pedido.EstatusPedido.EnPreparacion.name());
             psPedido.executeUpdate();
 
             // 3. Obtener el ID autoincrementable que MySQL le asignó al Pedido
@@ -146,8 +147,8 @@ public class PedidoDAO {
             System.getLogger(PedidoDAO.class.getName()).log(System.Logger.Level.ERROR, ex.getMessage(), ex);
             try {
                 if (conn != null) {
-                    conn.setAutoCommit(true);
                     conn.rollback();
+                    conn.setAutoCommit(true);
                 }
             } catch (SQLException rollbackEx) {
                 System.getLogger(PedidoDAO.class.getName()).log(System.Logger.Level.ERROR, "Error al ejecutar rollback", rollbackEx);
@@ -216,14 +217,14 @@ public class PedidoDAO {
                 boolean esPreparadoViejo = rsViejo.getInt("esPreparado") == 1;
 
                 if (esPreparadoViejo) {
-                    // CORRECCIÓN: Seleccionamos 'idComponente' (que hace referencia al idProducto del insumo)
+                    // Recuperar insumos asociados al producto preparado
                     String queryInsumosViejos = "SELECT idProducto, cantidadCP FROM v_productoComponente WHERE idPreparado = ?";
                     PreparedStatement psInsV = conn.prepareStatement(queryInsumosViejos);
                     psInsV.setInt(1, idProdViejo);
                     ResultSet rsInsV = psInsV.executeQuery();
 
                     while (rsInsV.next()) {
-                        // CORRECCIÓN: Leemos la columna 'idComponente' para obtener el ID real del insumo en la tabla producto
+                        // idProducto representa el insumo/componente
                         int idInsumo = rsInsV.getInt("idProducto");
                         double cantComponente = rsInsV.getDouble("cantidadCP");
 

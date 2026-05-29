@@ -161,7 +161,7 @@ public class Validador {
 
         aplicarFiltro(
                 campo,
-                "[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\s]*",
+                "[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\\-\\s]*",
                 longitudMaxima
         );
     }

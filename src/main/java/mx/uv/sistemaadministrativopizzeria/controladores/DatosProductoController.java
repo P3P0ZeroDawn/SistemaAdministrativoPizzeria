@@ -74,6 +74,13 @@ public class DatosProductoController implements Initializable {
         chbPreparado.setOnAction(e -> configurarTipoProducto());
 
         chbInsumo.setOnAction(e -> configurarTipoProducto());
+        
+        Validador.permitirTextoNumerico(tfNombre, 45);
+        Validador.permitirTextoNumerico(tfCodigo, 45);
+        Validador.permitirTextoNumerico(tfDescripcion, 255);
+        Validador.permitirDecimal(tfPrecio, 45);
+        Validador.permitirDecimal(tfCantidad, 45);
+        Validador.permitirTextoNumerico(tfUnidadMedida, 60);
     }    
 
     @FXML
@@ -328,6 +335,11 @@ public class DatosProductoController implements Initializable {
             boolean resultado;
 
             if (modo == ModoFormulario.REGISTRO) {
+                
+                if(ProductoDAO.verificarCodigoExistente(productoRecuperado.getCodigo())){
+                    JavaFXUtils.mostrarError("Código de producto inválido", "El código ya se encuentra registrado", false);
+                    return;
+                }
 
                 int idGenerado =
                         ProductoDAO.registrarProducto(
