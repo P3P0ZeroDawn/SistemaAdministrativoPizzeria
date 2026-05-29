@@ -24,6 +24,7 @@ import mx.uv.sistemaadministrativopizzeria.App;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.BotonAccion;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemTextoBoton;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.JavaFXUtils;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ModoFormulario;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Ventana;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Pedido;
@@ -274,7 +275,7 @@ public class DatosPedidoController implements Initializable {
 
     @FXML
     private void clicConfirmar(ActionEvent event) {
-        if(pedido != null && !proPedidos.isEmpty() && pedido.getIdUsuario() != -1 && pedido.getIdUsuario() > 0){
+        if(pedido != null && !proPedidos.isEmpty() && pedido.getIdUsuario() > 0){
             if(modo.equals(ModoFormulario.REGISTRO)){
                 nuevoPedido();
             } else {
@@ -282,7 +283,11 @@ public class DatosPedidoController implements Initializable {
             }
                    
         } else{
-            System.out.println("Faltan datos");
+            if(pedido.getIdUsuario() <= 0){
+                JavaFXUtils.mostrarMensaje("Datos faltantes", "Por favor selecciones un usuario para el pedido", false);
+            } else{
+                JavaFXUtils.mostrarMensaje("Datos faltantes", "Faltan datos para realizar el pedido", false);
+            }
         }
     }
     
@@ -318,7 +323,4 @@ public class DatosPedidoController implements Initializable {
         }
     }
     
-    private void actualizarTotal(){
-        
-    }
 }

@@ -6,6 +6,7 @@ package mx.uv.sistemaadministrativopizzeria.controladores;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +29,11 @@ import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizable
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ModoFormulario;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Ventana;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Pedido;
+import mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoPedido;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.PedidoDAO;
+import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoDAO;
+import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoPedidoDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.UsuarioDAO;
 
 /**
@@ -123,7 +127,9 @@ public class ConsultaPedidosController implements Initializable {
             
             Pedido.EstatusPedido estatusSeleccionado = ventana.getController().getEstatus();
             if(estatusSeleccionado != null){
-                int resultado = PedidoDAO.cambiarEstatus(pedido.getIdPedido(), estatusSeleccionado);
+                int resultado = (estatusSeleccionado.equals(Pedido.EstatusPedido.Cancelado)) ?
+                        cancelarPedido(pedido):
+                        PedidoDAO.cambiarEstatus(pedido.getIdPedido(), estatusSeleccionado);
                 if(resultado != 0){
                     JavaFXUtils.mostrarMensaje("Cambio exitoso", "Se cambio el estado con exito", false);
                     llenarLista();
@@ -134,6 +140,23 @@ public class ConsultaPedidosController implements Initializable {
         } catch (IOException ex) {
             System.getLogger(ConsultaPedidosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
+    }
+    
+    private int cancelarPedido(Pedido pedido){
+        try {
+            if(pedido == null) throw new NullPointerException("No existe ningun pedido");
+            pedido = ProductoPedidoDAO.obtenerProPedidos(pedido);
+            for(ProductoPedido p: pedido.getProductos()){
+                p.setProducto(ProductoDAO.obtenerProducto(p.getProducto().getIdProducto()));
+                if(p.getProducto().getEsPreparado()){
+                    p.setProducto(ProductoDAO.obtenerProductosProducto(p.getProducto()));
+                }
+            }
+            return PedidoDAO.cancelarPedido(pedido);
+        } catch (SQLException | NullPointerException ex){
+            System.getLogger(DatosPedidoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        return 0;
     }
     
     private void llenarEstatus() {

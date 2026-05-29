@@ -326,4 +326,80 @@ public class PedidoDAO {
 
         return resultado;
     }
+
+    public static int cancelarPedido(Pedido pedido) {
+        int resultado = 0;
+        MySQLConnectionManager conn = null;
+
+        try {
+            conn = MySQLConnectionManager.buildConnection();
+            conn.setAutoCommit(false);
+
+            //Devolver las cantidades al inventario
+            for (ProductoPedido pp : pedido.getProductos()) {
+                Producto prod = pp.getProducto();
+                int cantidadPedida = pp.getCantidad();
+
+                if (prod.getEsPreparado()) {
+                    if (prod.getComponentes() == null || prod.getComponentes().isEmpty()) {
+                        throw new SQLException("El producto preparado '" + prod.getNombre() + "' no tiene insumos asignados en memoria.");
+                    }
+
+                    // Devolver el stock de cada insumo multiplicando por la cantidad de preparados del pedido
+                    for (ComponenteElaboracion comp : prod.getComponentes()) {
+                        double cantidadADevolver = comp.getCantidad() * cantidadPedida;
+
+                        String queryInsumo = "UPDATE producto SET cantidad = cantidad + ? WHERE idProducto = ?";
+                        PreparedStatement psInsumo = conn.prepareStatement(queryInsumo);
+                        psInsumo.setDouble(1, cantidadADevolver);
+                        psInsumo.setInt(2, comp.getProducto().getIdProducto());
+                        psInsumo.executeUpdate();
+                    }
+                } else {
+                    // Si es un producto normal, sumamos de vuelta la cantidad pedida directamente
+                    String queryProd = "UPDATE producto SET cantidad = cantidad + ? WHERE idProducto = ?";
+                    PreparedStatement psProd = conn.prepareStatement(queryProd);
+                    psProd.setDouble(1, (double) cantidadPedida);
+                    psProd.setInt(2, prod.getIdProducto());
+                    psProd.executeUpdate();
+                }
+            }
+
+            // PASO 2: Modificar a 0 la cantidad en la tabla
+            String queryActualizarPP = "UPDATE productoPedido SET cantidad = 0 WHERE idPedido = ?;";
+            PreparedStatement psActualizarPP = conn.prepareStatement(queryActualizarPP);
+            psActualizarPP.setInt(1, pedido.getIdPedido());
+            psActualizarPP.executeUpdate();
+
+            // PASO 3: Opcional pero recomendado - Cambiar el estatus del Pedido general a "CANCELADO"
+            String queryUpdatePedido = "UPDATE pedido SET estatus = 'Cancelado', total = 0.0 WHERE idPedido = ?";
+            PreparedStatement psUpdatePedido = conn.prepareStatement(queryUpdatePedido);
+            psUpdatePedido.setInt(1, pedido.getIdPedido());
+            psUpdatePedido.executeUpdate();
+
+            conn.commit(); // Consolidamos los cambios de manera segura
+            resultado = 1;
+
+        } catch (SQLException ex) {
+            System.getLogger(PedidoDAO.class.getName()).log(System.Logger.Level.ERROR, ex.getMessage(), ex);
+            try {
+                if (conn != null) {
+                    conn.rollback(); // Deshacemos todo ante cualquier error crítico
+                }
+            } catch (SQLException rollbackEx) {
+                System.getLogger(PedidoDAO.class.getName()).log(System.Logger.Level.ERROR, "Error al ejecutar rollback", rollbackEx);
+            }
+        } finally {
+            try {
+                if (conn != null) {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                }
+            } catch (SQLException closeEx) {
+                System.getLogger(PedidoDAO.class.getName()).log(System.Logger.Level.ERROR, "Error al cerrar conexión", closeEx);
+            }
+        }
+
+        return resultado;
+    }
 }
