@@ -24,6 +24,7 @@ import mx.uv.sistemaadministrativopizzeria.App;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.BotonAccion;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemTextoBoton;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.JavaFXUtils;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ModoFormulario;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Ventana;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Pedido;
@@ -40,6 +41,7 @@ public class ConsultaPedidosController implements Initializable {
 
     private ObservableList<Usuario> usuarios = FXCollections.observableArrayList();
     private ObservableList<Pedido.EstatusPedido> estatus = FXCollections.observableArrayList();
+    private ObservableList<Pedido> pedidos = FXCollections.observableArrayList();
     
     @FXML
     private ComboBox<Usuario> cbBusUsuario;
@@ -86,16 +88,49 @@ public class ConsultaPedidosController implements Initializable {
                 new BotonAccion<>(
                         "Cambiar estatus",
                         pedido -> {
-                            //eliminarUsuario((Usuario) usuario);
+                            cambiarEstatus(pedido);
                 })
         ));
     }
     
     private void editarPedido(Pedido pedido){
+        if(!pedido.getEstatus().equals(Pedido.EstatusPedido.EnPreparacion)){
+            JavaFXUtils.mostrarAdvertencia("No se puede modificar", 
+                    "El pedido ya no se puede modificar, solo se pueden modificar"
+                            + " aquellos en preparación", false);
+            return;
+        }
         try {
             Ventana<DatosPedidoController> ventana = App.setRootVentana("datosPedido");
             
             ventana.getController().configurar(ModoFormulario.EDICION, pedido);
+        } catch (IOException ex) {
+            System.getLogger(ConsultaPedidosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }
+    
+    private void cambiarEstatus(Pedido pedido){
+        if(!pedido.getEstatus().equals(Pedido.EstatusPedido.EnPreparacion)){
+            JavaFXUtils.mostrarAdvertencia("No se puede modificar el estatus", 
+                    "El estatus de este pedido ya no puede ser modificado", false);
+            return;
+        }
+        try {
+            Ventana<SeleccionEstatusPedidoController> ventana = 
+                    App.abrirVentanaEmergente("seleccionEstatusPedido", "Selección de estatus", 
+                            400, 200, true);
+            ventana.getStage().showAndWait();
+            
+            Pedido.EstatusPedido estatusSeleccionado = ventana.getController().getEstatus();
+            if(estatusSeleccionado != null){
+                int resultado = PedidoDAO.cambiarEstatus(pedido.getIdPedido(), estatusSeleccionado);
+                if(resultado != 0){
+                    JavaFXUtils.mostrarMensaje("Cambio exitoso", "Se cambio el estado con exito", false);
+                    llenarLista();
+                } else{
+                    JavaFXUtils.mostrarError("Cambio fallido", "No se logro combiar el estatus del pedido", false);
+                }
+            }
         } catch (IOException ex) {
             System.getLogger(ConsultaPedidosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
@@ -132,24 +167,26 @@ public class ConsultaPedidosController implements Initializable {
 
     
     private void llenarLista() {
-        List<Pedido> pedidos = PedidoDAO.obtenerPedidos();
+        List<Pedido> pedidosLista = PedidoDAO.obtenerPedidos();
 
         Usuario usuario = cbBusUsuario.getValue();
         LocalDate fecha = dpBusFecha.getValue();
         Pedido.EstatusPedido estatusSeleccionado = cbBusEstatus.getValue();
 
         if (usuario != null && usuario.getIdUsuario() != -1) {
-            pedidos.removeIf(p -> p.getIdUsuario() != usuario.getIdUsuario());
+            pedidosLista.removeIf(p -> p.getIdUsuario() != usuario.getIdUsuario());
         }
 
         if (fecha != null) {
-            pedidos.removeIf(p -> !p.getFechaPedido().equals(fecha));
+            pedidosLista.removeIf(p -> !p.getFechaPedido().equals(fecha));
         }
 
         if (estatusSeleccionado != null) {
-            pedidos.removeIf(p -> p.getEstatus() != estatusSeleccionado);
+            pedidosLista.removeIf(p -> p.getEstatus() != estatusSeleccionado);
         }
 
+        pedidos.clear();
+        pedidos.addAll(pedidosLista);
         lvPedidos.setItems(FXCollections.observableArrayList(pedidos));
     }
     

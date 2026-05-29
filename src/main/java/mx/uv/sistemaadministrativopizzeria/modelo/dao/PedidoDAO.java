@@ -43,6 +43,26 @@ public class PedidoDAO {
         return lista;
     }
 
+    public static int cambiarEstatus(int idPedido, Pedido.EstatusPedido estatus) {
+        int resultado = 0;
+        try {
+            MySQLConnectionManager conn = MySQLConnectionManager.buildConnection();
+            String query = "UPDATE pedido SET estatus = ? WHERE idPedido = ?;";
+
+            PreparedStatement ps = conn.prepareStatement(query);
+
+            ps.setString(1, estatus.name());
+            ps.setInt(2, idPedido);
+
+            resultado = ps.executeUpdate();
+
+            conn.close();
+        } catch (SQLException ex) {
+            System.getLogger(PedidoDAO.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+        return resultado;
+    }
+
     public static int realizarPedido(Pedido pedido) {
         int resultado = 0;
         MySQLConnectionManager conn = null;

@@ -124,7 +124,7 @@ public class DatosPedidoController implements Initializable {
     }
     
     private void llenarProductos(){
-        List<Producto> lista = ProductoDAO.obtenerProductos();
+        List<Producto> lista = ProductoDAO.obtenerProdParaPedido();
         for(Producto p: lista){
             if(p.getEsPreparado()){
                 p = ProductoDAO.obtenerProductosProducto(p);

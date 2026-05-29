@@ -54,6 +54,43 @@ public class ProductoDAO {
         return lista;
     }
     
+    public static List<Producto> obtenerProdParaPedido() {
+
+        List<Producto> lista = new ArrayList<>();
+
+        try {
+
+            MySQLConnectionManager conn =
+                    MySQLConnectionManager.buildConnection();
+
+            String query =
+                    "SELECT * FROM producto WHERE activo = 1 AND esInsumo = 0";
+
+            PreparedStatement ps =
+                    conn.prepareStatement(query);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                lista.add(
+                        serializarProducto(rs)
+                );
+            }
+
+            conn.close();
+
+        } catch (SQLException ex) {
+
+            System.getLogger(ProductoDAO.class.getName())
+                    .log(System.Logger.Level.ERROR,
+                            (String) null,
+                            ex);
+        }
+
+        return lista;
+    }
+    
     public static Producto obtenerProducto(int idProducto) {
 
         Producto producto = null;
