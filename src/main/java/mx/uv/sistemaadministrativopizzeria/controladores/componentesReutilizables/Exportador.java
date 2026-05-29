@@ -66,17 +66,17 @@ public class Exportador {
             String tipo = obtenerTipo(p);
 
             String precio =
-                    p.getEsInsumo()
+                    (p.getEsInsumo() == false)
                     ? valorSeguroDinero(p.getPrecio())
                     : "No aplica";
 
             String cantidad =
-                    p.getEsInsumo()
+                    (p.getEsPreparado() == false)
                     ? valorSeguro(p.getCantidad())
                     : "No aplica";
 
             String unidad =
-                    p.getEsInsumo()
+                    (p.getEsPreparado() == false)
                     ? textoSeguro(p.getUnidadMedida())
                     : "No aplica";
 
@@ -259,17 +259,17 @@ public class Exportador {
             String tipo = obtenerTipo(p);
 
             String precio =
-                    p.getEsInsumo()
+                    (p.getEsInsumo() == false)
                     ? valorSeguroDinero(p.getPrecio())
                     : "No aplica";
 
             String cantidad =
-                    p.getEsInsumo()
+                    (p.getEsPreparado() == false)
                     ? valorSeguro(p.getCantidad())
                     : "No aplica";
 
             String unidad =
-                    p.getEsInsumo()
+                    (p.getEsPreparado() == false)
                     ? textoSeguro(p.getUnidadMedida())
                     : "No aplica";
 
