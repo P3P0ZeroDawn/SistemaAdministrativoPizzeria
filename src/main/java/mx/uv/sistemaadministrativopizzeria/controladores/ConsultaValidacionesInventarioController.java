@@ -9,17 +9,24 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import mx.uv.sistemaadministrativopizzeria.App;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.CeldaEstadoTabla;
@@ -44,14 +51,20 @@ public class ConsultaValidacionesInventarioController implements Initializable {
     private ComboBox<HistorialInventario> cbBusValidacion;
     @FXML
     private TableView<ProductoHistorial> tvValidaciones;
+    @FXML 
+    private TableColumn<ProductoHistorial, ProductoHistorial> tcImagen;
     @FXML
     private TableColumn<ProductoHistorial, String> tcProducto;
     @FXML
-    private TableColumn<ProductoHistorial, String> tcExistenciaSistema;
+    private TableColumn<ProductoHistorial, Double> tcExistenciaSistema;
     @FXML
-    private TableColumn<ProductoHistorial, String> tcExistenciaReal;
+    private TableColumn<ProductoHistorial, Double> tcExistenciaReal;
     @FXML
     private TableColumn<ProductoHistorial, ProductoHistorial.EstatusExistencia> tcEstatusExistencia;
+    @FXML
+    private TableColumn<ProductoHistorial, String> tcUnidad;
+    @FXML
+    private TableColumn<ProductoHistorial, String> tcRazon;
 
     /**
      * Initializes the controller class.
@@ -102,15 +115,96 @@ public class ConsultaValidacionesInventarioController implements Initializable {
         tvValidaciones.setItems(productosHis);
     }
     
-    private void configurarTabla(){
-        tcProducto.setCellValueFactory(new PropertyValueFactory<>("nombreProducto"));
-        tcExistenciaSistema.setCellValueFactory(new PropertyValueFactory<>("cantidadSistema"));
-        tcExistenciaReal.setCellValueFactory(new PropertyValueFactory<>("cantidadReal"));
-        tcEstatusExistencia.setCellValueFactory(new PropertyValueFactory<>("estatusExistencia"));
+    private void configurarTabla() {
+
+        // ================= IMAGEN =================
+        tcImagen.setCellValueFactory(p ->
+                new ReadOnlyObjectWrapper<>(p.getValue())
+        );
+
+        tcImagen.setCellFactory(col -> new TableCell<ProductoHistorial, ProductoHistorial>() {
+
+            private final ImageView iv = new ImageView();
+            private final StackPane container = new StackPane();
+
+            {
+                iv.setFitWidth(45);
+                iv.setFitHeight(45);
+                iv.setPreserveRatio(true);
+
+                container.setAlignment(Pos.CENTER);
+                container.setStyle(
+                        "-fx-background-color: white;" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-padding: 5;"
+                );
+
+                container.getChildren().add(iv);
+            }
+
+            @Override
+            protected void updateItem(ProductoHistorial item, boolean empty) {
+
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                iv.setImage(
+                        item.getProducto() != null
+                                ? item.getProducto().getFoto()
+                                : null
+                );
+
+                setGraphic(container);
+            }
+        });
+
+        // ================= PRODUCTO =================
+        tcProducto.setCellValueFactory(p ->
+                new SimpleStringProperty(p.getValue().getNombreProducto())
+        );
+
+        // ================= SISTEMA =================
+        tcExistenciaSistema.setCellValueFactory(p ->
+                new ReadOnlyObjectWrapper<>(p.getValue().getCantidadSistema())
+        );
+
+        // ================= REAL =================
+        tcExistenciaReal.setCellValueFactory(p ->
+                new ReadOnlyObjectWrapper<>(p.getValue().getCantidadReal())
+        );
+
+        // ================= UNIDAD =================
+        tcUnidad.setCellValueFactory(p ->
+                new SimpleStringProperty(
+                        p.getValue().getProducto() != null
+                                ? p.getValue().getProducto().getUnidadMedida()
+                                : ""
+                )
+        );
+
+        // ================= RAZÓN =================
+        tcRazon.setCellValueFactory(p ->
+                new SimpleStringProperty(
+                        p.getValue().getRazon() == null
+                                ? ""
+                                : p.getValue().getRazon()
+                )
+        );
+
+        // ================= ESTADO =================
+        tcEstatusExistencia.setCellValueFactory(p ->
+                new ReadOnlyObjectWrapper<>(p.getValue().getEstatusExistencia())
+        );
+
         tcEstatusExistencia.setCellFactory(param -> new CeldaEstadoTabla<>(estatus -> {
-            if(estatus == null)
-                return null;
-            switch(estatus){
+
+            if (estatus == null) return null;
+
+            switch (estatus) {
                 case Correcta:
                     return new Badge("Correcta", "#7FFC6475");
                 case Faltante:
@@ -121,6 +215,14 @@ public class ConsultaValidacionesInventarioController implements Initializable {
                     return new Badge(estatus.toString(), "transparent");
             }
         }));
+
+        // ================= ESTILO =================
+        tcProducto.setStyle("-fx-alignment: CENTER-LEFT;");
+        tcExistenciaSistema.setStyle("-fx-alignment: CENTER;");
+        tcExistenciaReal.setStyle("-fx-alignment: CENTER;");
+        tcUnidad.setStyle("-fx-alignment: CENTER;");
+        tcRazon.setStyle("-fx-alignment: CENTER-LEFT;");
+        tcEstatusExistencia.setStyle("-fx-alignment: CENTER;");
     }
     
     public void configurarDatePicker() {
@@ -141,6 +243,15 @@ public class ConsultaValidacionesInventarioController implements Initializable {
     @FXML
     private void btnVolver(ActionEvent event) {
         try {
+            App.configurarVentana(
+                ((Stage) dpBusFecha.getScene().getWindow()),
+                "Sistema Administrativo Pizzeria Italia Pizza",
+                700, 300,
+                815, 650,
+                900, 700,
+                false
+            );
+            ((Stage) dpBusFecha.getScene().getWindow()).centerOnScreen();
             App.setRoot("menuEmpleadoAdministrador");
         } catch (IOException ex) {
             System.getLogger(ConsultaUsuariosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);

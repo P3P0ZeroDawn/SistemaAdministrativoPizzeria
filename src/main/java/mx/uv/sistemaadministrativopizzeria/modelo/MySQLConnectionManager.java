@@ -31,7 +31,7 @@ public class MySQLConnectionManager {
      */
     private MySQLConnectionManager() throws SQLException {
         driver = "com.mysql.cj.jdbc.Driver";
-        url = "jdbc:mysql://" + host + ":" + port + "/" + db + "?useTimezone=true&serverTimezone=UTC";
+        url = "jdbc:mysql://" + host + ":" + port + "/" + db + "?useTimezone=true&serverTimezone=America/Mexico_City";
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {

@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" stylesheets="@../../../css/primer-light.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.sistemaadministrativopizzeria.controladores.ConsultaValidacionesInventarioController">
+<BorderPane prefHeight="600.0" prefWidth="1200.0" stylesheets="@../../../css/primer-light.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.sistemaadministrativopizzeria.controladores.ConsultaValidacionesInventarioController">
    <top>
       <VBox spacing="10.0" BorderPane.alignment="CENTER">
          <children>
@@ -29,7 +29,7 @@
                               <Font size="30.0" />
                            </font>
                         </Label>
-                        <Region prefHeight="60.0" prefWidth="303.0" />
+                        <Region prefHeight="60.0" prefWidth="700.0" />
                      </children>
                   </HBox>
                   <StackPane alignment="CENTER_RIGHT" prefWidth="100.0">
@@ -92,10 +92,13 @@
    <center>
       <TableView fx:id="tvValidaciones" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
+            <TableColumn fx:id="tcImagen" prefWidth="70.0" text="" />
           <TableColumn fx:id="tcProducto" prefWidth="269.0" text="Producto" />
           <TableColumn fx:id="tcExistenciaSistema" prefWidth="173.0" text="Existencia en el sistema" />
-            <TableColumn fx:id="tcExistenciaReal" prefWidth="165.0" text="Existencia real" />
-            <TableColumn fx:id="tcEstatusExistencia" prefWidth="194.0" text="Estatus de existencia" />
+            <TableColumn fx:id="tcUnidad" prefWidth="119.20001220703125" text="Unidad" />
+            <TableColumn fx:id="tcExistenciaReal" prefWidth="110.0" text="Existencia real" />
+            <TableColumn fx:id="tcRazon" prefWidth="150.0" text="Razón" />
+            <TableColumn fx:id="tcEstatusExistencia" prefWidth="243.0" text="Estado" />
         </columns>
          <BorderPane.margin>
             <Insets bottom="20.0" left="15.0" right="15.0" top="10.0" />

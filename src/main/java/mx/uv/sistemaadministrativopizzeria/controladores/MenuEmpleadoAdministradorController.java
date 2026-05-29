@@ -12,7 +12,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 import mx.uv.sistemaadministrativopizzeria.App;
+import static mx.uv.sistemaadministrativopizzeria.App.configurarVentana;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
 
 /**
@@ -87,6 +89,15 @@ public class MenuEmpleadoAdministradorController implements Initializable {
     @FXML
     private void clicBtnValidaciones(ActionEvent event) {
         try {
+            App.configurarVentana(
+                ((Stage) lbNombreEmpleado.getScene().getWindow()),
+                "Sistema Administrativo Pizzeria Italia Pizza",
+                1200, 700,
+                1200, 700,
+                1200, 700,
+                false
+            );
+            ((Stage) lbNombreEmpleado.getScene().getWindow()).centerOnScreen();
             App.setRoot("consultaValidacionesInventario");
         } catch (IOException ex) {
             System.getLogger(MenuEmpleadoAdministradorController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);

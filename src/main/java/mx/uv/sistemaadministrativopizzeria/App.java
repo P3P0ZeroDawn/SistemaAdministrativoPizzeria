@@ -21,12 +21,14 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        stage.setTitle("Sistema Administrativo Pizzeria Italia Pizza");
-        stage.setMinWidth(700);
-        stage.setMinHeight(300);
-        stage.setMaxWidth(900);
-        stage.setMaxHeight(700);
-        stage.setResizable(false);
+        configurarVentana(
+                stage,
+                "Sistema Administrativo Pizzeria Italia Pizza",
+                700, 300,
+                815, 650,
+                900, 700,
+                false
+        );
         scene = new Scene(loadFXML("inicioSesion"), 800, 600);
         scene.getStylesheets().add(
                 App.class.getResource("/css/primer-light.css").toExternalForm()
@@ -114,6 +116,23 @@ public class App extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
+    
+    public static void configurarVentana(Stage stage,
+                                        String titulo,
+                                        int minW, int minH,
+                                        int prefW, int prefH,
+                                        int maxW, int maxH,
+                                        boolean resizable) {
+
+       stage.setTitle(titulo);
+       stage.setMinWidth(minW);
+       stage.setMinHeight(minH);
+       stage.setWidth(prefW);
+       stage.setHeight(prefH);
+       stage.setMaxWidth(maxW);
+       stage.setMaxHeight(maxH);
+       stage.setResizable(resizable);
+   }
 
     public static void main(String[] args) {
         launch();
