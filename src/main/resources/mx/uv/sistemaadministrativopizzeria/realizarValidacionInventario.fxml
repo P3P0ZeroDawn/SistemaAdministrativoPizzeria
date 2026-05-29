@@ -3,85 +3,126 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" stylesheets="@../../../css/primer-light.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.sistemaadministrativopizzeria.controladores.RealizarValidacionInventarioController">
-   <top>
-      <VBox spacing="10.0" BorderPane.alignment="CENTER">
-         <children>
-            <HBox alignment="CENTER">
-               <children>
-                  <HBox alignment="CENTER_LEFT" spacing="10.0">
-                     <children>
+<BorderPane prefHeight="600.0" prefWidth="1200.0" stylesheets="@../../../css/primer-light.css" xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.uv.sistemaadministrativopizzeria.controladores.RealizarValidacionInventarioController">
+
+    <!-- TOP -->
+    <top>
+        <VBox spacing="10.0" BorderPane.alignment="CENTER">
+
+            <children>
+
+                <HBox alignment="CENTER_LEFT" spacing="10">
+
+                    <children>
+
                         <Label text="Validación de inventario">
-                           <font>
-                              <Font size="30.0" />
-                           </font>
+
+                            <font>
+                                <Font size="30.0" />
+                            </font>
+
                         </Label>
-                        <Region prefHeight="60.0" prefWidth="316.0" />
-                     </children>
-                  </HBox>
-                  <StackPane alignment="CENTER_RIGHT" prefWidth="100.0">
-                     <children>
-                        <Button alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#btnVolver" prefHeight="39.0" prefWidth="100.0" text="Volver" textAlignment="RIGHT">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Button>
-                        <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="CENTER_LEFT">
-                           <image>
-                              <Image url="@../../../imagenes/volver.png" />
-                           </image>
-                           <StackPane.margin>
-                              <Insets left="5.0" />
-                           </StackPane.margin>
-                        </ImageView>
-                     </children>
-                  </StackPane>
-               </children>
-            </HBox>
-         </children>
-         <BorderPane.margin>
-            <Insets top="20.0" />
-         </BorderPane.margin>
-      </VBox>
-   </top>
-   <center>
-      <ListView fx:id="lvProductos" prefHeight="452.0" prefWidth="760.0" BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
-         </BorderPane.margin>
-      </ListView>
-   </center>
-   <bottom>
-      <HBox prefHeight="42.0" prefWidth="800.0" BorderPane.alignment="CENTER">
-         <children>
-            <Button mnemonicParsing="false" onAction="#clicBtnCancelar" prefHeight="39.0" prefWidth="100.0" text="Cancelar">
+
+                        <Region HBox.hgrow="ALWAYS" />
+
+                    </children>
+
+                </HBox>
+
+            </children>
+
+            <padding>
+                <Insets bottom="10" left="20" right="20" top="20" />
+            </padding>
+
+        </VBox>
+    </top>
+
+    <!-- CENTER -->
+    <center>
+
+        <VBox spacing="10" BorderPane.alignment="CENTER">
+
+            <children>
+
+                <TableView fx:id="tvProductos" editable="true" style="-fx-background-color: transparent; -fx-border-color: lightgray;" VBox.vgrow="ALWAYS">
+
+                    <columns>
+
+                        <TableColumn fx:id="tcImagen" prefWidth="70.0" text="" />
+
+                        <TableColumn fx:id="tcProducto" prefWidth="240.0" text="Producto" />
+
+                        <TableColumn fx:id="tcSistema" prefWidth="120.0" text="Sistema" />
+
+                        <TableColumn fx:id="tcUnidad" prefWidth="100.0" text="Unidad" />
+
+                        <TableColumn fx:id="tcReal" prefWidth="120.0" text="Real" />
+
+                        <TableColumn fx:id="tcRazon" prefWidth="260.0" text="Razón" />
+
+                        <TableColumn fx:id="tcEstado" prefWidth="254.0" text="Estado" />
+
+                    </columns>
+
+                </TableView>
+
+            </children>
+
+            <padding>
+                <Insets bottom="10" left="10" right="10" />
+            </padding>
+
+        </VBox>
+
+    </center>
+
+    <!-- BOTTOM -->
+    <bottom>
+
+        <HBox alignment="CENTER" prefHeight="70" spacing="10" BorderPane.alignment="CENTER">
+
+            <children>
+
+                <Button mnemonicParsing="false" onAction="#clicBtnCancelar" prefHeight="40" prefWidth="120" text="Cancelar">
+
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+
+                </Button>
+            <Region prefHeight="41.0" prefWidth="359.0" />
+
+                <Button mnemonicParsing="false" onAction="#clicBtnValidar" prefHeight="40" prefWidth="120" text="Validar">
+
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+
+                </Button>
+            <Region prefHeight="41.0" prefWidth="369.0" />
+            <Button mnemonicParsing="false" onAction="#clicBtnGuardar" prefHeight="40" prefWidth="120" text="Guardar">
                <font>
-                  <Font size="18.0" />
+                  <Font size="16.0" />
                </font>
-               <HBox.margin>
-                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-               </HBox.margin>
             </Button>
-            <Region prefHeight="83.0" prefWidth="504.0" />
-            <Button mnemonicParsing="false" onAction="#clicBtnGuardar" prefHeight="39.0" prefWidth="116.0" text="Guardar">
-               <font>
-                  <Font size="18.0" />
-               </font>
-               <HBox.margin>
-                  <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
-               </HBox.margin>
-            </Button>
-         </children>
-      </HBox>
-   </bottom>
+
+            </children>
+
+            <padding>
+                <Insets bottom="20" left="20" right="20" top="10" />
+            </padding>
+
+        </HBox>
+
+    </bottom>
+
 </BorderPane>

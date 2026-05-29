@@ -23,6 +23,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import mx.uv.sistemaadministrativopizzeria.App;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.CeldaEstadoTabla;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Ventana;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.HistorialInventario;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoHistorial;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.HistorialInventarioDAO;
@@ -149,7 +150,17 @@ public class ConsultaValidacionesInventarioController implements Initializable {
     @FXML
     private void btnRealizarValidacion(ActionEvent event) {
         try {
-            App.setRoot("realizarValidacionInventario");
+            Ventana<RealizarValidacionInventarioController> ventana =
+                    App.abrirVentanaEmergente(
+                            "realizarValidacionInventario",
+                            "Validación de inventario",
+                            1200,
+                            600,
+                            true
+                    );
+            
+            ventana.getStage().showAndWait();
+            llenarComboBox(dpBusFecha.getValue());
         } catch (IOException ex) {
             System.getLogger(ConsultaValidacionesInventarioController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }

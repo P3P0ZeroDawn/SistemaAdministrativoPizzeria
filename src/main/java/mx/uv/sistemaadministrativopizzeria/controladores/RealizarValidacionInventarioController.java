@@ -1,187 +1,330 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/javafx/FXMLController.java to edit this template
- */
 package mx.uv.sistemaadministrativopizzeria.controladores;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ListView;
-import mx.uv.sistemaadministrativopizzeria.App;
-import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemValidacionInventario;
+import javafx.geometry.Pos;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.CeldaEstadoTabla;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.JavaFXUtils;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoHistorial;
-import mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoValidacionInventario;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.HistorialInventarioDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoDAO;
 
-/**
- * FXML Controller class
- *
- * @author hp
- */
 public class RealizarValidacionInventarioController implements Initializable {
 
     private ObservableList<ProductoHistorial> productos;
-    
-    @FXML
-    private ListView<ProductoHistorial> lvProductos;
 
-    /**
-     * Initializes the controller class.
-     */
+    @FXML private TableView<ProductoHistorial> tvProductos;
+    @FXML private TableColumn<ProductoHistorial, ProductoHistorial> tcImagen;
+    @FXML private TableColumn<ProductoHistorial, String> tcProducto;
+    @FXML private TableColumn<ProductoHistorial, Double> tcSistema;
+    @FXML private TableColumn<ProductoHistorial, String> tcUnidad;
+    @FXML private TableColumn<ProductoHistorial, Double> tcReal;
+    @FXML private TableColumn<ProductoHistorial, String> tcRazon;
+    @FXML private TableColumn<ProductoHistorial, ProductoHistorial.EstatusExistencia> tcEstado;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        configurarTabla();
+        cargarProductos();
+    }
+
+    // ================= CONFIGURACIÓN TABLA =================
+    private void configurarTabla() {
+
+        tvProductos.setFixedCellSize(60);
+
+        // ---------------- IMAGEN ----------------
+        tcImagen.setCellValueFactory(p ->
+                new ReadOnlyObjectWrapper<>(p.getValue())
+        );
+
+        tcImagen.setCellFactory(col -> new TableCell<ProductoHistorial, ProductoHistorial>() {
+
+            private final ImageView iv = new ImageView();
+            private final StackPane container = new StackPane();
+
+            {
+                iv.setFitWidth(45);
+                iv.setFitHeight(45);
+                iv.setPreserveRatio(true);
+
+                container.setAlignment(Pos.CENTER);
+                container.setStyle(
+                        "-fx-background-color: white;" +
+                        "-fx-background-radius: 10;" +
+                        "-fx-padding: 5;"
+                );
+
+                container.getChildren().add(iv);
+            }
+
+            @Override
+            protected void updateItem(ProductoHistorial item, boolean empty) {
+
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setGraphic(null);
+                    return;
+                }
+
+                ProductoHistorial ph = item;
+
+                if (ph.getProducto() != null) {
+                    iv.setImage(ph.getProducto().getFoto());
+                } else {
+                    iv.setImage(null);
+                }
+
+                setGraphic(container);
+            }
+        });
+
+        // ---------------- PRODUCTO ----------------
+        tcProducto.setCellValueFactory(p ->
+                new SimpleStringProperty(p.getValue().getNombreProducto())
+        );
+
+        // ---------------- SISTEMA ----------------
+        tcSistema.setCellValueFactory(p ->
+                new ReadOnlyObjectWrapper<>(p.getValue().getCantidadSistema())
+        );
+
+        // ---------------- UNIDAD ----------------
+        tcUnidad.setCellValueFactory(p ->
+                new SimpleStringProperty(p.getValue().getProducto().getUnidadMedida())
+        );
+
+        // ---------------- REAL (LIBRE EDICIÓN) ----------------
+        tcReal.setCellValueFactory(p ->
+                new ReadOnlyObjectWrapper<>(p.getValue().getCantidadReal())
+        );
+
+        tcReal.setCellFactory(col -> new TableCell<>() {
+
+            private final TextField tf = new TextField();
+
+            {
+                tf.setAlignment(Pos.CENTER);
+
+                tf.textProperty().addListener((obs, oldV, newV) -> {
+
+                    ProductoHistorial item = getTableRow().getItem();
+                    if (item == null) return;
+
+                    try {
+                        double val = (newV == null || newV.isBlank())
+                                ? 0.0
+                                : Double.parseDouble(newV);
+
+                        item.setCantidadReal(val);
+
+                    } catch (NumberFormatException ignored) {}
+                });
+            }
+
+            @Override
+            protected void updateItem(Double value, boolean empty) {
+
+                super.updateItem(value, empty);
+
+                if (empty) {
+                    setGraphic(null);
+                    return;
+                }
+
+                tf.setText(value == null || value == 0.0 ? "" : String.valueOf(value));
+                setGraphic(tf);
+            }
+        });
+
+        // ---------------- RAZÓN ----------------
+        tcRazon.setCellValueFactory(p ->
+                new SimpleStringProperty(p.getValue().getRazon())
+        );
+
+        tcRazon.setCellFactory(col -> new TableCell<>() {
+
+            private final TextField tf = new TextField();
+
+            {
+                tf.textProperty().addListener((obs, oldV, newV) -> {
+
+                    ProductoHistorial item = getTableRow().getItem();
+                    if (item != null) {
+                        item.setRazon(newV);
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(String value, boolean empty) {
+
+                super.updateItem(value, empty);
+
+                if (empty) {
+                    setGraphic(null);
+                    return;
+                }
+
+                tf.setText(value == null ? "" : value);
+                setGraphic(tf);
+            }
+        });
+
+        // ---------------- ESTADO ----------------
+        tcEstado.setCellValueFactory(p ->
+                new ReadOnlyObjectWrapper<>(p.getValue().getEstatusExistencia())
+        );
+
+        tcEstado.setCellFactory(param -> new CeldaEstadoTabla<>(estatus -> {
+
+            if (estatus == null) return null;
+
+            switch (estatus) {
+                case Correcta:
+                    return new Badge("Correcta", "#7FFC6475");
+                case Faltante:
+                    return new Badge("Faltante", "#FF7474CC");
+                case Sobrante:
+                    return new Badge("Sobrante", "#FF8D2899");
+                default:
+                    return new Badge(estatus.toString(), "transparent");
+            }
+        }));
+
+        tcSistema.setStyle("-fx-alignment:CENTER;");
+        tcUnidad.setStyle("-fx-alignment:CENTER;");
+        tcReal.setStyle("-fx-alignment:CENTER;");
+        tcEstado.setStyle("-fx-alignment:CENTER;");
+    }
+
+    // ================= CARGA =================
+    private void cargarProductos() {
 
         productos = FXCollections.observableArrayList();
 
-        List<Producto> listaProductos =
+        List<Producto> lista =
                 ProductoDAO.obtenerProductosValidacionInventario();
 
-        for (Producto producto : listaProductos) {
+        for (Producto p : lista) {
 
-            ProductoHistorial ph =
-                    new ProductoHistorial();
+            ProductoHistorial ph = new ProductoHistorial();
 
-            ph.setProducto(producto);
+            ph.setProducto(p);
+            ph.setCantidadSistema(p.getCantidad());
 
-            /*
-             * EXISTENCIA SISTEMA
-             */
-            ph.setCantidadSistema(
-                    producto.getCantidad()
-            );
-
-            /*
-             * INICIALMENTE IGUAL
-             */
-            ph.setCantidadReal(
-                    producto.getCantidad()
-            );
-
-            /*
-             * SIN DIFERENCIAS
-             */
-            ph.setEstatusExistencia(
-                    ProductoHistorial
-                            .EstatusExistencia
-                            .Correcta
-            );
-
+            // inicio vacío
+            ph.setCantidadReal(0.0);
             ph.setRazon("");
+            ph.setEstatusExistencia(null);
 
             productos.add(ph);
         }
 
-        lvProductos.setItems(productos);
-        
-        lvProductos.setCellFactory(
-                param -> new ItemValidacionInventario()
-        );
-    }    
+        tvProductos.setItems(productos);
+    }
 
+    // ================= VALIDACIÓN MANUAL =================
     @FXML
-    private void btnVolver(ActionEvent event) {
-        try {
-            App.setRoot("consultaValidacionesInventario");
-        } catch (IOException ex) {
-            System.getLogger(RealizarValidacionInventarioController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+    private void clicBtnValidar(ActionEvent event) {
+        validarExistencias();
+    }
+    
+    private void validarExistencias(){
+        for (ProductoHistorial item : productos) {
+            calcularEstatus(item);
+        }
+        tvProductos.refresh();
+    }
+
+    // ================= LÓGICA =================
+    private void calcularEstatus(ProductoHistorial item) {
+
+        double sistema = item.getCantidadSistema();
+        double real = item.getCantidadReal();
+
+        if (real == sistema) {
+            item.setEstatusExistencia(ProductoHistorial.EstatusExistencia.Correcta);
+        } else if (real < sistema) {
+            item.setEstatusExistencia(ProductoHistorial.EstatusExistencia.Faltante);
+        } else {
+            item.setEstatusExistencia(ProductoHistorial.EstatusExistencia.Sobrante);
         }
     }
 
+    // ================= CANCELAR =================
     @FXML
     private void clicBtnCancelar(ActionEvent event) {
 
-        boolean confirmado =
-                JavaFXUtils.mostrarConfirmacion(
-                        "Cancelar",
-                        "¿Desea cancelar la validación?"
-                );
-
-        if (confirmado) {
-
-            try {
-
-                App.setRoot(
-                        "consultaValidacionesInventario"
-                );
-
-            } catch (IOException ex) {
-
-                ex.printStackTrace();
-            }
+        if (JavaFXUtils.mostrarConfirmacion(
+                "Cancelar",
+                "¿Desea cancelar la validación?"
+        )) {
+            ((Stage) tvProductos.getScene().getWindow()).close();
         }
     }
 
+    // ================= GUARDAR =================
     @FXML
     private void clicBtnGuardar(ActionEvent event) {
-        
+        validarExistencias();
         for (ProductoHistorial p : productos) {
 
-            boolean diferencia =
-                    p.getEstatusExistencia()
-                    != ProductoHistorial
-                            .EstatusExistencia
-                            .Correcta;
+            if (p.getEstatusExistencia() == null) continue;
+
+            boolean diff =
+                    p.getEstatusExistencia() != ProductoHistorial.EstatusExistencia.Correcta;
 
             boolean razonVacia =
-                    p.getRazon() == null
-                    || p.getRazon().isBlank();
+                    p.getRazon() == null || p.getRazon().isBlank();
 
-            if (diferencia && razonVacia) {
+            if (diff && razonVacia) {
 
                 JavaFXUtils.mostrarAdvertencia(
                         "Razón requerida",
-                        "Debe ingresar una razón para "
-                        + p.getNombreProducto(),
+                        "Debe ingresar una razón para " + p.getNombreProducto(),
                         false
                 );
-
                 return;
             }
         }
 
-        boolean resultado =
-                HistorialInventarioDAO
-                        .guardarHistorialInventario(
-                                productos
-                        );
+        boolean ok =
+                HistorialInventarioDAO.guardarHistorialInventario(productos);
 
-        if (resultado) {
-
+        if (ok) {
             JavaFXUtils.mostrarMensaje(
-                    "Validación guardada",
-                    "La validación se guardó correctamente",
+                    "Validación completada",
+                    "Guardado correctamente",
                     false
             );
 
-            try {
-
-                App.setRoot(
-                        "consultaValidacionesInventario"
-                );
-
-            } catch (IOException ex) {
-
-                ex.printStackTrace();
-            }
-
+            ((Stage) tvProductos.getScene().getWindow()).close();
         } else {
-
             JavaFXUtils.mostrarError(
                     "Error",
-                    "No se pudo guardar la validación",
+                    "No se pudo guardar",
                     false
             );
         }
     }
-    
 }
