@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.HashMap;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Ventana;
 
@@ -21,6 +22,10 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        Image icon = new Image("/imagenes/icon.png");
+        
+        // Add the icon to the stage
+        stage.getIcons().add(icon);
         configurarVentana(
                 stage,
                 "Sistema Administrativo Pizzeria Italia Pizza",
