@@ -23,14 +23,14 @@ public class ProductoDAO {
 
         try {
 
-            MySQLConnectionManager conn =
-                    MySQLConnectionManager.buildConnection();
+            MySQLConnectionManager conn
+                    = MySQLConnectionManager.buildConnection();
 
-            String query =
-                    "SELECT * FROM producto WHERE activo = 1";
+            String query
+                    = "SELECT * FROM producto WHERE activo = 1";
 
-            PreparedStatement ps =
-                    conn.prepareStatement(query);
+            PreparedStatement ps
+                    = conn.prepareStatement(query);
 
             ResultSet rs = ps.executeQuery();
 
@@ -53,21 +53,21 @@ public class ProductoDAO {
 
         return lista;
     }
-    
+
     public static List<Producto> obtenerProdParaPedido() {
 
         List<Producto> lista = new ArrayList<>();
 
         try {
 
-            MySQLConnectionManager conn =
-                    MySQLConnectionManager.buildConnection();
+            MySQLConnectionManager conn
+                    = MySQLConnectionManager.buildConnection();
 
-            String query =
-                    "SELECT * FROM producto WHERE activo = 1 AND esInsumo = 0";
+            String query
+                    = "SELECT * FROM producto WHERE activo = 1 AND esInsumo = 0";
 
-            PreparedStatement ps =
-                    conn.prepareStatement(query);
+            PreparedStatement ps
+                    = conn.prepareStatement(query);
 
             ResultSet rs = ps.executeQuery();
 
@@ -90,26 +90,26 @@ public class ProductoDAO {
 
         return lista;
     }
-    
+
     public static Producto obtenerProducto(int idProducto) {
 
         Producto producto = null;
 
         try {
 
-            MySQLConnectionManager conn =
-                    MySQLConnectionManager.buildConnection();
+            MySQLConnectionManager conn
+                    = MySQLConnectionManager.buildConnection();
 
-            String query =
-                    "SELECT * FROM producto WHERE idProducto = ?";
+            String query
+                    = "SELECT * FROM producto WHERE idProducto = ?";
 
-            PreparedStatement ps =
-                    conn.prepareStatement(query);
+            PreparedStatement ps
+                    = conn.prepareStatement(query);
             ps.setInt(1, idProducto);
 
             ResultSet rs = ps.executeQuery();
 
-            if(rs.next()){
+            if (rs.next()) {
                 producto = serializarProducto(rs);
             }
             conn.close();
@@ -123,24 +123,24 @@ public class ProductoDAO {
         }
         return producto;
     }
-    
-    public static Producto obtenerProductosProducto(
-        Producto producto) {
 
-        List<ComponenteElaboracion> lista =
-                new ArrayList<>();
+    public static Producto obtenerProductosProducto(
+            Producto producto) {
+
+        List<ComponenteElaboracion> lista
+                = new ArrayList<>();
 
         try {
 
-            MySQLConnectionManager conn =
-                    MySQLConnectionManager.buildConnection();
+            MySQLConnectionManager conn
+                    = MySQLConnectionManager.buildConnection();
 
-            String query =
-                    "SELECT * FROM v_productoComponente"
+            String query
+                    = "SELECT * FROM v_productoComponente"
                     + " WHERE idPreparado = ?;";
 
-            PreparedStatement ps =
-                    conn.prepareStatement(query);
+            PreparedStatement ps
+                    = conn.prepareStatement(query);
 
             ps.setInt(1,
                     producto.getIdProducto());
@@ -149,11 +149,11 @@ public class ProductoDAO {
 
             while (rs.next()) {
 
-                Producto p =
-                        serializarProducto(rs);
+                Producto p
+                        = serializarProducto(rs);
 
-                ComponenteElaboracion componente =
-                        new ComponenteElaboracion();
+                ComponenteElaboracion componente
+                        = new ComponenteElaboracion();
 
                 componente.setProducto(p);
 
@@ -183,23 +183,23 @@ public class ProductoDAO {
 
         return producto;
     }
-    
-    public static boolean verificarCodigoExistente(String codigo){
+
+    public static boolean verificarCodigoExistente(String codigo) {
         int count = 0;
-        
-        try{
+
+        try {
             MySQLConnectionManager conn = MySQLConnectionManager.buildConnection();
             String query = "SELECT COUNT(*) FROM producto WHERE codigo = ?";
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, codigo);
             ResultSet rs = ps.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 count = rs.getInt(1);
             }
-            conn.close();   
-        }catch(SQLException ex){
+            conn.close();
+        } catch (SQLException ex) {
             System.getLogger(
-                ProductoDAO.class.getName()
+                    ProductoDAO.class.getName()
             ).log(
                     System.Logger.Level.ERROR,
                     (String) null,
@@ -208,56 +208,53 @@ public class ProductoDAO {
         }
         return (count > 0);
     }
-    
+
     public static List<Producto>
-    obtenerProductosValidacionInventario() {
+            obtenerProductosValidacionInventario() {
 
+        List<Producto> lista
+                = new ArrayList<>();
 
-    List<Producto> lista =
-            new ArrayList<>();
+        try {
 
-    try {
+            MySQLConnectionManager conn
+                    = MySQLConnectionManager
+                            .buildConnection();
 
-        MySQLConnectionManager conn =
-                MySQLConnectionManager
-                        .buildConnection();
+            String query
+                    = "SELECT * FROM producto "
+                    + "WHERE activo = 1 "
+                    + "AND esPreparado = 0";
 
-        String query =
-                "SELECT * FROM producto "
-                + "WHERE activo = 1 "
-                + "AND esPreparado = 0";
+            PreparedStatement ps
+                    = conn.prepareStatement(query);
 
-        PreparedStatement ps =
-                conn.prepareStatement(query);
+            ResultSet rs
+                    = ps.executeQuery();
 
-        ResultSet rs =
-                ps.executeQuery();
+            while (rs.next()) {
 
-        while (rs.next()) {
+                lista.add(
+                        serializarProducto(rs)
+                );
+            }
 
-            lista.add(
-                    serializarProducto(rs)
+            conn.close();
+
+        } catch (SQLException ex) {
+
+            System.getLogger(
+                    ProductoDAO.class.getName()
+            ).log(
+                    System.Logger.Level.ERROR,
+                    (String) null,
+                    ex
             );
         }
 
-        conn.close();
-
-    } catch (SQLException ex) {
-
-        System.getLogger(
-                ProductoDAO.class.getName()
-        ).log(
-                System.Logger.Level.ERROR,
-                (String) null,
-                ex
-        );
-    }
-
-    return lista;
-
+        return lista;
 
     }
-
 
     public static Producto buscarProducto(int idProducto) {
 
@@ -265,15 +262,15 @@ public class ProductoDAO {
 
         try {
 
-            MySQLConnectionManager conn =
-                    MySQLConnectionManager.buildConnection();
+            MySQLConnectionManager conn
+                    = MySQLConnectionManager.buildConnection();
 
-            String query =
-                    "SELECT * FROM producto "
+            String query
+                    = "SELECT * FROM producto "
                     + "WHERE idProducto = ?";
 
-            PreparedStatement ps =
-                    conn.prepareStatement(query);
+            PreparedStatement ps
+                    = conn.prepareStatement(query);
 
             ps.setInt(1, idProducto);
 
@@ -297,26 +294,32 @@ public class ProductoDAO {
         return producto;
     }
 
-        public static int registrarProducto(
-                Producto producto,
-                byte[] fotoBytes) throws mx.uv.sistemaadministrativopizzeria.excepciones.CodigoProductoExistenteException {
+    public static int registrarProducto(
+            Producto producto,
+            byte[] fotoBytes) throws mx.uv.sistemaadministrativopizzeria.excepciones.CodigoProductoExistenteException {
 
         if (producto != null) {
 
             try {
 
-                MySQLConnectionManager conn =
-                        MySQLConnectionManager.buildConnection();
+                MySQLConnectionManager conn
+                        = MySQLConnectionManager.buildConnection();
 
-                String query =
-                        "INSERT INTO producto "
+                String query
+                        = "INSERT INTO producto "
                         + "(nombre, codigo, descripcion, "
                         + "precio, foto, cantidad, unidadMedida, "
                         + "activo, esPreparado, esInsumo) "
                         + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-                PreparedStatement ps =
-                        conn.prepareStatement(
+                // Verificar código duplicado antes de insertar
+                if (verificarCodigoExistente(producto.getCodigo())) {
+                    conn.close();
+                    throw new mx.uv.sistemaadministrativopizzeria.excepciones.CodigoProductoExistenteException();
+                }
+
+                PreparedStatement ps
+                        = conn.prepareStatement(
                                 query,
                                 java.sql.Statement.RETURN_GENERATED_KEYS
                         );
@@ -351,23 +354,17 @@ public class ProductoDAO {
                 ps.setInt(10,
                         producto.getEsInsumo() ? 1 : 0);
 
-                                // Verificar código duplicado antes de insertar
-                                if (verificarCodigoExistente(producto.getCodigo())) {
-                                        conn.close();
-                                        throw new mx.uv.sistemaadministrativopizzeria.excepciones.CodigoProductoExistenteException();
-                                }
-
-                                int filas = ps.executeUpdate();
+                int filas = ps.executeUpdate();
 
                 if (filas > 0) {
 
-                    ResultSet rs =
-                            ps.getGeneratedKeys();
+                    ResultSet rs
+                            = ps.getGeneratedKeys();
 
                     if (rs.next()) {
 
-                        int idGenerado =
-                                rs.getInt(1);
+                        int idGenerado
+                                = rs.getInt(1);
 
                         conn.close();
 
@@ -392,24 +389,24 @@ public class ProductoDAO {
     }
 
     public static boolean actualizarProducto(
-        Producto producto,
-        byte[] fotoBytes,
-        boolean modificarFoto) {
+            Producto producto,
+            byte[] fotoBytes,
+            boolean modificarFoto) {
 
         if (producto != null) {
 
             try {
 
-                MySQLConnectionManager conn =
-                        MySQLConnectionManager.buildConnection();
+                MySQLConnectionManager conn
+                        = MySQLConnectionManager.buildConnection();
 
-                String campoFoto =
-                        modificarFoto
+                String campoFoto
+                        = modificarFoto
                                 ? ", foto = ? "
                                 : "";
 
-                String query =
-                        "UPDATE producto SET "
+                String query
+                        = "UPDATE producto SET "
                         + "nombre = ?, "
                         + "descripcion = ?, "
                         + "precio = ?, "
@@ -420,8 +417,8 @@ public class ProductoDAO {
                         + campoFoto
                         + "WHERE idProducto = ?";
 
-                PreparedStatement ps =
-                        conn.prepareStatement(query);
+                PreparedStatement ps
+                        = conn.prepareStatement(query);
 
                 int indice = 1;
 
@@ -491,17 +488,17 @@ public class ProductoDAO {
 
         try {
 
-            MySQLConnectionManager conn =
-                    MySQLConnectionManager.buildConnection();
+            MySQLConnectionManager conn
+                    = MySQLConnectionManager.buildConnection();
 
-            StringBuilder query =
-                    new StringBuilder(
+            StringBuilder query
+                    = new StringBuilder(
                             "SELECT * FROM producto "
                             + "WHERE activo = 1"
                     );
 
-            List<String> filtros =
-                    new ArrayList<>();
+            List<String> filtros
+                    = new ArrayList<>();
 
             if (porNombre) {
 
@@ -524,8 +521,8 @@ public class ProductoDAO {
                 query.append(")");
             }
 
-            PreparedStatement ps =
-                    conn.prepareStatement(
+            PreparedStatement ps
+                    = conn.prepareStatement(
                             query.toString()
                     );
 
@@ -572,26 +569,26 @@ public class ProductoDAO {
 
             try {
 
-                MySQLConnectionManager conn =
-                        MySQLConnectionManager.buildConnection();
+                MySQLConnectionManager conn
+                        = MySQLConnectionManager.buildConnection();
 
-                                // Revisar si el producto fue usado en algún pedido
-                                String queryCheck = "SELECT 1 FROM productoPedido WHERE idProducto = ? LIMIT 1";
-                                java.sql.PreparedStatement psCheck = conn.prepareStatement(queryCheck);
-                                psCheck.setInt(1, producto.getIdProducto());
-                                java.sql.ResultSet rsCheck = psCheck.executeQuery();
-                                if (rsCheck.next()) {
-                                        conn.close();
-                                        throw new mx.uv.sistemaadministrativopizzeria.excepciones.ProductoUsadoEnPedidoException();
-                                }
+                // Revisar si el producto fue usado en algún pedido
+                String queryCheck = "SELECT 1 FROM productoPedido WHERE idProducto = ? LIMIT 1";
+                java.sql.PreparedStatement psCheck = conn.prepareStatement(queryCheck);
+                psCheck.setInt(1, producto.getIdProducto());
+                java.sql.ResultSet rsCheck = psCheck.executeQuery();
+                if (rsCheck.next()) {
+                    conn.close();
+                    throw new mx.uv.sistemaadministrativopizzeria.excepciones.ProductoUsadoEnPedidoException();
+                }
 
-                String query =
-                        "UPDATE producto "
+                String query
+                        = "UPDATE producto "
                         + "SET activo = 0 "
                         + "WHERE idProducto = ?";
 
-                PreparedStatement ps =
-                        conn.prepareStatement(query);
+                PreparedStatement ps
+                        = conn.prepareStatement(query);
 
                 ps.setInt(1,
                         producto.getIdProducto());
@@ -636,16 +633,16 @@ public class ProductoDAO {
                 producto.setDescripcion(
                         rs.getString("descripcion"));
 
-                Double precio =
-                        rs.getObject(
+                Double precio
+                        = rs.getObject(
                                 "precio",
                                 Double.class
                         );
 
                 producto.setPrecio(precio);
 
-                Double cantidad =
-                        rs.getObject(
+                Double cantidad
+                        = rs.getObject(
                                 "cantidad",
                                 Double.class
                         );
@@ -664,8 +661,8 @@ public class ProductoDAO {
                 producto.setEsInsumo(
                         rs.getInt("esInsumo") == 1);
 
-                byte[] fotoBytes =
-                        rs.getBytes("foto");
+                byte[] fotoBytes
+                        = rs.getBytes("foto");
 
                 if (fotoBytes != null) {
 
