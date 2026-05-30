@@ -83,9 +83,16 @@ public class UsuarioDAO {
         return usuario;
     }
 
-    public static boolean registrarUsuario(Usuario usuario) {
+    public static boolean registrarUsuario(Usuario usuario) throws mx.uv.sistemaadministrativopizzeria.excepciones.UsuarioDuplicadoException {
         if (usuario != null) {
             try {
+                // Verificar usuario duplicado solo para empleados
+                if (usuario.getTipoUsuario().equals(Usuario.tipoUsuario.Empleado)) {
+                    if (verificarUsuarioExistente(usuario.getUsuario())) {
+                        throw new mx.uv.sistemaadministrativopizzeria.excepciones.UsuarioDuplicadoException();
+                    }
+                }
+
                 MySQLConnectionManager conn = MySQLConnectionManager.buildConnection();
                 String query = "INSERT INTO usuario (nombre, apellidoPaterno, apellidoMaterno, "
                         + "telefono, email, activo, tipoUsuario, usuario, password, rolEmpleado, "
@@ -125,11 +132,18 @@ public class UsuarioDAO {
     }
 
     public static boolean actualizarUsuario(Usuario usuario,
-            boolean modifContrasenia) {
+            boolean modifContrasenia) throws mx.uv.sistemaadministrativopizzeria.excepciones.UsuarioDuplicadoException {
 
         if (usuario != null) {
 
             try {
+
+                // Verificar usuario duplicado solo para empleados
+                if (usuario.getTipoUsuario().equals(Usuario.tipoUsuario.Empleado)) {
+                    if (verificarUsuarioExistenteExcluyendo(usuario.getUsuario(), usuario.getIdUsuario())) {
+                        throw new mx.uv.sistemaadministrativopizzeria.excepciones.UsuarioDuplicadoException();
+                    }
+                }
 
                 MySQLConnectionManager conn
                         = MySQLConnectionManager.buildConnection();
@@ -368,6 +382,57 @@ public class UsuarioDAO {
             }
         }
         return false;
+    }
+
+    public static boolean verificarUsuarioExistente(String usuario) {
+        int count = 0;
+
+        try {
+            MySQLConnectionManager conn = MySQLConnectionManager.buildConnection();
+            String query = "SELECT COUNT(*) FROM usuario WHERE usuario = ?";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setString(1, usuario);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+            conn.close();
+        } catch (SQLException ex) {
+            System.getLogger(
+                    UsuarioDAO.class.getName()
+            ).log(
+                    System.Logger.Level.ERROR,
+                    (String) null,
+                    ex
+            );
+        }
+        return (count > 0);
+    }
+
+    public static boolean verificarUsuarioExistenteExcluyendo(String usuario, int idUsuario) {
+        int count = 0;
+
+        try {
+            MySQLConnectionManager conn = MySQLConnectionManager.buildConnection();
+            String query = "SELECT COUNT(*) FROM usuario WHERE usuario = ? AND idUsuario != ?";
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setString(1, usuario);
+            ps.setInt(2, idUsuario);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+            conn.close();
+        } catch (SQLException ex) {
+            System.getLogger(
+                    UsuarioDAO.class.getName()
+            ).log(
+                    System.Logger.Level.ERROR,
+                    (String) null,
+                    ex
+            );
+        }
+        return (count > 0);
     }
 
     public static Usuario serializarUsuario(ResultSet rs) {

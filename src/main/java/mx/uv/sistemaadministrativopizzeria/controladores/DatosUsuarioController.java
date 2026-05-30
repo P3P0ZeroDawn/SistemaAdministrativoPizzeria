@@ -150,7 +150,9 @@ public class DatosUsuarioController implements Initializable {
             ((Stage) tfNombre.getScene().getWindow()).close();
         }catch (DatosFaltantesException e){
             JavaFXUtils.mostrarAdvertencia("Datos Faltantes", e.getMessage(), false);
-        }  
+        }catch (mx.uv.sistemaadministrativopizzeria.excepciones.UsuarioDuplicadoException e){
+            JavaFXUtils.mostrarError("Usuario duplicado", e.getMessage(), false);
+        }
     }
     
     public void configurar(ModoFormulario modo, Usuario usuario) {
