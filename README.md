@@ -40,7 +40,6 @@ La aplicación fue desarrollada utilizando JavaFX para la interfaz gráfica y My
 ### Inventario
 
 - Validaciones de inventario.
-- Historial de movimientos.
 - Control de existencias.
 - Verificación de disponibilidad de insumos.
 
