@@ -213,9 +213,9 @@ El sistema implementa:
 
 ## Autores
 
-Pedro Enrique Sánchez Rodríguez
-Emiliano Morales Baizabal
-César Daniel Ortega Castillejos
+- Pedro Enrique Sánchez Rodríguez
+- Emiliano Morales Baizabal
+- César Daniel Ortega Castillejos
 
 ---
 
