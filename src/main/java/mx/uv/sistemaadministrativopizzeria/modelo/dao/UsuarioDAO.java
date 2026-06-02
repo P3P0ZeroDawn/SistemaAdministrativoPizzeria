@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
-import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.EncriptadorPassword;
+import mx.uv.sistemaadministrativopizzeria.utilidades.EncriptadorPassword;
 import mx.uv.sistemaadministrativopizzeria.modelo.MySQLConnectionManager;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.JavaFXUtils;

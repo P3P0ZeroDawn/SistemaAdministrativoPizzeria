@@ -1,4 +1,4 @@
-package mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables;
+package mx.uv.sistemaadministrativopizzeria.utilidades;
 
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.Color;

@@ -35,7 +35,7 @@ import mx.uv.sistemaadministrativopizzeria.modelo.dao.PedidoDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoPedidoDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.UsuarioDAO;
-import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Exportador;
+import mx.uv.sistemaadministrativopizzeria.utilidades.Exportador;
 import mx.uv.sistemaadministrativopizzeria.controladores.SeleccionReporteController;
 import java.awt.Desktop;
 import java.time.LocalDateTime;

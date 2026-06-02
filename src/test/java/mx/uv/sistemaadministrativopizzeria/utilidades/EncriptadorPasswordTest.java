@@ -1,5 +1,6 @@
-package mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables;
+package mx.uv.sistemaadministrativopizzeria.utilidades;
 
+import mx.uv.sistemaadministrativopizzeria.utilidades.EncriptadorPassword;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.UnsupportedEncodingException;

@@ -22,7 +22,7 @@ import javafx.scene.control.TextField;
 import mx.uv.sistemaadministrativopizzeria.App;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.BotonAccion;
-import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Exportador;
+import mx.uv.sistemaadministrativopizzeria.utilidades.Exportador;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemTextoBoton;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.JavaFXUtils;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ModoFormulario;

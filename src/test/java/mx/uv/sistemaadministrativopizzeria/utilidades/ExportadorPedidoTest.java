@@ -1,4 +1,4 @@
-package mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables;
+package mx.uv.sistemaadministrativopizzeria.utilidades;
 
 import static org.junit.jupiter.api.Assertions.*;
 
