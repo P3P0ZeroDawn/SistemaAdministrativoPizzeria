@@ -4,13 +4,15 @@
  */
 package mx.uv.sistemaadministrativopizzeria.modelo.beans;
 
+import javafx.scene.image.Image;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemConImagen;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.ItemObservableList;
 
 /**
  *
  * @author pedro
  */
-public class ProductoPedido implements ItemObservableList{
+public class ProductoPedido implements ItemObservableList, ItemConImagen{
     private int idProductoPedido;
     private Producto producto;
     private int cantidad;
@@ -51,5 +53,13 @@ public class ProductoPedido implements ItemObservableList{
     @Override
     public String getString() {
         return producto.getNombre();
+    }
+
+    @Override
+    public Image getImagen() {
+        if (producto != null) {
+            return producto.getImagen();
+        }
+        return null;
     }
 }
