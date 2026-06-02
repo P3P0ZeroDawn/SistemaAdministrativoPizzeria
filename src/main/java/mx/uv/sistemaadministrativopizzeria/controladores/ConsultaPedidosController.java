@@ -114,16 +114,18 @@ public class ConsultaPedidosController implements Initializable {
             return;
         }
         try {
-            App.configurarVentana(((Stage) cbBusUsuario.getScene().getWindow()),
+            Ventana<DatosPedidoController> ventana = App.abrirVentanaEmergente(
+                    "datosPedido",
                     "Edición de pedido",
                     1020, 700,
-                    1020, 700,
-                    1020, 700,
-                    true);
-            ((Stage) cbBusUsuario.getScene().getWindow()).centerOnScreen();
-            Ventana<DatosPedidoController> ventana = App.setRootVentana("datosPedido");
+                    false);
             
+            ventana.getStage().centerOnScreen();
             ventana.getController().configurar(ModoFormulario.EDICION, pedido);
+            ventana.getStage().showAndWait();
+            
+            // Actualizar lista después de cerrar la ventana de edición
+            llenarLista();
         } catch (IOException ex) {
             System.getLogger(ConsultaPedidosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
@@ -232,16 +234,18 @@ public class ConsultaPedidosController implements Initializable {
     @FXML
     private void btnRealizarPedido(ActionEvent event) {
         try {
-            App.configurarVentana(((Stage) cbBusUsuario.getScene().getWindow()),
-                    "Edición de pedido",
+            Ventana<DatosPedidoController> ventana = App.abrirVentanaEmergente(
+                    "datosPedido",
+                    "Nuevo pedido",
                     1020, 700,
-                    1020, 700,
-                    1020, 700,
-                    true);
-            ((Stage) cbBusUsuario.getScene().getWindow()).centerOnScreen();
-            Ventana<DatosPedidoController> ventana = App.setRootVentana("datosPedido");
+                    false);
             
+            ventana.getStage().centerOnScreen();
             ventana.getController().configurar(ModoFormulario.REGISTRO, null);
+            ventana.getStage().showAndWait();
+            
+            // Actualizar lista después de cerrar la ventana de nuevo pedido
+            llenarLista();
         } catch (IOException ex) {
             System.getLogger(ConsultaPedidosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }

@@ -58,11 +58,7 @@ public class DatosPedidoController implements Initializable {
     @FXML
     private Label lbTotal;
     @FXML
-    private TextField tfProducto;
-    @FXML
     private ListView<Producto> lvProducto;
-    @FXML
-    private TextField tfPedido;
     @FXML
     private ListView<ProductoPedido> lvPedido;
     @FXML
@@ -391,20 +387,8 @@ public class DatosPedidoController implements Initializable {
     }
     
     private void cerrarVentana(){
-        try {
-             App.configurarVentana(
-                ((Stage) tfPedido.getScene().getWindow()),
-                "Sistema Administrativo Pizzeria Italia Pizza",
-                700, 300,
-                815, 650,
-                900, 700,
-                false
-            );
-            ((Stage) tfPedido.getScene().getWindow()).centerOnScreen();
-            App.setRoot("consultaPedidos");
-        } catch (IOException ex) {
-            System.getLogger(DatosPedidoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
+        Stage stage = (Stage) lvPedido.getScene().getWindow();
+        stage.close();
     }
 
     @FXML
@@ -431,10 +415,10 @@ public class DatosPedidoController implements Initializable {
         pedido.setProductos(new ArrayList<>(proPedidos));
         int resultado = PedidoDAO.realizarPedido(pedido);
         if (resultado != 0) {
-            System.out.println("EXITOO-----");
+            JavaFXUtils.mostrarMensaje("Pedido creado", "El pedido se ha creado exitosamente", false);
             cerrarVentana();
         } else {
-            System.out.println("Fallo");
+            JavaFXUtils.mostrarError("Error al crear", "No se pudo crear el pedido, intenta nuevamente", false);
         }
     }
     
@@ -450,10 +434,10 @@ public class DatosPedidoController implements Initializable {
 
         int resultado = PedidoDAO.actualizarPedido(pedido);
         if (resultado != 0) {
-            System.out.println("EDICIÓN EXITOSA-----");
+            JavaFXUtils.mostrarMensaje("Pedido actualizado", "El pedido se ha actualizado exitosamente", false);
             cerrarVentana();
         } else {
-            System.out.println("Fallo al editar el pedido");
+            JavaFXUtils.mostrarError("Error al actualizar", "No se pudo actualizar el pedido, intenta nuevamente", false);
         }
     }
     
