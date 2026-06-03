@@ -214,7 +214,7 @@ public class ConsultaUsuariosController implements Initializable {
                 }
             }
         }else{
-            JavaFXUtils.mostrarError("No se puede eliminar", "El usuario seleccionado es el usuario activo", false);
+            JavaFXUtils.mostrarError("No se puede eliminar", "El usuario seleccionado\nes el usuario activo", false);
         }  
     }
 }

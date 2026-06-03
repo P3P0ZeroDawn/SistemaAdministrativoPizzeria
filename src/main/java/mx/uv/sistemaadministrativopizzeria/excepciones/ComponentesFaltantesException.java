@@ -7,7 +7,7 @@ package mx.uv.sistemaadministrativopizzeria.excepciones;
 public class ComponentesFaltantesException extends Exception {
 
     public ComponentesFaltantesException() {
-        super("Debes agregar al menos un componente para este producto preparado.");
+        super("Debes agregar al menos un componente\npara este producto preparado.");
     }
 
     public ComponentesFaltantesException(String message) {

@@ -7,7 +7,7 @@ package mx.uv.sistemaadministrativopizzeria.excepciones;
 public class ProductoUsadoEnPedidoException extends Exception {
 
     public ProductoUsadoEnPedidoException() {
-        super("No se puede eliminar el producto porque fue usado en al menos un pedido.");
+        super("No se puede eliminar el producto\nporque fue usado en\nat menos un pedido.");
     }
 
     public ProductoUsadoEnPedidoException(String message) {

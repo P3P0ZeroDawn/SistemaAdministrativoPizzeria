@@ -23,13 +23,13 @@
       <ComboBox fx:id="cbUsuario" prefHeight="39.0" prefWidth="370.0" />
       <HBox alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" onAction="#clicBtnCancelar" text="Cancelar">
+            <Button mnemonicParsing="false" onAction="#clicBtnCancelar" prefHeight="38.0" prefWidth="104.0" text="Cancelar">
                <font>
                   <Font size="16.0" />
                </font>
             </Button>
             <Region prefHeight="35.0" prefWidth="190.0" />
-            <Button mnemonicParsing="false" onAction="#clicBtnConfirmar" text="Confirmar">
+            <Button mnemonicParsing="false" onAction="#clicBtnConfirmar" prefHeight="37.0" prefWidth="110.0" text="Confirmar">
                <font>
                   <Font size="16.0" />
                </font>

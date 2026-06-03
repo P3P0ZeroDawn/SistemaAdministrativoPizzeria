@@ -145,7 +145,7 @@ public class DatosUsuarioController implements Initializable {
             }
             if(resultado){
                 JavaFXUtils.mostrarMensaje("Datos guardados",
-                        "Se guardaron correctamente los datos del usuario", false);
+                        "Se guardaron correctamente\nlos datos del usuario", false);
             }
             ((Stage) tfNombre.getScene().getWindow()).close();
         }catch (DatosFaltantesException e){

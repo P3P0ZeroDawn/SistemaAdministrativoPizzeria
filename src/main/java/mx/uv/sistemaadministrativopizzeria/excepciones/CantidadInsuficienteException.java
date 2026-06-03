@@ -7,7 +7,7 @@ package mx.uv.sistemaadministrativopizzeria.excepciones;
 public class CantidadInsuficienteException extends Exception {
 
     public CantidadInsuficienteException() {
-        super("No hay suficiente cantidad disponible para agregar al pedido.");
+        super("No hay suficiente cantidad disponible\npara agregar al pedido.");
     }
 
     public CantidadInsuficienteException(String message) {

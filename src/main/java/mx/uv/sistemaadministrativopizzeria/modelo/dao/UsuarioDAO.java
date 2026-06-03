@@ -349,7 +349,7 @@ public class UsuarioDAO {
                         int total = rsCheck.getInt("total");
                         connCheck.close();
                         if (total > 0) {
-                            throw new UsuarioConPedidosException("El usuario es cliente y tiene pedidos registrados.");
+                            throw new UsuarioConPedidosException("El usuario es cliente y\ntiene pedidos registrados.");
                         }
                     } else {
                         connCheck.close();

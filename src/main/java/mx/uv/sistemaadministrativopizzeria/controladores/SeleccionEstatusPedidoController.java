@@ -56,7 +56,7 @@ public class SeleccionEstatusPedidoController implements Initializable {
             ((Stage) cbEstatus.getScene().getWindow()).close();
         } else{
             JavaFXUtils.mostrarAdvertencia("Sin selección", 
-                    "Por favor seleccione un estatus para el pedido", false);
+                    "Por favor seleccione un estatus\npara el pedido", false);
         }
     } 
 }

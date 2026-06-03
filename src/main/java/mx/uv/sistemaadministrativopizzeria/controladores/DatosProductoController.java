@@ -346,9 +346,9 @@ public class DatosProductoController implements Initializable {
 
                                 // Si es preparado, forzamos agregar insumos: preguntar y abrir la ventana de componentes
                                 if (productoRecuperado.getEsPreparado()) {
-                                        boolean confirmar = JavaFXUtils.mostrarConfirmacion("Producto preparado", "Un producto preparado requiere al menos un insumo. ¿Deseas guardar y agregar insumos ahora?");
+                                        boolean confirmar = JavaFXUtils.mostrarConfirmacion("Producto preparado", "Un producto preparado requiere\nat menos un insumo.\n¿Deseas guardar y agregar\ninsumos ahora?");
                                         if (!confirmar) {
-                                                JavaFXUtils.mostrarAdvertencia("Guardado cancelado", "No se puede guardar un producto preparado sin insumos", false);
+                                                JavaFXUtils.mostrarAdvertencia("Guardado cancelado", "No se puede guardar\nun producto preparado\nsin insumos", false);
                                                 return;
                                         }
                                 }
@@ -508,7 +508,7 @@ public class DatosProductoController implements Initializable {
 
             JavaFXUtils.mostrarError(
                     "Error",
-                    "No se pudo abrir la ventana de componentes",
+                    "No se pudo abrir\nla ventana de componentes",
                     false
             );
         }

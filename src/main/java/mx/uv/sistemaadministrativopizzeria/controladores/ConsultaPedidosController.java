@@ -109,8 +109,7 @@ public class ConsultaPedidosController implements Initializable {
     private void editarPedido(Pedido pedido){
         if(!pedido.getEstatus().equals(Pedido.EstatusPedido.EnPreparacion)){
             JavaFXUtils.mostrarAdvertencia("No se puede modificar", 
-                    "El pedido ya no se puede modificar, solo se pueden modificar"
-                            + " aquellos en preparación", false);
+                    "El pedido ya no se puede modificar,\nsolo se pueden modificar\naquellos en preparación", false);
             return;
         }
         try {
@@ -134,7 +133,7 @@ public class ConsultaPedidosController implements Initializable {
     private void cambiarEstatus(Pedido pedido){
         if(!pedido.getEstatus().equals(Pedido.EstatusPedido.EnPreparacion)){
             JavaFXUtils.mostrarAdvertencia("No se puede modificar el estatus", 
-                    "El estatus de este pedido ya no puede ser modificado", false);
+                    "El estatus de este pedido\nya no puede ser modificado", false);
             return;
         }
         try {

@@ -361,7 +361,7 @@ public class RealizarValidacionInventarioController implements Initializable {
 
                 JavaFXUtils.mostrarAdvertencia(
                         "Razón requerida",
-                        "Debe ingresar una razón para " + p.getNombreProducto(),
+                        "Debe ingresar una razón\npara " + p.getNombreProducto(),
                         false
                 );
                 return;

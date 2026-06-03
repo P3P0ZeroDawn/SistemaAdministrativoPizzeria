@@ -14,6 +14,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
 import mx.uv.sistemaadministrativopizzeria.App;
+import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Validador;
+import mx.uv.sistemaadministrativopizzeria.excepciones.DatosFaltantesException;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.UsuarioDAO;
 
@@ -38,6 +40,13 @@ public class InicioSesionController implements Initializable {
 
     @FXML
     private void clicBtnIniciarSesion(ActionEvent event) {
+        try{
+            Validador.requerido(tfUsuario, "El nombre de usuario es requerido");
+            Validador.requerido(pfContrasenia, "La contraseña es requerida");
+        }catch (DatosFaltantesException e){
+                JavaFXUtils.mostrarAdvertencia("Datos Faltantes", e.getMessage(), false);
+                return;
+        }
         String usuario = tfUsuario.getText();
         String contrasenia = pfContrasenia.getText();
         

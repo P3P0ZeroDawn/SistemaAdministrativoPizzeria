@@ -7,7 +7,7 @@ package mx.uv.sistemaadministrativopizzeria.excepciones;
 public class ProductoPreparadoSinInsumosException extends Exception {
 
     public ProductoPreparadoSinInsumosException() {
-        super("Un producto preparado requiere al menos un insumo antes de ser guardado.");
+        super("Un producto preparado requiere\nat menos un insumo antes\nde ser guardado.");
     }
 
     public ProductoPreparadoSinInsumosException(String message) {

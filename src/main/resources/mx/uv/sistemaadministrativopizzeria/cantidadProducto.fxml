@@ -27,13 +27,13 @@
       </TextField>
       <HBox alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" onAction="#clicBtnCancelar" text="Cancelar">
+            <Button mnemonicParsing="false" onAction="#clicBtnCancelar" prefHeight="42.0" prefWidth="130.0" text="Cancelar">
                <font>
                   <Font size="16.0" />
                </font>
             </Button>
-            <Region prefHeight="35.0" prefWidth="190.0" />
-            <Button mnemonicParsing="false" onAction="#clicBtnConfirmar" text="Confirmar">
+            <Region prefHeight="42.0" prefWidth="146.0" />
+            <Button mnemonicParsing="false" onAction="#clicBtnConfirmar" prefHeight="42.0" prefWidth="118.0" text="Confirmar">
                <font>
                   <Font size="16.0" />
                </font>

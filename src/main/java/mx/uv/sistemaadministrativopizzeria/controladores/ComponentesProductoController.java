@@ -341,7 +341,7 @@ public class ComponentesProductoController
 
             JavaFXUtils.mostrarError(
                     "Error",
-                    "No se pudieron actualizar los componentes",
+                    "No se pudieron actualizar\nlos componentes",
                     false
             );
 
@@ -375,7 +375,7 @@ public class ComponentesProductoController
 
             JavaFXUtils.mostrarError(
                     "Error",
-                    "No se pudieron guardar los componentes",
+                    "No se pudieron guardar\nlos componentes",
                     false
             );
         }
