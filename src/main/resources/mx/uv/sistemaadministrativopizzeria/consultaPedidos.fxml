@@ -26,7 +26,7 @@
                               <Font size="30.0" />
                            </font>
                         </Label>
-                        <Button mnemonicParsing="false" onAction="#btnRealizarPedido" prefHeight="60.0" prefWidth="130.0" text="Realizar&#10;un pedido">
+                        <Button mnemonicParsing="false" onAction="#clicBtnRealizarPedido" prefHeight="60.0" prefWidth="130.0" text="Realizar&#10;un pedido">
                            <font>
                               <Font size="14.0" />
                            </font>

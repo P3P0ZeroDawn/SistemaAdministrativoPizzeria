@@ -39,6 +39,14 @@ public class CantidadProductoController implements Initializable {
             Validador.permitirSoloNumeros(tfCantidad, 10);
         }
     }
+    
+    public void configurar(boolean esDecimal, Number cantidadInicial) {
+        configurar(esDecimal);
+        if(cantidadInicial != null){
+            tfCantidad.setText(String.valueOf(cantidadInicial));
+            tfCantidad.selectAll();
+        }
+    }
 
     public void configurar() {
         configurar(true); 

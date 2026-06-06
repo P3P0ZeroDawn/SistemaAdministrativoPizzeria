@@ -7,9 +7,12 @@ package mx.uv.sistemaadministrativopizzeria.controladores;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Locale;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -84,8 +87,8 @@ public class DatosProductoController implements Initializable {
         Validador.permitirTextoNumerico(tfNombre, 45);
         Validador.permitirTextoNumerico(tfCodigo, 45);
         Validador.permitirTextoNumerico(tfDescripcion, 255);
-        Validador.permitirDecimal(tfPrecio, 45);
-        Validador.permitirDecimal(tfCantidad, 45);
+        Validador.permitirDecimal(tfPrecio, 10, 2);
+        Validador.permitirDecimal(tfCantidad, 10, 2);
         Validador.permitirTextoNumerico(tfUnidadMedida, 60);
     }    
 
@@ -271,6 +274,12 @@ public class DatosProductoController implements Initializable {
     }
     
     private void cargarDatosProducto(Producto producto) {
+        
+        // Crear DecimalFormat sin notación científica
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        DecimalFormat df = new DecimalFormat("0.##", symbols);
+        df.setMaximumFractionDigits(2);
+        df.setGroupingUsed(false);
 
         tfNombre.setText(
                 producto.getNombre()
@@ -287,18 +296,14 @@ public class DatosProductoController implements Initializable {
         if (producto.getPrecio() != null) {
 
             tfPrecio.setText(
-                    String.valueOf(
-                            producto.getPrecio()
-                    )
+                    df.format(producto.getPrecio())
             );
         }
 
         if (producto.getCantidad() != null) {
 
             tfCantidad.setText(
-                    String.valueOf(
-                            producto.getCantidad()
-                    )
+                    df.format(producto.getCantidad())
             );
         }
 

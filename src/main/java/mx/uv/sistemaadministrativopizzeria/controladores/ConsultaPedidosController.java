@@ -96,7 +96,7 @@ public class ConsultaPedidosController implements Initializable {
                         "Editar",
                         FontAwesomeSolid.EDIT,
                         pedido -> {
-                            editarPedido(pedido);
+                            abrirEdicionPedido(pedido);
                 }),
                 new BotonAccion<>(
                         "Cambiar estatus",
@@ -106,24 +106,28 @@ public class ConsultaPedidosController implements Initializable {
         ));
     }
     
-    private void editarPedido(Pedido pedido){
+    private void abrirEdicionPedido(Pedido pedido){
         if(!pedido.getEstatus().equals(Pedido.EstatusPedido.EnPreparacion)){
             JavaFXUtils.mostrarAdvertencia("No se puede modificar", 
                     "El pedido ya no se puede modificar,\nsolo se pueden modificar\naquellos en preparación", false);
             return;
         }
+        abrirFormularioPedido(ModoFormulario.EDICION, pedido, "Edición de pedido");
+    }
+    
+    private void abrirFormularioPedido(ModoFormulario modo, Pedido pedido, String titulo) {
         try {
             Ventana<DatosPedidoController> ventana = App.abrirVentanaEmergente(
                     "datosPedido",
-                    "Edición de pedido",
+                    titulo,
                     1020, 700,
-                    false);
+                    true);
             
             ventana.getStage().centerOnScreen();
-            ventana.getController().configurar(ModoFormulario.EDICION, pedido);
+            ventana.getController().configurar(modo, pedido);
             ventana.getStage().showAndWait();
             
-            // Actualizar lista después de cerrar la ventana de edición
+            // Actualizar lista después de cerrar la ventana del pedido
             llenarLista();
         } catch (IOException ex) {
             System.getLogger(ConsultaPedidosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
@@ -231,23 +235,8 @@ public class ConsultaPedidosController implements Initializable {
     }
     
     @FXML
-    private void btnRealizarPedido(ActionEvent event) {
-        try {
-            Ventana<DatosPedidoController> ventana = App.abrirVentanaEmergente(
-                    "datosPedido",
-                    "Nuevo pedido",
-                    1020, 700,
-                    false);
-            
-            ventana.getStage().centerOnScreen();
-            ventana.getController().configurar(ModoFormulario.REGISTRO, null);
-            ventana.getStage().showAndWait();
-            
-            // Actualizar lista después de cerrar la ventana de nuevo pedido
-            llenarLista();
-        } catch (IOException ex) {
-            System.getLogger(ConsultaPedidosController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
+    private void clicBtnRealizarPedido(ActionEvent event) {
+        abrirFormularioPedido(ModoFormulario.REGISTRO, null, "Nuevo pedido");
     }
 
     @FXML

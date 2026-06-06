@@ -209,12 +209,62 @@ public class Validador {
     public static void permitirDecimal(TextInputControl campo,
                                    int longitudMaxima) {
 
-    aplicarFiltro(
-            campo,
-            "[0-9.]*",
-            longitudMaxima
-    );
-}
+        aplicarFiltro(
+                campo,
+                "[0-9.]*",
+                longitudMaxima
+        );
+    }
+    
+    public static void permitirDecimal(TextInputControl campo,
+                                   int digitosEnteros,
+                                   int digitosDecimales) {
+
+        int longitudMaxima = digitosEnteros + digitosDecimales + 1; // +1 por el punto decimal
+        
+        campo.setTextFormatter(new TextFormatter<>(change -> {
+            String nuevoTexto = change.getControlNewText();
+            
+            if (nuevoTexto.isEmpty()) {
+                return change;
+            }
+            
+            // Permite solo dígitos y un punto decimal
+            if (!nuevoTexto.matches("[0-9.]*")) {
+                return null;
+            }
+            
+            // Permite máximo un punto decimal
+            if (nuevoTexto.split("\\.", -1).length > 2) {
+                return null;
+            }
+            
+            // Validar longitud total
+            if (nuevoTexto.length() > longitudMaxima) {
+                return null;
+            }
+            
+            // Si contiene punto, validar cantidad de dígitos antes y después
+            if (nuevoTexto.contains(".")) {
+                String[] partes = nuevoTexto.split("\\.", -1);
+                if (partes.length >= 2) {
+                    String parteEntera = partes[0];
+                    String parteDecimal = partes[1];
+                    
+                    if (parteEntera.length() > digitosEnteros || parteDecimal.length() > digitosDecimales) {
+                        return null;
+                    }
+                }
+            } else {
+                // Sin punto decimal, validar solo la parte entera
+                if (nuevoTexto.length() > digitosEnteros) {
+                    return null;
+                }
+            }
+            
+            return change;
+        }));
+    }
     
     public static void passwordSegura(TextInputControl campo,
                                   String mensaje)

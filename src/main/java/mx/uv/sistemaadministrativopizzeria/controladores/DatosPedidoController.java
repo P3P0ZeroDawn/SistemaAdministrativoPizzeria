@@ -16,10 +16,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import mx.uv.sistemaadministrativopizzeria.App;
 import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizables.Badge;
@@ -31,9 +32,11 @@ import mx.uv.sistemaadministrativopizzeria.controladores.componentesReutilizable
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Pedido;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.Producto;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.ProductoPedido;
+import mx.uv.sistemaadministrativopizzeria.modelo.beans.Usuario;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.PedidoDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoDAO;
 import mx.uv.sistemaadministrativopizzeria.modelo.dao.ProductoPedidoDAO;
+import mx.uv.sistemaadministrativopizzeria.modelo.dao.UsuarioDAO;
 import mx.uv.sistemaadministrativopizzeria.excepciones.CantidadInsuficienteException;
 import mx.uv.sistemaadministrativopizzeria.modelo.beans.ComponenteElaboracion;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
@@ -47,6 +50,7 @@ public class DatosPedidoController implements Initializable {
 
     private ObservableList<Producto> productos = FXCollections.observableArrayList();
     private ObservableList<ProductoPedido> proPedidos = FXCollections.observableArrayList();
+    private ObservableList<Usuario> usuarios = FXCollections.observableArrayList();
      
     private ModoFormulario modo;
     private Pedido pedido;
@@ -54,21 +58,21 @@ public class DatosPedidoController implements Initializable {
     @FXML
     private Label lbTitulo;
     @FXML
-    private Label lbUsuario;
-    @FXML
     private Label lbTotal;
     @FXML
     private ListView<Producto> lvProducto;
     @FXML
     private ListView<ProductoPedido> lvPedido;
     @FXML
-    private Button btnSeleccionUsuario;
-    @FXML
     private Label lbFecha;
     @FXML
     private Button btnConfirmacion;
     @FXML
     private Label lbFechaPedido;
+    @FXML
+    private Button btnNuevoUsuario;
+    @FXML
+    private ComboBox<Usuario> cbUsuario;
 
     /**
      * Initializes the controller class.
@@ -78,7 +82,29 @@ public class DatosPedidoController implements Initializable {
         configurarListaProductos();
         llenarProductos();
         configurarListaPedidos();
+        configurarComboUsuarios();
+        cargarUsuarios();
         lvPedido.setItems(proPedidos);
+    }
+    
+    private void configurarComboUsuarios(){
+        cbUsuario.setItems(usuarios);
+        cbUsuario.setOnAction(e -> {
+            Usuario usuarioSeleccionado = cbUsuario.getSelectionModel().getSelectedItem();
+            if(usuarioSeleccionado != null){
+                if(pedido == null) pedido = new Pedido();
+                pedido.setIdUsuario(usuarioSeleccionado.getIdUsuario());
+                pedido.setNombreUsuario(usuarioSeleccionado.getString());
+            }
+        });
+    }
+    
+    private void cargarUsuarios(){
+        List<Usuario> listaUsuarios = UsuarioDAO.obtenerUsuarios();
+        usuarios.clear();
+        if(listaUsuarios != null){
+            usuarios.addAll(listaUsuarios);
+        }
     }
     
     private void configurarListaProductos(){
@@ -94,7 +120,7 @@ public class DatosPedidoController implements Initializable {
                         "Agregar",
                         FontAwesomeSolid.PLUS,
                         producto -> {
-                            seleccionarCantidad(producto);
+                            agregarUnaUnidadProducto(producto);
                 })
         ));
     }
@@ -122,10 +148,23 @@ public class DatosPedidoController implements Initializable {
                             aumentarPedido(pedido);
                 })
         ));
+        lvPedido.setOnMouseClicked(event -> {
+            if(event.getClickCount() != 1 || esClicSobreBoton((Node) event.getTarget())){
+                return;
+            }
+            
+            ProductoPedido productoPedido = lvPedido.getSelectionModel().getSelectedItem();
+            if(productoPedido != null){
+                modificarCantidadProductoPedido(productoPedido);
+            }
+        });
     }
     
     private void llenarProductos(){
         List<Producto> lista = ProductoDAO.obtenerProdParaPedido();
+        if(lista == null){
+            return;
+        }
         for(Producto p: lista){
             if(p.getEsPreparado()){
                 p = ProductoDAO.obtenerProductosProducto(p);
@@ -157,10 +196,11 @@ public class DatosPedidoController implements Initializable {
         
         if(modo == ModoFormulario.EDICION && pedido != null){
             lbTitulo.setText("Edición de pedido");
-            btnSeleccionUsuario.setVisible(false);
+            btnNuevoUsuario.setVisible(false);
+            cbUsuario.setDisable(true);
             btnConfirmacion.setText("Confirmar");
             llenarPedido();
-            lbUsuario.setText(pedido.getNombreUsuario());
+            seleccionarUsuarioDelPedido();
             lbFechaPedido.setText("" + pedido.getFechaPedido());
             lbTotal.setText("" + pedido.getTotalAPagar());
         } else{
@@ -170,28 +210,86 @@ public class DatosPedidoController implements Initializable {
         }
     }
     
-    private void seleccionarCantidad(Producto producto){
+    private void seleccionarUsuarioDelPedido(){
+        if(pedido == null || cbUsuario == null){
+            return;
+        }
+        for(Usuario usuario : usuarios){
+            if(usuario.getIdUsuario() == pedido.getIdUsuario()){
+                cbUsuario.getSelectionModel().select(usuario);
+                return;
+            }
+        }
+    }
+    
+    private void agregarUnaUnidadProducto(Producto producto){
+        try {
+            agregarProducto(producto, 1);
+        } catch (CantidadInsuficienteException ex) {
+            JavaFXUtils.mostrarError("Cantidad insuficiente", ex.getMessage(), false);
+        }
+    }
+    
+    private void modificarCantidadProductoPedido(ProductoPedido productoPedido){
+        Number cantidadSeleccionada = solicitarCantidad(productoPedido.getCantidad());
+        if(cantidadSeleccionada == null){
+            return;
+        }
+        
+        int nuevaCantidad = cantidadSeleccionada.intValue();
+        actualizarCantidadProductoPedido(productoPedido, nuevaCantidad);
+    }
+    
+    private Number solicitarCantidad(Integer cantidadActual){
         try {
             Ventana<CantidadProductoController> ventana = App.abrirVentanaEmergente( "cantidadProducto",
                     "Cantidad", 400, 200, true);
             
-            ventana.getController().configurar();
+            ventana.getController().configurar(false, cantidadActual);
             ventana.getStage().showAndWait();
-
-            Number num = ventana.getController().getCantidad();
-            if (num != null) {
-                Integer cantidad = num.intValue(); // Lo recuperas como Integer
-                if (cantidad > 0) {
-                    try {
-                        agregarProducto(producto, cantidad);
-                    } catch (CantidadInsuficienteException ex) {
-                        JavaFXUtils.mostrarError("Cantidad insuficiente", ex.getMessage(), false);
-                    }
-                }
-            }
+            return ventana.getController().getCantidad();
         } catch (IOException ex) {
             System.getLogger(DatosPedidoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
+        return null;
+    }
+    
+    private void actualizarCantidadProductoPedido(ProductoPedido productoPedido, int nuevaCantidad){
+        int cantidadActual = productoPedido.getCantidad();
+        int diferencia = nuevaCantidad - cantidadActual;
+        
+        if(diferencia == 0){
+            return;
+        }
+        
+        if(diferencia > 0){
+            try {
+                agregarProducto(productoPedido.getProducto(), diferencia);
+            } catch (CantidadInsuficienteException ex) {
+                JavaFXUtils.mostrarError("Cantidad insuficiente", ex.getMessage(), false);
+            }
+            return;
+        }
+        
+        productoPedido.setCantidad(nuevaCantidad);
+        int index = proPedidos.indexOf(productoPedido);
+        if(index >= 0){
+            proPedidos.set(index, productoPedido);
+        }
+        
+        pedido.setTotalAPagar(pedido.getTotalAPagar() + (productoPedido.getProducto().getPrecio() * diferencia));
+        lbTotal.setText("" + pedido.getTotalAPagar());
+    }
+    
+    private boolean esClicSobreBoton(Node nodo){
+        Node actual = nodo;
+        while(actual != null){
+            if(actual instanceof Button){
+                return true;
+            }
+            actual = actual.getParent();
+        }
+        return false;
     }
     
     private void agregarProducto(Producto producto, int cantidad) throws CantidadInsuficienteException{
@@ -365,24 +463,31 @@ public class DatosPedidoController implements Initializable {
     }
     
     @FXML
-    private void btnClicSeleccionUsuario(ActionEvent event) {
+    private void clicBtnNuevoUsuario(ActionEvent event) {
         try {
-            Ventana<SeleccionUsuarioController> ventana = App.abrirVentanaEmergente("seleccionUsuario",
-                    "Selección de usuario", 400, 200, true);
-            if(pedido == null) pedido = new Pedido();
-            ventana.getController().setPedido(pedido);
-            ventana.getStage().showAndWait();
+            Ventana<DatosUsuarioController> ventana = App.abrirVentanaEmergente(
+                    "datosUsuario",
+                    "Nuevo usuario",
+                    800,
+                    700,
+                    true
+            );
             
-            if(pedido.getIdUsuario() != -1 && pedido.getIdUsuario() > 0){
-                lbUsuario.setText(pedido.getNombreUsuario());
-            }
+            ventana.getController().configurar(
+                    ModoFormulario.REGISTRO,
+                    null
+            );
+            
+            ventana.getStage().showAndWait();
+            cargarUsuarios();
+            
         } catch (IOException ex) {
             System.getLogger(DatosPedidoController.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
     }
 
     @FXML
-    private void clicBtnCancelar(ActionEvent event) {
+    private void clicBtnCancelarPedido(ActionEvent event) {
         cerrarVentana();
     }
     
@@ -392,7 +497,7 @@ public class DatosPedidoController implements Initializable {
     }
 
     @FXML
-    private void clicConfirmar(ActionEvent event) {
+    private void clicBtnConfirmarPedido(ActionEvent event) {
         if(pedido != null && !proPedidos.isEmpty() && pedido.getIdUsuario() > 0){
             if(modo.equals(ModoFormulario.REGISTRO)){
                 nuevoPedido();
