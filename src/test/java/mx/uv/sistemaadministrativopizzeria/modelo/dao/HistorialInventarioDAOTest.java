@@ -23,6 +23,13 @@ public class HistorialInventarioDAOTest {
 
         assertEquals(6.5, resultado);
     }
+    
+    @Test
+    public void testCalcularNuevoStockRestaDiferenciaCuandoHayFaltante() throws Exception {
+        double resultado = (double) calcularNuevoStockMethod().invoke(null, 20.0, 15.0, 30.0);
+
+        assertEquals(25.0, resultado);
+    }
 
     @Test
     public void testSerializarProductoHistorialSinFoto() throws Exception {
@@ -63,6 +70,29 @@ public class HistorialInventarioDAOTest {
         InvocationTargetException ex = assertThrows(
                 InvocationTargetException.class,
                 () -> serializarProductoHistorialMethod().invoke(null, ResultSetTestUtils.resultSet(values))
+        );
+
+        assertInstanceOf(NullPointerException.class, ex.getCause());
+    }
+    
+    @Test
+    public void testSerializarProductoHistorialConEstatusInvalidoLanzaNullPointerException() throws Exception {
+        Map<String, Object> values = new HashMap<>();
+        values.put("estatusExistencia", "Desconocido");
+
+        InvocationTargetException ex = assertThrows(
+                InvocationTargetException.class,
+                () -> serializarProductoHistorialMethod().invoke(null, ResultSetTestUtils.resultSet(values))
+        );
+
+        assertInstanceOf(NullPointerException.class, ex.getCause());
+    }
+    
+    @Test
+    public void testSerializarProductoHistorialConResultSetNuloLanzaNullPointerException() throws Exception {
+        InvocationTargetException ex = assertThrows(
+                InvocationTargetException.class,
+                () -> serializarProductoHistorialMethod().invoke(null, new Object[]{null})
         );
 
         assertInstanceOf(NullPointerException.class, ex.getCause());

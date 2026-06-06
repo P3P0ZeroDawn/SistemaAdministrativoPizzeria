@@ -69,6 +69,33 @@ public class PedidoDAOTest {
 
         assertInstanceOf(NullPointerException.class, ex.getCause());
     }
+    
+    @Test
+    public void testSerializarPedidoConEstatusNuloLanzaNullPointerException() throws Exception {
+        Map<String, Object> values = new HashMap<>();
+        values.put("idPedido", 18);
+        values.put("idUsuario", 6);
+        values.put("fechaPedido", LocalDate.now());
+        values.put("total", 1.0);
+        values.put("estatus", null);
+
+        InvocationTargetException ex = assertThrows(
+                InvocationTargetException.class,
+                () -> serializarPedidoMethod().invoke(null, ResultSetTestUtils.resultSet(values))
+        );
+
+        assertInstanceOf(NullPointerException.class, ex.getCause());
+    }
+    
+    @Test
+    public void testSerializarPedidoConResultSetNuloLanzaNullPointerException() throws Exception {
+        InvocationTargetException ex = assertThrows(
+                InvocationTargetException.class,
+                () -> serializarPedidoMethod().invoke(null, new Object[]{null})
+        );
+
+        assertInstanceOf(NullPointerException.class, ex.getCause());
+    }
 
     private Pedido invocarSerializarPedido(ResultSet rs) throws Exception {
         return (Pedido) serializarPedidoMethod().invoke(null, rs);

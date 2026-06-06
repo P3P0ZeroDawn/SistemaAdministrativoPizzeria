@@ -22,6 +22,24 @@ public class ValidadorTest {
         tf.setText("");
         assertThrows(DatosFaltantesException.class, () -> Validador.requerido(tf, "falta"));
     }
+    
+    @Test
+    public void testValidacionesAceptanValoresCorrectos() {
+        TextField requerido = new TextField("  dato  ");
+        TextField email = new TextField("cliente@example.com");
+        TextField numero = new TextField("12345");
+        TextField password = new TextField("Segura1!");
+        ComboBox<String> combo = new ComboBox<>();
+        combo.setValue("Seleccion");
+
+        assertAll(
+                () -> assertDoesNotThrow(() -> Validador.requerido(requerido, "falta")),
+                () -> assertDoesNotThrow(() -> Validador.email(email, "email")),
+                () -> assertDoesNotThrow(() -> Validador.numerico(numero, "num")),
+                () -> assertDoesNotThrow(() -> Validador.passwordSegura(password, "pw")),
+                () -> assertDoesNotThrow(() -> Validador.comboRequerido(combo, "combo"))
+        );
+    }
 
     @Test
     public void testLongitudMaximaThrows() {
@@ -95,5 +113,38 @@ public class ValidadorTest {
         TextField tf2 = new TextField();
         Validador.permitirCorreo(tf2, 10);
         assertNotNull(tf2.getTextFormatter());
+    }
+    
+    @Test
+    public void testFiltroSoloNumerosRechazaLetrasYLongitudMayor() {
+        TextField tf = new TextField();
+        Validador.permitirSoloNumeros(tf, 3);
+
+        tf.setText("12");
+        assertEquals("12", tf.getText());
+
+        tf.setText("12a");
+        assertEquals("12", tf.getText());
+
+        tf.setText("1234");
+        assertEquals("12", tf.getText());
+    }
+    
+    @Test
+    public void testFiltroDecimalConLimitesRechazaFormatoInvalido() {
+        TextField tf = new TextField();
+        Validador.permitirDecimal(tf, 3, 2);
+
+        tf.setText("123.45");
+        assertEquals("123.45", tf.getText());
+
+        tf.setText("123.456");
+        assertEquals("123.45", tf.getText());
+
+        tf.setText("12.3.4");
+        assertEquals("123.45", tf.getText());
+
+        tf.setText("1234");
+        assertEquals("123.45", tf.getText());
     }
 }

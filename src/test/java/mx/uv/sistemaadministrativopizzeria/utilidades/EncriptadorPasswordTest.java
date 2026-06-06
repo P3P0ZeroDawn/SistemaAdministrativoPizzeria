@@ -23,4 +23,22 @@ public class EncriptadorPasswordTest {
         byte[] b = EncriptadorPassword.sha256Bytes("dos");
         assertNotEquals(new String(a), new String(b));
     }
+    
+    @Test
+    public void testSha256BytesDeHolaCoincideConHashConocido() throws Exception {
+        byte[] bytes = EncriptadorPassword.sha256Bytes("hola");
+
+        assertEquals(
+                "b221d9dbb083a7f33428d7c2a3c3198ae925614d70210e28716ccaa7cd4ddb79",
+                toHex(bytes)
+        );
+    }
+    
+    private String toHex(byte[] bytes) {
+        StringBuilder hex = new StringBuilder();
+        for(byte b : bytes){
+            hex.append(String.format("%02x", b));
+        }
+        return hex.toString();
+    }
 }

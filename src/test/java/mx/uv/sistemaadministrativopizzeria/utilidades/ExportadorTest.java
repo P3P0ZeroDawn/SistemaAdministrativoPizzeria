@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.List;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
@@ -35,6 +38,46 @@ public class ExportadorTest {
 
         assertTrue(tmp.exists());
         assertTrue(tmp.length() > 0);
+    }
+    
+    @Test
+    public void testExportarInventarioCSVRespetaTiposYValoresNoAplican() throws IOException {
+        File tmp = File.createTempFile("inventario-tipos", ".csv");
+        tmp.deleteOnExit();
+
+        Producto preparado = new Producto();
+        preparado.setNombre("Pizza");
+        preparado.setCodigo("PZ");
+        preparado.setDescripcion("");
+        preparado.setPrecio(150.0);
+        preparado.setCantidad(99.0);
+        preparado.setUnidadMedida("pieza");
+        preparado.setEsPreparado(true);
+        preparado.setEsInsumo(false);
+
+        Producto insumo = new Producto();
+        insumo.setNombre(null);
+        insumo.setCodigo("HAR");
+        insumo.setDescripcion("Harina");
+        insumo.setPrecio(20.0);
+        insumo.setCantidad(3.5);
+        insumo.setUnidadMedida("kg");
+        insumo.setEsPreparado(false);
+        insumo.setEsInsumo(true);
+
+        ArrayList<Producto> productos = new ArrayList<>();
+        productos.add(preparado);
+        productos.add(insumo);
+
+        Exportador.exportarInventarioCSV(tmp.getAbsolutePath(), productos);
+
+        List<String> lineas = Files.readAllLines(tmp.toPath(), StandardCharsets.UTF_8);
+        assertEquals(3, lineas.size());
+        assertTrue(lineas.get(1).contains("\"Preparado\""));
+        assertTrue(lineas.get(1).contains("\"$ 150.00\""));
+        assertTrue(lineas.get(1).contains("\"No aplica\""));
+        assertTrue(lineas.get(2).contains("\"Insumo\""));
+        assertTrue(lineas.get(2).contains("\"3.5\""));
     }
 
     @Test

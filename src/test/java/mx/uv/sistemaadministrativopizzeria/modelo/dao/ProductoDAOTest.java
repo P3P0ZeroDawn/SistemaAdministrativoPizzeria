@@ -125,4 +125,38 @@ public class ProductoDAOTest {
         assertEquals("Imagen", p.getNombre());
         assertNotNull(p.getFoto());
     }
+    
+    @Test
+    public void testSerializarProductoConResultSetNuloRetornaNull() {
+        assertNull(ProductoDAO.serializarProducto(null));
+    }
+    
+    @Test
+    public void testSerializarProductoConCamposOpcionalesNulos() throws Exception {
+        Map<String, Object> values = new HashMap<>();
+        values.put("idProducto", 9);
+        values.put("nombre", "Producto parcial");
+        values.put("codigo", "PAR");
+        values.put("descripcion", null);
+        values.put("precio", null);
+        values.put("cantidad", null);
+        values.put("unidadMedida", null);
+        values.put("activo", 0);
+        values.put("esPreparado", 0);
+        values.put("esInsumo", 0);
+        values.put("foto", null);
+
+        Producto p = ProductoDAO.serializarProducto(createResultSetProxy(values));
+
+        assertNotNull(p);
+        assertEquals(9, p.getIdProducto());
+        assertEquals("Producto parcial", p.getNombre());
+        assertNull(p.getDescripcion());
+        assertNull(p.getPrecio());
+        assertNull(p.getCantidad());
+        assertNull(p.getUnidadMedida());
+        assertFalse(p.getActivo());
+        assertFalse(p.getEsPreparado());
+        assertFalse(p.getEsInsumo());
+    }
 }

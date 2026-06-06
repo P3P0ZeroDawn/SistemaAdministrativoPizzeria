@@ -4,7 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,5 +43,50 @@ public class ExportadorPedidoTest {
 
         assertTrue(tmp.exists());
         assertTrue(tmp.length() > 0);
+    }
+    
+    @Test
+    public void testExportarPedidosCSVIncluyeProductosYCubreDatosFaltantes() throws IOException {
+        File tmp = File.createTempFile("pedidos", ".csv");
+        tmp.deleteOnExit();
+
+        Pedido pedidoConProductos = new Pedido();
+        pedidoConProductos.setNombreUsuario("Cliente Uno");
+        pedidoConProductos.setFechaPedido(java.time.LocalDate.of(2026, 6, 1));
+        pedidoConProductos.setEstatus(Pedido.EstatusPedido.EnPreparacion);
+        pedidoConProductos.setTotalAPagar(240.0);
+
+        Producto producto = new Producto();
+        producto.setNombre("Pizza");
+
+        ProductoPedido productoPedido = new ProductoPedido();
+        productoPedido.setProducto(producto);
+        productoPedido.setCantidad(2);
+
+        ArrayList<ProductoPedido> productos = new ArrayList<>();
+        productos.add(productoPedido);
+        pedidoConProductos.setProductos(productos);
+
+        Pedido pedidoSinProductos = new Pedido();
+        pedidoSinProductos.setNombreUsuario(null);
+        pedidoSinProductos.setFechaPedido(null);
+        pedidoSinProductos.setEstatus(null);
+        pedidoSinProductos.setTotalAPagar(null);
+        pedidoSinProductos.setProductos(null);
+
+        ArrayList<Pedido> pedidos = new ArrayList<>();
+        pedidos.add(pedidoConProductos);
+        pedidos.add(pedidoSinProductos);
+
+        Exportador.exportarPedidosCSV(tmp.getAbsolutePath(), pedidos);
+
+        List<String> lineas = Files.readAllLines(tmp.toPath(), StandardCharsets.UTF_8);
+        assertEquals(3, lineas.size());
+        assertTrue(lineas.get(1).contains("\"Cliente Uno\""));
+        assertTrue(lineas.get(1).contains("\"Pizza x2; \""));
+        assertTrue(lineas.get(1).contains("\"$ 240.00\""));
+        assertTrue(lineas.get(2).contains("\"No aplica\""));
+        assertTrue(lineas.get(2).contains("\"-\""));
+        assertTrue(lineas.get(2).contains("\"No se cargaron productos\""));
     }
 }
