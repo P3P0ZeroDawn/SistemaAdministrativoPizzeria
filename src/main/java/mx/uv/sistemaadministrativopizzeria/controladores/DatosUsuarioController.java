@@ -32,6 +32,11 @@ public class DatosUsuarioController implements Initializable {
     
     private ModoFormulario modo;
     private Usuario usuarioEdicion;
+    private boolean soloCliente = false;
+
+    public void setSoloCliente(boolean soloCliente) {
+        this.soloCliente = soloCliente;
+    }
     
     private final Tooltip tooltipContrasenia = new Tooltip("Las contraseñas no coinciden");
     
@@ -164,6 +169,11 @@ public class DatosUsuarioController implements Initializable {
             cargarDatosUsuario(usuario);
             vbContrasenia.setVisible(false);
             chbModifContrasenia.setVisible(true);
+        }
+        
+        if(soloCliente){
+            cbTipousuario.getSelectionModel().select(Usuario.tipoUsuario.Cliente);
+            cbTipousuario.setDisable(true);
         }
     }
     

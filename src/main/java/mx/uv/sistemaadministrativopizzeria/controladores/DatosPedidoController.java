@@ -473,6 +473,8 @@ public class DatosPedidoController implements Initializable {
                     true
             );
             
+            ventana.getController().setSoloCliente(true);
+            
             ventana.getController().configurar(
                     ModoFormulario.REGISTRO,
                     null
